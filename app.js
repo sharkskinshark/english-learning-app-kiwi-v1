@@ -186,6 +186,8 @@ const openDashboardBtn = document.getElementById('openDashboardBtn');
 const googleSignInContainer = document.getElementById('googleSignInContainer');
 const googleSignOutBtn = document.getElementById('googleSignOutBtn');
 const existingGoogleLoginBtn = document.getElementById('existingGoogleLoginBtn');
+const registerProfileBtn = document.getElementById('registerProfileBtn');
+const recoverNicknameBtn = document.getElementById('recoverNicknameBtn');
 const authStatusHint = document.getElementById('authStatusHint');
 const learningContent = document.getElementById('learningContent');
 const identitySection = document.getElementById('identitySection');
@@ -1928,6 +1930,14 @@ function findIdentityByGoogleEmail(email, store = loadIdentityStore()) {
   return null;
 }
 
+function findIdentityByNickname(nickname, store = loadIdentityStore()) {
+  const key = normalizeNickname(nickname).toLowerCase();
+  if (!key) return null;
+  const profile = store[key];
+  if (!profile || typeof profile !== 'object') return null;
+  return { key, profile };
+}
+
 function buildDefaultIdentityStats() {
   return {
     totalSessions: 0,
@@ -2118,7 +2128,7 @@ async function syncAuthGateFromCurrentState({ silent = false } = {}) {
 
   setLearningAccess(false);
   if (!silent) {
-    setIdentityHint('Google 已登入，請輸入名稱與生日按「完成註冊」，或確認你已用這個 Gmail 註冊過。', true);
+    setIdentityHint('Google 已登入，請先設定暱稱與生日再按「完成註冊」。暱稱不可重複。', true);
   }
   return false;
 }
@@ -2154,6 +2164,37 @@ async function signInRegisteredByGoogleOnly() {
   syncUsernameAcrossFeatures(linked.profile.nickname);
   setLearningAccess(true, linked.profile, email);
   setIdentityHint(`已使用 Gmail 登入：${linked.profile.nickname}`);
+  return true;
+}
+
+async function recoverNicknameForSignedInGoogle() {
+  if (!backendAuthState.signedIn) {
+    setIdentityHint('請先完成 Google 登入。', true);
+    return false;
+  }
+
+  const email = getSignedInGoogleEmail();
+  if (!email) {
+    setIdentityHint('無法取得 Google 信箱，請重新登入。', true);
+    return false;
+  }
+
+  let linked = findIdentityByGoogleEmail(email);
+  if (!linked) {
+    const remoteIdentity = await fetchIdentityProfileFromBackend();
+    if (remoteIdentity.ok && remoteIdentity.profile) {
+      const synced = upsertLocalIdentityProfile(remoteIdentity.profile);
+      if (synced) linked = synced;
+    }
+  }
+
+  if (!linked?.profile) {
+    setIdentityHint('此 Gmail 尚未註冊暱稱，請先輸入暱稱與生日完成註冊。', true);
+    return false;
+  }
+
+  fillIdentityInputs(linked.profile);
+  setIdentityHint(`此 Gmail 綁定的暱稱是：${linked.profile.nickname}`);
   return true;
 }
 
@@ -2201,6 +2242,14 @@ async function saveOrSignInIdentityProfile(name, birthday, options = {}) {
     return { ok: false, reason: 'missing-google-email' };
   }
 
+  const localStore = loadIdentityStore();
+  const localNicknameOwner = findIdentityByNickname(nickname, localStore);
+  const localNicknameOwnerEmail = normalizeEmail(localNicknameOwner?.profile?.googleEmail || '');
+  if (localNicknameOwner && localNicknameOwnerEmail && localNicknameOwnerEmail !== googleEmail) {
+    setIdentityHint('此名稱已被其他人註冊，請更換名稱。', true);
+    return { ok: false, reason: 'nickname-taken' };
+  }
+
   if (backendAuthState.backendEnabled && backendAuthState.signedIn) {
     const remote = await fetchBackendJson('/api/auth/session', {
       method: 'POST',
@@ -2243,7 +2292,7 @@ async function saveOrSignInIdentityProfile(name, birthday, options = {}) {
   }
 
   const key = nickname.toLowerCase();
-  const store = loadIdentityStore();
+  const store = localStore;
   const now = Date.now();
   const existing = store[key];
 
@@ -2410,6 +2459,35 @@ function setAuthStatusHint(message, isError = false) {
   authStatusHint.classList.toggle('error', !!isError);
 }
 
+function updateIdentityRegistrationControls() {
+  const signedIn = !!backendAuthState.signedIn;
+
+  if (usernameInputField) {
+    usernameInputField.disabled = !signedIn;
+    usernameInputField.readOnly = !signedIn;
+    usernameInputField.placeholder = signedIn ? IDENTITY_PLACEHOLDER_NAME : '請先登入 Google';
+  }
+
+  if (birthdayInputField) {
+    birthdayInputField.disabled = !signedIn;
+    birthdayInputField.readOnly = !signedIn;
+    birthdayInputField.placeholder = signedIn ? IDENTITY_PLACEHOLDER_BIRTHDAY : '請先登入 Google';
+  }
+
+  if (birthdayVisibilityToggle) {
+    birthdayVisibilityToggle.disabled = !signedIn;
+    if (!signedIn) setBirthdayDigitsVisible(false);
+  }
+
+  if (registerProfileBtn) {
+    registerProfileBtn.disabled = !signedIn || cloudSyncBusy;
+  }
+
+  if (recoverNicknameBtn) {
+    recoverNicknameBtn.disabled = !signedIn || cloudSyncBusy;
+  }
+}
+
 function readStorageValue(key) {
   const raw = localStorage.getItem(key);
   if (raw === null) return undefined;
@@ -2468,6 +2546,8 @@ function updateCloudSyncControlLabels() {
   if (existingGoogleLoginBtn) {
     existingGoogleLoginBtn.disabled = !backendAuthState.signedIn || cloudSyncBusy;
   }
+
+  updateIdentityRegistrationControls();
 }
 
 async function fetchBackendJson(path, options = {}) {
@@ -3186,7 +3266,6 @@ if (saveUsernameBtn) {
   });
 }
 
-const registerProfileBtn = document.getElementById('registerProfileBtn');
 if (registerProfileBtn) {
   registerProfileBtn.addEventListener('click', async () => {
     if (!backendAuthState.signedIn) {
@@ -3214,12 +3293,9 @@ if (existingGoogleLoginBtn) {
   });
 }
 
-const recoverNicknameBtn = document.getElementById('recoverNicknameBtn');
 if (recoverNicknameBtn) {
   recoverNicknameBtn.addEventListener('click', async () => {
-    const usernameInput = document.getElementById('usernameInput');
-    const birthdayInput = document.getElementById('birthdayInput');
-    await recoverNicknamesByBirthday(birthdayInput?.value, usernameInput?.value);
+    await recoverNicknameForSignedInGoogle();
   });
 }
 
