@@ -163,6 +163,16 @@
           </button>
         </div>
         <div class="identity-section-body">
+        <div class="account-auth-panel">
+          <h3>Google 帳號登入</h3>
+          <div class="account-auth-actions">
+            <div id="googleSignInContainer"></div>
+            <button id="existingGoogleLoginBtn" class="secondary-action-btn">已註冊者 Gmail 直接登入</button>
+            <button id="googleSignOutBtn" class="secondary-action-btn hidden">切換 / 登出 Google</button>
+          </div>
+          <div id="authStatusHint" class="identity-hint">請先登入 Google，再完成註冊或直接登入。</div>
+        </div>
+
         <div class="username-area">
           <input type="text" id="usernameInput" placeholder="輸入暱稱" maxlength="20">
           <input type="password" id="birthdayInput" placeholder="輸入西元生日" maxlength="8" inputmode="numeric" pattern="[0-9]*">
@@ -174,16 +184,6 @@
           <span>顯示生日數字</span>
         </label>
         <div id="identityHint" class="identity-hint">請先登入 Google，再設定暱稱與生日完成註冊。暱稱不可重複。</div>
-
-        <div class="account-auth-panel">
-          <h3>Google 帳號登入</h3>
-          <div class="account-auth-actions">
-            <div id="googleSignInContainer"></div>
-            <button id="existingGoogleLoginBtn" class="secondary-action-btn">已註冊者 Gmail 直接登入</button>
-            <button id="googleSignOutBtn" class="secondary-action-btn hidden">切換 / 登出 Google</button>
-          </div>
-          <div id="authStatusHint" class="identity-hint">請先登入 Google，再完成註冊或直接登入。</div>
-        </div>
 
         <div class="cloud-sync-panel">
           <h3>雲端同步（Google 帳號）☁️</h3>
