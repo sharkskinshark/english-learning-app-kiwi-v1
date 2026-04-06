@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Holiday Status Button Debug</title>
+    <style>
+        button {
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #2E8B57, #98FB98);
+            color: white;
+            border: 2px solid #fff;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 6px 15px rgba(46, 139, 87, 0.5);
+            margin: 10px;
+        }
+        .debug-info {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>Holiday Status Button Debug Test</h1>
+    
+    <button id="btn-status">📅 Check Holiday Status</button>
+    <button onclick="debugInfo()">Show Debug Info</button>
+    
+    <div id="debug-output" class="debug-info"></div>
+
+    <script src="events.js"></script>
+    <script>
+        let isAnimationUnlocked = false; // Default state to match test-buttons.html
+        
+        function debugInfo() {
+            const output = document.getElementById('debug-output');
+            let info = 'Debug Information:\n';
+            info += `EVENTS defined: ${typeof EVENTS !== 'undefined'}\n`;
+            info += `isHolidayActive defined: ${typeof isHolidayActive !== 'undefined'}\n`;
+            info += `checkHolidayStatus defined: ${typeof checkHolidayStatus !== 'undefined'}\n`;
+            info += `Button element found: ${document.getElementById('btn-status') !== null}\n`;
+            info += `Current date: ${new Date().toISOString()}\n`;
+            
+            if (typeof EVENTS !== 'undefined') {
+                info += `Available events: ${Object.keys(EVENTS).join(', ')}\n`;
+            }
+            
+            output.innerText = info;
+        }
+        
+        // Copy the EXACT function from test-buttons.html
+        function checkHolidayStatus() {
+            console.log('=== Holiday Status Check Started ===');
+            
+            const today = new Date();
+            const currentDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            
+            let statusMessage = `📅 Holiday Status Check (${currentDate})\n\n`;
+            
+            // Show unlock status
+            if (isAnimationUnlocked) {
+                statusMessage += '🔓 UNLOCKED MODE: All animations available regardless of date!\n\n';
+            } else {
+                statusMessage += '🔒 LOCKED MODE: Only active holiday animations available\n\n';
+            }
+            
+            // Comprehensive list of all holiday events
+            const holidayIds = ['easter', 'spring', 'summer', 'backToSchool', 'halloween', 'thanksgiving', 'christmas', 'newyear', 'chinesenewyear', 'birthday'];
+            
+            // Check if EVENTS object exists
+            if (typeof EVENTS === 'undefined' || !EVENTS) {
+                statusMessage += '❌ ERROR: Events data not loaded. Please refresh the page.\n\n';
+                alert(statusMessage);
+                return;
+            }
+            
+            // Check if isHolidayActive function exists
+            if (typeof isHolidayActive === 'undefined') {
+                statusMessage += '❌ ERROR: isHolidayActive function not available. Please refresh the page.\n\n';
+                alert(statusMessage);
+                return;
+            }
+            
+            // Debug: Show all available events
+            const availableEvents = Object.keys(EVENTS);
+            console.log('Available EVENTS:', availableEvents);
+            statusMessage += `📊 Available Events in System: ${availableEvents.length}\n`;
+            statusMessage += `   [${availableEvents.join(', ')}]\n\n`;
+            
+            let foundEvents = 0;
+            let missingEvents = [];
+            
+            console.log('Starting to check each holiday...');
+            
+            holidayIds.forEach((holidayId, index) => {
+                console.log(`Checking holiday ${index + 1}/${holidayIds.length}: ${holidayId}`);
+                
+                const event = EVENTS[holidayId];
+                if (event && event.name && event.period) {
+                    foundEvents++;
+                    let isActive = false;
+                    let errorOccurred = false;
+                    
+                    try {
+                        console.log(`Calling isHolidayActive for: ${holidayId}`);
+                        isActive = isHolidayActive(holidayId);
+                        console.log(`Result for ${holidayId}: ${isActive}`);
+                    } catch (error) {
+                        console.error(`Error checking holiday status for ${holidayId}:`, error);
+                        statusMessage += `⚠️ Error checking ${event.name} status\n\n`;
+                        errorOccurred = true;
+                    }
+                    
+                    if (!errorOccurred) {
+                        const canRun = isAnimationUnlocked || isActive;
+                        const status = canRun ? (isActive ? '✅ ACTIVE' : '🔓 UNLOCKED') : '❌ Inactive';
+                        const period = `${event.period.start} to ${event.period.end}`;
+                        statusMessage += `${status} ${event.name}\n   Period: ${period}\n\n`;
+                    }
+                } else {
+                    missingEvents.push(holidayId);
+                    console.log(`Missing event: ${holidayId}`);
+                }
+            });
+            
+            console.log('Finished checking all holidays');
+            
+            // Show missing events if any
+            if (missingEvents.length > 0) {
+                statusMessage += `\n⚠️ Missing Events: ${missingEvents.join(', ')}\n`;
+            }
+            
+            // Add summary
+            statusMessage += `\n📊 Summary: Found ${foundEvents}/${holidayIds.length} expected events\n`;
+            
+            if (isAnimationUnlocked) {
+                statusMessage += '\n💡 Animations will auto-lock after completion!';
+            } else {
+                statusMessage += '\n🎯 Use "🔓 Unlock Animations" to test outside holiday periods!';
+            }
+            
+            console.log('=== Holiday Status Check Complete ===');
+            console.log('Final message:', statusMessage);
+            alert(statusMessage);
+        }
+        
+        // Bind the button
+        document.addEventListener('DOMContentLoaded', function() {
+            const button = document.getElementById('btn-status');
+            if (button) {
+                button.addEventListener('click', checkHolidayStatus);
+                console.log('Holiday Status button bound successfully');
+            } else {
+                console.error('Could not find btn-status element');
+            }
+        });
+        
+        // Auto-show debug info
+        window.addEventListener('load', debugInfo);
+    </script>
+</body>
+</html>

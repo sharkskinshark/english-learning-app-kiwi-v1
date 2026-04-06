@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>System Validation Test</title>
+</head>
+<body>
+    <h1>🔍 System Validation Report</h1>
+    <div id="results"></div>
+
+    <script src="events.js"></script>
+    <script>
+        const results = document.getElementById('results');
+        let testResults = [];
+
+        // Test 1: EVENTS object structure
+        function testEventsStructure() {
+            if (typeof EVENTS === 'undefined') {
+                return { test: 'EVENTS Object', status: '❌ FAILED', message: 'EVENTS object not defined' };
+            }
+
+            const eventKeys = Object.keys(EVENTS);
+            const expectedEvents = ['easter', 'spring', 'summer', 'backToSchool', 'halloween', 'thanksgiving', 'christmas', 'newyear', 'chinesenewyear', 'birthday'];
+            
+            let missingEvents = expectedEvents.filter(event => !eventKeys.includes(event));
+            let extraEvents = eventKeys.filter(event => !expectedEvents.includes(event));
+
+            if (missingEvents.length === 0 && extraEvents.length === 0) {
+                return { test: 'EVENTS Structure', status: '✅ PASSED', message: `All ${eventKeys.length} events found` };
+            } else {
+                return { test: 'EVENTS Structure', status: '⚠️ WARNING', message: `Missing: [${missingEvents.join(', ')}], Extra: [${extraEvents.join(', ')}]` };
+            }
+        }
+
+        // Test 2: Event properties validation
+        function testEventProperties() {
+            const requiredProps = ['id', 'name', 'period', 'words'];
+            let issues = [];
+
+            Object.keys(EVENTS).forEach(key => {
+                const event = EVENTS[key];
+                requiredProps.forEach(prop => {
+                    if (!event[prop]) {
+                        issues.push(`${key} missing ${prop}`);
+                    }
+                });
+
+                if (event.period && (!event.period.start || !event.period.end)) {
+                    issues.push(`${key} has invalid period`);
+                }
+            });
+
+            if (issues.length === 0) {
+                return { test: 'Event Properties', status: '✅ PASSED', message: 'All events have required properties' };
+            } else {
+                return { test: 'Event Properties', status: '❌ FAILED', message: issues.join(', ') };
+            }
+        }
+
+        // Test 3: Period date format validation
+        function testDateFormats() {
+            const dateRegex = /^\d{2}-\d{2}$/;
+            let issues = [];
+
+            Object.keys(EVENTS).forEach(key => {
+                const event = EVENTS[key];
+                if (event.period) {
+                    if (!dateRegex.test(event.period.start)) {
+                        issues.push(`${key} invalid start date format`);
+                    }
+                    if (!dateRegex.test(event.period.end)) {
+                        issues.push(`${key} invalid end date format`);
+                    }
+                }
+            });
+
+            if (issues.length === 0) {
+                return { test: 'Date Formats', status: '✅ PASSED', message: 'All dates in MM-DD format' };
+            } else {
+                return { test: 'Date Formats', status: '❌ FAILED', message: issues.join(', ') };
+            }
+        }
+
+        // Test 4: Vocabulary words validation
+        function testVocabularyWords() {
+            let totalWords = 0;
+            let issues = [];
+
+            Object.keys(EVENTS).forEach(key => {
+                const event = EVENTS[key];
+                if (event.words && Array.isArray(event.words)) {
+                    totalWords += event.words.length;
+                    
+                    event.words.forEach((word, index) => {
+                        if (!word.word || !word.meaning || !word.emoji) {
+                            issues.push(`${key} word ${index + 1} missing properties`);
+                        }
+                    });
+                } else {
+                    issues.push(`${key} has no words array`);
+                }
+            });
+
+            if (issues.length === 0) {
+                return { test: 'Vocabulary Words', status: '✅ PASSED', message: `${totalWords} total words validated` };
+            } else {
+                return { test: 'Vocabulary Words', status: '❌ FAILED', message: issues.join(', ') };
+            }
+        }
+
+        // Run all tests
+        testResults.push(testEventsStructure());
+        testResults.push(testEventProperties());
+        testResults.push(testDateFormats());
+        testResults.push(testVocabularyWords());
+
+        // Display results
+        let html = '<h2>📊 Validation Results</h2>';
+        let passCount = 0;
+
+        testResults.forEach(result => {
+            html += `<div style="margin: 10px 0; padding: 10px; border-left: 4px solid ${result.status.includes('✅') ? 'green' : result.status.includes('❌') ? 'red' : 'orange'};">`;
+            html += `<strong>${result.status} ${result.test}</strong><br>`;
+            html += `${result.message}`;
+            html += `</div>`;
+
+            if (result.status.includes('✅')) passCount++;
+        });
+
+        html += `<h3>📋 Summary: ${passCount}/${testResults.length} tests passed</h3>`;
+        results.innerHTML = html;
+
+        console.log('🔍 System Validation Complete');
+        console.log('Available EVENTS:', Object.keys(EVENTS));
+    </script>
+</body>
+</html>

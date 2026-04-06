@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Holiday Status Test - November 2, 2025</title>
+</head>
+<body>
+    <h1>Holiday Status Test - November 2, 2025</h1>
+    <button onclick="testCurrentDate()">Test Today's Holiday Status</button>
+    <div id="output"></div>
+
+    <script src="events.js"></script>
+    <script>
+        function testCurrentDate() {
+            const output = document.getElementById('output');
+            const today = new Date(2025, 10, 2); // November 2, 2025 (month is 0-based)
+            
+            let result = '<h2>Holiday Status for November 2, 2025:</h2>';
+            
+            const holidayIds = ['easter', 'spring', 'summer', 'backToSchool', 'halloween', 'thanksgiving', 'christmas', 'newyear', 'chinesenewyear', 'birthday'];
+            
+            result += '<ul>';
+            
+            holidayIds.forEach(holidayId => {
+                const event = EVENTS[holidayId];
+                if (event && event.period) {
+                    const isActive = isHolidayActive(holidayId);
+                    const status = isActive ? '✅ ACTIVE' : '❌ Inactive';
+                    result += `<li><strong>${status}</strong> ${event.name} (${event.period.start} to ${event.period.end})</li>`;
+                } else {
+                    result += `<li>❌ Missing: ${holidayId}</li>`;
+                }
+            });
+            
+            result += '</ul>';
+            
+            // Check thanksgiving specifically (should be active on Nov 2)
+            const thanksgiving = EVENTS.thanksgiving;
+            if (thanksgiving) {
+                const isThankgivingActive = isHolidayActive('thanksgiving');
+                result += `<h3>Thanksgiving Check:</h3>`;
+                result += `<p>Period: ${thanksgiving.period.start} to ${thanksgiving.period.end}</p>`;
+                result += `<p>Today (Nov 2): ${isThankgivingActive ? 'SHOULD BE ACTIVE ✅' : 'Should be inactive ❌'}</p>`;
+            }
+            
+            output.innerHTML = result;
+        }
+        
+        // Auto-run test when page loads
+        window.addEventListener('load', testCurrentDate);
+    </script>
+</body>
+</html>

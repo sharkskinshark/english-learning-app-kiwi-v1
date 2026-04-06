@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Holiday Status Test</title>
+    <style>
+        button {
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #2E8B57, #98FB98);
+            color: white;
+            border: 2px solid #fff;
+            border-radius: 12px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple Holiday Status Test</h1>
+    
+    <button onclick="testBasicFunction()">Test Basic Function</button>
+    <button onclick="testRealFunction()">Test Real Holiday Status</button>
+    
+    <div id="log" class="log">Loading...</div>
+
+    <script src="events.js"></script>
+    <script>
+        let isAnimationUnlocked = false;
+        let log = '';
+        
+        function addLog(message) {
+            log += new Date().toLocaleTimeString() + ': ' + message + '\n';
+            document.getElementById('log').textContent = log;
+        }
+        
+        function testBasicFunction() {
+            addLog('=== Basic Function Test ===');
+            addLog('EVENTS defined: ' + (typeof EVENTS !== 'undefined'));
+            addLog('isHolidayActive defined: ' + (typeof isHolidayActive !== 'undefined'));
+            
+            if (typeof EVENTS !== 'undefined') {
+                addLog('EVENTS keys: ' + Object.keys(EVENTS).join(', '));
+            }
+            
+            if (typeof isHolidayActive !== 'undefined' && typeof EVENTS !== 'undefined') {
+                try {
+                    const result = isHolidayActive('christmas');
+                    addLog('isHolidayActive(christmas): ' + result);
+                } catch (error) {
+                    addLog('ERROR calling isHolidayActive: ' + error.message);
+                }
+            }
+        }
+        
+        function testRealFunction() {
+            addLog('=== Real Holiday Status Function Test ===');
+            
+            try {
+                // Test the exact logic from the Holiday Status button
+                const holidayIds = ['easter', 'spring', 'summer', 'backToSchool', 'halloween', 'thanksgiving', 'christmas', 'newyear', 'chinesenewyear', 'birthday'];
+                
+                addLog('Testing ' + holidayIds.length + ' holidays...');
+                
+                let foundEvents = 0;
+                let errors = [];
+                
+                holidayIds.forEach(holidayId => {
+                    const event = EVENTS[holidayId];
+                    if (event && event.name && event.period) {
+                        foundEvents++;
+                        try {
+                            const isActive = isHolidayActive(holidayId);
+                            addLog(holidayId + ': ' + (isActive ? 'ACTIVE' : 'inactive'));
+                        } catch (error) {
+                            errors.push(holidayId + ': ' + error.message);
+                        }
+                    } else {
+                        errors.push(holidayId + ': missing from EVENTS');
+                    }
+                });
+                
+                addLog('Found ' + foundEvents + ' events, ' + errors.length + ' errors');
+                if (errors.length > 0) {
+                    addLog('Errors: ' + errors.join(', '));
+                }
+                
+            } catch (error) {
+                addLog('FATAL ERROR: ' + error.message);
+            }
+        }
+        
+        // Auto-run basic test
+        window.addEventListener('load', function() {
+            addLog('Page loaded');
+            setTimeout(testBasicFunction, 100);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Holiday Animations</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="events.js"></script>
+</head>
+<body>
+  <h1>Test Holiday Animations</h1>
+  
+  <div style="position: fixed; top: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 999999;">
+    <button id="btn-unlock" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #FF4500, #FF8C00); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(255, 69, 0, 0.5);">🔓 Unlock Animations</button>
+    <button id="btn-status" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #2E8B57, #98FB98); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(46, 139, 87, 0.5);">📅 Check Holiday Status</button>
+    
+    <!-- CHRONOLOGICAL ORDER BY HOLIDAY PERIODS -->
+    
+    <!-- 1. Chinese New Year (01-15 to 02-15) -->
+    <button id="btn6" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #DC143C, #FFD700); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(220, 20, 60, 0.5);">🐉 Test Chinese NY</button>
+    <button id="btn7" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #8B0000, #FFA500); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(139, 0, 0, 0.5);">� Chinese NY Vocab</button>
+    <button id="btn8" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #B8860B, #CD5C5C); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(184, 134, 11, 0.5);">🧧 Simulate Chinese NY Event</button>
+    
+    <!-- 2. Spring (03-20 to 04-20) -->
+    <button id="btn19" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #32CD32, #98FB98); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(50, 205, 50, 0.5);">🌸 Test Spring Bloom</button>
+    <button id="btn22" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #98FB98, #90EE90); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(152, 251, 152, 0.5);">� Spring Bloom Vocab</button>
+    
+    <!-- 3. Easter (04-01 to 04-15) -->
+    <button id="btn15" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #FF69B4, #FFB6C1); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(255, 105, 180, 0.5);">� Test Easter</button>
+    <button id="btn16" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #98FB98, #90EE90); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(152, 251, 152, 0.5);">🥚 Easter Vocab</button>
+    <button id="btn17" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #DDA0DD, #F0E68C); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(221, 160, 221, 0.5);">🌷 Simulate Easter Event</button>
+    
+    <!-- 4. Summer (06-15 to 07-15) -->
+    <button id="btn12" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #FF8C00, #FFD700); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(255, 140, 0, 0.5);">☀️ Test Summer</button>
+    <button id="btn13" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #1E90FF, #87CEEB); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(30, 144, 255, 0.5);">🏖️ Summer Vocab</button>
+    <button id="btn14" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #32CD32, #98FB98); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(50, 205, 50, 0.5);">🍦 Simulate Summer Event</button>
+    
+    <!-- 5. Back to School (08-15 to 09-15) -->
+    <button id="btn18" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #FF8C00, #FFA500); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(255, 140, 0, 0.5);">📚 Test Back to School</button>
+    <button id="btn21" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #FF6347, #FFA500); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(255, 99, 71, 0.5);">📝 Back to School Vocab</button>
+    
+    <!-- 6. Birthday (09-10 to 09-10) -->
+    <button id="btn24" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #FF69B4, #FF1493); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(255, 105, 180, 0.5);">� Test Birthday</button>
+    <button id="btn25" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #FFB6C1, #FFC0CB); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(255, 182, 193, 0.5);">🎈 Birthday Vocab</button>
+    <button id="btn26" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #DA70D6, #FF69B4); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(218, 112, 214, 0.5);">🎉 Simulate Birthday Event</button>
+    
+    <!-- 7. Halloween (10-25 to 10-31) -->
+    <button id="btn9" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #8B008B, #FF4500); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(139, 0, 139, 0.5);">� Test Halloween</button>
+    <button id="btn10" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #4B0082, #8A2BE2); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(75, 0, 130, 0.5);">� Halloween Vocab</button>
+    <button id="btn11" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #800080, #FF8C00); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(128, 0, 128, 0.5);">🕷️ Simulate Halloween Event</button>
+    
+    <!-- 8. Thanksgiving (11-20 to 11-30) -->
+    <button id="btn20" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #D2691E, #CD853F); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(210, 105, 30, 0.5);">🦃 Test Thanksgiving</button>
+    <button id="btn23" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #CD853F, #DEB887); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(205, 133, 63, 0.5);">🍂 Thanksgiving Vocab</button>
+    
+    <!-- 9. Christmas (12-15 to 12-25) -->
+    <button id="btn1" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #dc143c, #ff6347); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(220, 20, 60, 0.5);">� Test Christmas</button>
+    <button id="btn3" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #228B22, #32CD32); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(34, 139, 34, 0.5);">📚 Christmas Vocab</button>
+    <button id="btn5" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #C41E3A, #165B33); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(196, 30, 58, 0.5);">� Simulate Christmas Event</button>
+    
+    <!-- 10. New Year (12-26 to 01-05) - spans year boundary -->
+    <button id="btn2" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #4B0082, #FFD700); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(75, 0, 130, 0.5);">� Test New Year</button>
+    <button id="btn4" style="padding: 12px 20px; font-size: 16px; font-weight: bold; background: linear-gradient(45deg, #FF1493, #FF69B4); color: white; border: 2px solid #fff; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 15px rgba(255, 20, 147, 0.5);">📖 New Year Vocab</button>
+  </div>
+
+  <script>
+    // 🔓 UNLOCK SYSTEM FOR TESTING ANIMATIONS
+    let isAnimationUnlocked = false;
+    let unlockTimeout = null;
+    
+    function toggleAnimationUnlock() {
+      isAnimationUnlocked = !isAnimationUnlocked;
+      const unlockBtn = document.getElementById('btn-unlock');
+      
+      if (isAnimationUnlocked) {
+        unlockBtn.innerHTML = '🔒 Lock Animations';
+        unlockBtn.style.background = 'linear-gradient(45deg, #32CD32, #98FB98)';
+        alert('🔓 Animation restrictions temporarily unlocked! You can now test all holiday animations regardless of date.');
+        console.log('🔓 Animation unlock activated - all holiday restrictions bypassed');
+      } else {
+        unlockBtn.innerHTML = '🔓 Unlock Animations';
+        unlockBtn.style.background = 'linear-gradient(45deg, #FF4500, #FF8C00)';
+        alert('🔒 Animation restrictions locked. Animations will only work during holiday periods.');
+        console.log('🔒 Animation unlock deactivated - holiday restrictions restored');
+      }
+    }
+    
+    function autoLockAfterAnimation(duration = 8000) {
+      if (isAnimationUnlocked) {
+        console.log(`🔄 Auto-lock scheduled in ${duration/1000} seconds...`);
+        if (unlockTimeout) clearTimeout(unlockTimeout);
+        unlockTimeout = setTimeout(() => {
+          if (isAnimationUnlocked) {
+            console.log('🔒 Auto-locking animations after animation completion');
+            toggleAnimationUnlock();
+          }
+        }, duration);
+      }
+    }
+    
+    // Enhanced holiday checking that respects unlock status
+    function isHolidayActiveOrUnlocked(holidayId) {
+      if (isAnimationUnlocked) {
+        console.log(`🔓 Holiday check bypassed for ${holidayId} (unlocked mode)`);
+        return true;
+      }
+      return isHolidayActive(holidayId);
+    }
+    
+    function testChristmasAnimation() {
+      console.log('🎅 Christmas button clicked!');
+      
+      // Check if Christmas is currently active or unlocked
+      if (!isHolidayActiveOrUnlocked('christmas')) {
+        const message = getHolidayMessage('christmas');
+        alert(message + '\n\n💡 Tip: Use "🔓 Unlock Animations" button to test animations outside holiday periods!');
+        return;
+      }
+      
+      if (isAnimationUnlocked) {
+        alert('🎄 Christmas Animation Test! (🔓 Unlocked Mode - Animation will auto-lock after completion)');
+        autoLockAfterAnimation(8000); // Christmas animation is 8 seconds
+      } else {
+        alert('🎄 Christmas Animation Test! (Holiday is currently active)');
+      }
+      
+      const loader = document.createElement('div');
+      loader.className = 'christmas-loader active';
+      loader.innerHTML = '<div class="christmas-sky"><div class="santa-sleigh-scene"><div class="reindeer reindeer-1">🦌</div><div class="reindeer reindeer-2">🦌</div><div class="reindeer reindeer-3">🦌</div><div class="santa-sleigh">🎅🛷</div><div class="sleigh-trail">✨</div></div><div class="snow-container"><div class="snowflake snow-1">❄️</div><div class="snowflake snow-2">❄️</div><div class="snowflake snow-3">❄️</div><div class="snowflake snow-4">❄️</div><div class="snowflake snow-5">❄️</div><div class="snowflake snow-6">❄️</div><div class="snowflake snow-7">❄️</div><div class="snowflake snow-8">❄️</div><div class="snowflake snow-9">❄️</div><div class="snowflake snow-10">❄️</div><div class="snowflake snow-11">❄️</div><div class="snowflake snow-12">❄️</div><div class="snowflake snow-13">❄️</div><div class="snowflake snow-14">❄️</div><div class="snowflake snow-15">❄️</div><div class="snowflake snow-16">❄️</div><div class="snowflake snow-17">❄️</div><div class="snowflake snow-18">❄️</div><div class="snowflake snow-19">❄️</div><div class="snowflake snow-20">❄️</div><div class="snowflake snow-21">❄️</div><div class="snowflake snow-22">❄️</div><div class="snowflake snow-23">❄️</div><div class="snowflake snow-24">❄️</div><div class="snowflake snow-25">❄️</div><div class="snowflake snow-26">❄️</div><div class="snowflake snow-27">❄️</div><div class="snowflake snow-28">❄️</div><div class="snowflake snow-29">❄️</div><div class="snowflake snow-30">❄️</div><div class="snowflake snow-31">❄️</div><div class="snowflake snow-32">❄️</div><div class="snowflake snow-33">❄️</div><div class="snowflake snow-34">❄️</div><div class="snowflake snow-35">❄️</div><div class="snowflake snow-36">❄️</div></div><div class="gifts-container"><div class="flying-gift gift-1">🎁</div><div class="flying-gift gift-2">🧸</div><div class="flying-gift gift-3">📦</div><div class="flying-gift gift-4">🎀</div><div class="flying-gift gift-5">🪀</div><div class="flying-gift gift-6">🎮</div><div class="flying-gift gift-7">🎁</div><div class="flying-gift gift-8">🧸</div><div class="flying-gift gift-9">📦</div><div class="flying-gift gift-10">�</div><div class="flying-gift gift-11">🪀</div><div class="flying-gift gift-12">�🎮</div></div><div class="trees-container"><div class="christmas-tree tree-1">🎄<span class="tree-star">⭐</span></div><div class="christmas-tree tree-2">🎄</div><div class="christmas-tree tree-3">🎄<span class="tree-star">⭐</span></div><div class="christmas-tree tree-4">🎄</div><div class="christmas-tree tree-5">🎄<span class="tree-star">⭐</span></div><div class="christmas-tree tree-6">🎄</div></div><div class="christmas-stars"><div class="star star-1">⭐</div><div class="star star-2">🌟</div><div class="star star-3">⭐</div><div class="star star-4">🌟</div></div><div class="christmas-center-text">🎅 Santa is Coming!</div></div>';
+      
+      document.body.appendChild(loader);
+      
+      // Christmas firework emojis
+      const christmasEmojis = ['🎄', '🎅', '⭐', '🌟', '❄️', '🎁', '🔔', '🕯️', '🧦', '🎀', '✨', '💫'];
+      
+      // Create Christmas firework bursts
+      let burstCount = 0;
+      const maxBursts = 8;
+      
+      const createChristmasFirework = () => {
+        if (burstCount >= maxBursts) return;
+        
+        const particleCount = 18 + Math.floor(Math.random() * 12);
+        console.log(`Creating ${particleCount} particles for burst ${burstCount + 1}`);
+        
+        for (let i = 0; i < particleCount; i++) {
+          const particle = document.createElement('div');
+          particle.textContent = christmasEmojis[Math.floor(Math.random() * christmasEmojis.length)];
+          
+          // Set basic styles directly
+          particle.style.position = 'absolute';
+          particle.style.fontSize = '32px';
+          particle.style.zIndex = '100000';
+          particle.style.pointerEvents = 'none';
+          
+          // Random angle and distance
+          const angle = Math.random() * 360;
+          const radian = (angle * Math.PI) / 180;
+          const distance = 200 + Math.random() * 400;
+          
+          // Calculate start and end positions
+          const centerX = window.innerWidth / 2;
+          const centerY = window.innerHeight / 2;
+          const finalX = centerX + Math.cos(radian) * distance;
+          const finalY = centerY + Math.sin(radian) * distance;
+          
+          // Set initial position at center
+          particle.style.left = centerX + 'px';
+          particle.style.top = centerY + 'px';
+          particle.style.opacity = '1';
+          particle.style.transform = 'scale(0.5)';
+          
+          loader.appendChild(particle);
+          console.log(`Particle ${i}: from (${centerX}, ${centerY}) to (${finalX}, ${finalY})`);
+          
+          // Animate using requestAnimationFrame for better control
+          setTimeout(() => {
+            particle.style.transition = 'all 2s ease-out';
+            particle.style.left = finalX + 'px';
+            particle.style.top = finalY + 'px';
+            particle.style.transform = 'scale(1) rotate(360deg)';
+            particle.style.opacity = '0';
+            
+            console.log(`Animating particle ${i} to (${finalX}, ${finalY})`);
+          }, Math.random() * 100);
+          
+          // Clean up
+          setTimeout(() => {
+            if (particle && particle.parentNode) {
+              particle.parentNode.removeChild(particle);
+            }
+          }, 2200);
+        }
+        
+        burstCount++;
+        console.log(`🎆 Christmas firework burst ${burstCount}/${maxBursts}!`);
+        if (burstCount < maxBursts) {
+          setTimeout(createChristmasFirework, 700);
+        }
+      };
+      
+      const sleigh = loader.querySelector('.santa-sleigh-scene');
+      const stars = loader.querySelectorAll('.star');
+      const snow = loader.querySelectorAll('.snowflake');
+      const gifts = loader.querySelectorAll('.flying-gift');
+      const trees = loader.querySelectorAll('.christmas-tree');
+      
+      setTimeout(() => { sleigh.classList.add('flying'); }, 100);
+      setTimeout(() => { createChristmasFirework(); }, 300);
+      setTimeout(() => { trees.forEach((t, i) => setTimeout(() => t.classList.add('growing'), i * 150)); }, 500);
+      setTimeout(() => { stars.forEach(s => s.classList.add('twinkle')); }, 1000);
+      setTimeout(() => { snow.forEach((s, i) => setTimeout(() => s.classList.add('falling'), i * 100)); }, 2000);
+      setTimeout(() => { gifts.forEach((g, i) => setTimeout(() => g.classList.add('dropping'), i * 200)); }, 2500);
+      
+      setTimeout(() => {
+        if (loader.parentNode) loader.parentNode.removeChild(loader);
+        console.log('✅ Christmas animation complete');
+      }, 8000);
+    }
+    
+    function testNewYearAnimation() {
+      console.log('🎆 Starting New Year Firework Animation Simulation...');
+      
+      // Check if New Year is currently active or unlocked
+      if (!isHolidayActiveOrUnlocked('newyear')) {
+        const message = getHolidayMessage('newyear');
+        alert(message + '\n\n💡 Tip: Use "🔓 Unlock Animations" button to test animations outside holiday periods!');
+        return;
+      }
+      
+      if (isAnimationUnlocked) {
+        alert('🎆 New Year Animation Test! (🔓 Unlocked Mode - Animation will auto-lock after completion)');
+        autoLockAfterAnimation(7000); // New Year animation is 7 seconds
+      } else {
+        alert('🎆 New Year Animation Test! (Holiday is currently active)');
+      }
+      
+      // Create New Year loader with dynamic background
+      const newYearLoader = document.createElement('div');
+      newYearLoader.className = 'newyear-loader active';
+      newYearLoader.innerHTML = `
+        <!-- New Year Message -->
+        <div class="newyear-center-text">🎉 Happy New Year 2026! 🎆</div>
+      `;
+      
+      document.body.appendChild(newYearLoader);
+      
+      // New Year firework emojis
+      const fireworkEmojis = ['🎆', '🎇', '✨', '🌟', '💫', '🎊', '🎉', '⭐', '🔥', '💥'];
+      
+      // Hide main content during animation
+      const mainContent = document.getElementById('mainContent');
+      if (mainContent) {
+        mainContent.style.opacity = '0';
+        mainContent.style.visibility = 'hidden';
+      }
+      
+      // Add new-year-active class to body
+      document.body.classList.add('newyear-active');
+      
+      // Show center text immediately
+      const centerText = newYearLoader.querySelector('.newyear-center-text');
+      setTimeout(() => {
+        centerText.classList.add('show');
+      }, 100);
+      
+      // Create firework bursts every 800ms for 7 seconds
+      let burstCount = 0;
+      const maxBursts = 8; // 8 bursts over 7 seconds
+      
+      // Create 4 random edge fireworks with different timing
+      const createRandomEdgeFirework = (fireworkIndex) => {
+        console.log(`🎆 Creating random edge firework #${fireworkIndex + 1}`);
+        
+        // Random edge positions (avoid center area)
+        const edges = [
+          { x: Math.random() * 0.3 * window.innerWidth, y: Math.random() * 0.4 * window.innerHeight }, // Top-left
+          { x: 0.7 * window.innerWidth + Math.random() * 0.3 * window.innerWidth, y: Math.random() * 0.4 * window.innerHeight }, // Top-right
+          { x: Math.random() * 0.4 * window.innerWidth, y: 0.6 * window.innerHeight + Math.random() * 0.4 * window.innerHeight }, // Bottom-left
+          { x: 0.6 * window.innerWidth + Math.random() * 0.4 * window.innerWidth, y: 0.6 * window.innerHeight + Math.random() * 0.4 * window.innerHeight } // Bottom-right
+        ];
+        
+        const launchPoint = edges[fireworkIndex];
+        const particleCount = 8 + Math.floor(Math.random() * 6); // 8-13 particles per edge firework
+        
+        for (let i = 0; i < particleCount; i++) {
+          const firework = document.createElement('div');
+          firework.textContent = fireworkEmojis[Math.floor(Math.random() * fireworkEmojis.length)];
+          
+          // Set basic styles directly with responsive sizing  
+          firework.style.position = 'absolute';
+          firework.style.fontSize = Math.max(20, Math.min(28, window.innerWidth * 0.02)) + 'px'; // 2vw clamped 20-28px
+          firework.style.zIndex = '100000';
+          firework.style.pointerEvents = 'none';
+          
+          // Calculate angle for radial burst from edge position
+          const angle = Math.random() * 360;
+          const radian = (angle * Math.PI) / 180;
+          
+          // Smaller responsive distance for edge fireworks
+          const baseDistance = Math.min(window.innerWidth, window.innerHeight) * 0.2; // 20% of smaller dimension
+          const distance = baseDistance + Math.random() * (baseDistance * 0.6); // 20%-32% of smaller dimension
+          
+          const finalX = launchPoint.x + Math.cos(radian) * distance;
+          const finalY = launchPoint.y + Math.sin(radian) * distance;
+          
+          // Set initial position at edge launch point
+          firework.style.left = launchPoint.x + 'px';
+          firework.style.top = launchPoint.y + 'px';
+          firework.style.opacity = '1';
+          firework.style.transform = 'scale(0.2)';
+          
+          newYearLoader.appendChild(firework);
+          console.log(`Edge Firework ${fireworkIndex + 1} Particle ${i}: from (${launchPoint.x}, ${launchPoint.y}) to (${finalX}, ${finalY})`);
+          
+          // Trigger animation with slight delay
+          setTimeout(() => {
+            firework.style.transition = 'all 2.0s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            firework.style.left = finalX + 'px';
+            firework.style.top = finalY + 'px';
+            firework.style.transform = 'scale(1.0) rotate(360deg)';
+            firework.style.opacity = '0';
+          }, i * 15); // Faster stagger for edge fireworks
+          
+          // Remove particle after animation
+          setTimeout(() => {
+            if (firework && firework.parentNode) {
+              firework.parentNode.removeChild(firework);
+            }
+          }, 2200);
+        }
+      };
+
+      const createFireworkBurst = () => {
+        if (burstCount >= maxBursts) return;
+        
+        // Create 15-25 firework particles per burst for spectacular effect
+        const particleCount = 15 + Math.floor(Math.random() * 10);
+        console.log(`Creating ${particleCount} New Year particles for burst ${burstCount + 1}`);
+        
+        for (let i = 0; i < particleCount; i++) {
+          const firework = document.createElement('div');
+          firework.textContent = fireworkEmojis[Math.floor(Math.random() * fireworkEmojis.length)];
+          
+          // Set basic styles directly with responsive sizing
+          firework.style.position = 'absolute';
+          firework.style.fontSize = Math.max(24, Math.min(32, window.innerWidth * 0.025)) + 'px'; // 2.5vw clamped 24-32px
+          firework.style.zIndex = '100000';
+          firework.style.pointerEvents = 'none';
+          
+          // Calculate angle for even distribution in all directions
+          const angle = Math.random() * 360;
+          const radian = (angle * Math.PI) / 180;
+          
+          // Distance from center - responsive to screen size
+          const baseDistance = Math.min(window.innerWidth, window.innerHeight) * 0.3; // 30% of smaller dimension
+          const distance = baseDistance + Math.random() * (baseDistance * 0.8); // 30%-54% of smaller dimension
+          
+          // Calculate start and end positions
+          const centerX = window.innerWidth / 2;
+          const centerY = window.innerHeight / 2;
+          const finalX = centerX + Math.cos(radian) * distance;
+          const finalY = centerY + Math.sin(radian) * distance;
+          
+          // Set initial position at center
+          firework.style.left = centerX + 'px';
+          firework.style.top = centerY + 'px';
+          firework.style.opacity = '1';
+          firework.style.transform = 'scale(0.3)';
+          
+          newYearLoader.appendChild(firework);
+          console.log(`NY Particle ${i}: from (${centerX}, ${centerY}) to (${finalX}, ${finalY})`);
+          
+          // Trigger animation with slight delay for wave effect
+          setTimeout(() => {
+            firework.style.transition = 'all 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            firework.style.left = finalX + 'px';
+            firework.style.top = finalY + 'px';
+            firework.style.transform = 'scale(1.2) rotate(360deg)';
+            firework.style.opacity = '0';
+            
+            console.log(`Animating NY particle ${i} to (${finalX}, ${finalY})`);
+          }, i * 20); // Stagger by 20ms for ripple effect
+          
+          // Remove particle after animation
+          setTimeout(() => {
+            if (firework && firework.parentNode) {
+              firework.parentNode.removeChild(firework);
+            }
+          }, 2700);
+        }
+        
+        burstCount++;
+        console.log(`🎆 Firework burst ${burstCount}/${maxBursts} launched!`);
+        
+        // Schedule next burst
+        if (burstCount < maxBursts) {
+          setTimeout(createFireworkBurst, 800);
+        }
+      };
+      
+      // Start first firework burst after 500ms
+      setTimeout(createFireworkBurst, 500);
+      
+      // Launch 4 random edge fireworks at different times throughout 7-second animation
+      setTimeout(() => createRandomEdgeFirework(0), 1200);  // Top-left at 1.2s
+      setTimeout(() => createRandomEdgeFirework(1), 2800);  // Top-right at 2.8s  
+      setTimeout(() => createRandomEdgeFirework(2), 4200);  // Bottom-left at 4.2s
+      setTimeout(() => createRandomEdgeFirework(3), 5600);  // Bottom-right at 5.6s
+      
+      console.log('🎆 Scheduled 4 random edge fireworks at different timings!');
+
+      // Complete animation and cleanup (5 seconds total)
+      setTimeout(() => {
+        newYearLoader.classList.add('fade-out');
+        console.log('🎉 Starting fade out...');
+      }, 6500);
+      
+      setTimeout(() => {
+        // Remove New Year loader completely
+        if (newYearLoader && newYearLoader.parentNode) {
+          newYearLoader.parentNode.removeChild(newYearLoader);
+        }
+        
+        // Remove new-year-active class and show main content
+        document.body.classList.remove('newyear-active');
+        if (mainContent) {
+          mainContent.style.opacity = '1';
+          mainContent.style.visibility = 'visible';
+        }
+        
+        console.log('� New Year Firework Animation Test Complete!');
+        alert('🎉 New Year Firework Test Complete! Ready for December 26 - January 5, 2026! 🎆');
+      }, 7000);
+    }
+    
+    function speakWord(word, meaning) {
+      const utterance = new SpeechSynthesisUtterance(word);
+      
+      // Device detection
+      const isIPhone = /iPhone/i.test(navigator.userAgent);
+      const isIPad = /iPad/i.test(navigator.userAgent);
+      const isAndroid = /Android/i.test(navigator.userAgent);
+      
+      // British female voice priority
+      const voices = speechSynthesis.getVoices();
+      const britishFemale = voices.find(v => 
+        (v.name.includes('Moira') || v.name.includes('Victoria') || v.name.includes('Fiona') || 
+         v.name.includes('Female') && v.lang.includes('en-GB')) && 
+        (v.name.includes('Female') || v.name.includes('Premium'))
+      );
+      
+      if (britishFemale) {
+        utterance.voice = britishFemale;
+      }
+      
+      // Device-specific settings
+      if (isIPhone || isIPad) {
+        utterance.rate = 0.75;
+        utterance.pitch = 1.0;
+      } else if (isAndroid) {
+        utterance.rate = 0.8;
+        utterance.pitch = 1.05;
+      } else {
+        utterance.rate = 0.85;
+        utterance.pitch = 1.0;
+      }
+      
+      utterance.volume = 1.0;
+      utterance.lang = 'en-GB';
+      
+      speechSynthesis.cancel();
+      speechSynthesis.speak(utterance);
+      
+      console.log(`🔊 Speaking: ${word}`);
+    }
+    
+    function createVocabDisplay(words, title, color) {
+      // Remove any existing vocab display
+      const existing = document.getElementById('vocab-display');
+      if (existing) existing.remove();
+      
+      // Create vocab display container
+      const display = document.createElement('div');
+      display.id = 'vocab-display';
+      display.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        border: 3px solid ${color};
+        border-radius: 20px;
+        padding: 30px;
+        max-width: 600px;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        z-index: 999999;
+      `;
+      
+      // Title
+      const titleEl = document.createElement('h2');
+      titleEl.textContent = title;
+      titleEl.style.cssText = `
+        text-align: center;
+        color: ${color};
+        margin-bottom: 20px;
+        font-size: 24px;
+      `;
+      display.appendChild(titleEl);
+      
+      // Word list
+      const wordList = document.createElement('div');
+      words.forEach((item, index) => {
+        const wordDiv = document.createElement('div');
+        wordDiv.style.cssText = `
+          display: flex;
+          align-items: center;
+          padding: 12px;
+          margin-bottom: 10px;
+          background: #f8f9fa;
+          border-radius: 10px;
+          cursor: pointer;
+          transition: background 0.2s;
+        `;
+        wordDiv.onmouseover = () => wordDiv.style.background = '#e9ecef';
+        wordDiv.onmouseout = () => wordDiv.style.background = '#f8f9fa';
+        wordDiv.onclick = () => speakWord(item.word, item.meaning);
+        
+        wordDiv.innerHTML = `
+          <span style="font-size: 24px; margin-right: 10px;">${item.emoji}</span>
+          <span style="font-size: 20px; margin-right: 8px;">🔊</span>
+          <div style="flex: 1;">
+            <strong style="font-size: 18px; color: #333;">${item.word}</strong>
+            <div style="font-size: 14px; color: #666; margin-top: 4px;">${item.meaning}</div>
+          </div>
+        `;
+        
+        wordList.appendChild(wordDiv);
+      });
+      display.appendChild(wordList);
+      
+      // Close button
+      const closeBtn = document.createElement('button');
+      closeBtn.textContent = '✖ Close';
+      closeBtn.style.cssText = `
+        display: block;
+        margin: 20px auto 0;
+        padding: 10px 30px;
+        background: ${color};
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+      `;
+      closeBtn.onclick = () => display.remove();
+      display.appendChild(closeBtn);
+      
+      document.body.appendChild(display);
+      
+      // Load voices
+      if (speechSynthesis.getVoices().length === 0) {
+        speechSynthesis.addEventListener('voiceschanged', () => {}, { once: true });
+      }
+    }
+    
+    function testChristmasVocab() {
+      console.log('📚 Christmas Vocabulary Test');
+      const christmasWords = [
+        { word: "snow", meaning: "white cold flakes from sky", emoji: "❄️" },
+        { word: "santa", meaning: "brings presents at Christmas", emoji: "🎅" },
+        { word: "gift", meaning: "present wrapped for Christmas", emoji: "🎁" },
+        { word: "tree", meaning: "decorated Christmas tree", emoji: "🎄" },
+        { word: "star", meaning: "bright shape on top of tree", emoji: "⭐" },
+        { word: "reindeer", meaning: "animal that pulls Santa's sleigh", emoji: "🦌" },
+        { word: "sleigh", meaning: "Santa's vehicle for delivering gifts", emoji: "🛷" },
+        { word: "cookie", meaning: "sweet treat left for Santa", emoji: "🍪" },
+        { word: "stocking", meaning: "long sock hung for gifts", emoji: "🧦" },
+        { word: "bell", meaning: "makes ringing sound on Christmas", emoji: "🔔" },
+        { word: "wreath", meaning: "circular Christmas decoration", emoji: "🎀" },
+        { word: "mistletoe", meaning: "plant hung for Christmas kisses", emoji: "🌿" },
+        { word: "ornament", meaning: "decoration for Christmas tree", emoji: "🎗️" },
+        { word: "chimney", meaning: "where Santa enters houses", emoji: "🏠" },
+        { word: "carols", meaning: "Christmas songs sung door to door", emoji: "🎵" }
+      ];
+      
+      createVocabDisplay(christmasWords, '🎄 CHRISTMAS VOCABULARY (15 words)', '#dc143c');
+      console.log('✅ Christmas vocabulary displayed');
+    }
+    
+    function testNewYearVocab() {
+      console.log('📖 New Year Vocabulary Test');
+      const newYearWords = [
+        { word: "firework", meaning: "explosive colorful display", emoji: "🎆" },
+        { word: "resolution", meaning: "promise to do better", emoji: "📅" },
+        { word: "champagne", meaning: "sparkling drink for celebrations", emoji: "🍾" },
+        { word: "midnight", meaning: "12 o'clock at night", emoji: "🕛" },
+        { word: "toast", meaning: "drink to celebrate", emoji: "🥂" },
+        { word: "countdown", meaning: "counting backwards to zero", emoji: "⏰" },
+        { word: "celebration", meaning: "happy party or festival", emoji: "🎊" },
+        { word: "confetti", meaning: "small colorful paper pieces", emoji: "🎊" },
+        { word: "party", meaning: "fun gathering with friends", emoji: "🎉" },
+        { word: "calendar", meaning: "shows dates and months", emoji: "📆" },
+        { word: "wish", meaning: "hope for something good", emoji: "🌟" },
+        { word: "goal", meaning: "something you want to achieve", emoji: "🎯" },
+        { word: "fresh", meaning: "new and clean start", emoji: "✨" },
+        { word: "beginning", meaning: "the start of something new", emoji: "🌅" },
+        { word: "sparkler", meaning: "small handheld firework", emoji: "🎇" }
+      ];
+      
+      createVocabDisplay(newYearWords, '🎉 NEW YEAR VOCABULARY (15 words)', '#4B0082');
+      console.log('✅ New Year vocabulary displayed');
+    }
+    
+    function simulateChristmasEvent() {
+      console.log('🎅 Simulating Full Christmas Event...');
+      
+      // Step 1: Show Christmas animation
+      alert('🎄 Starting Christmas Event!\n\nFirst: Watch the Christmas animation with Santa, snow, and gifts!');
+      testChristmasAnimation();
+      
+      // Step 2: After animation, show vocabulary
+      setTimeout(() => {
+        alert('🎅 Animation complete!\n\nNow: Learn the 15 Christmas vocabulary words!\n\nClick on any word to hear it spoken.');
+        testChristmasVocab();
+      }, 8000); // After 7s animation + 1s buffer
+    }
+    
+    function testChineseNewYearAnimation() {
+      console.log('🐉 Chinese New Year button clicked!');
+      
+      // Check if Chinese New Year is currently active or unlocked
+      if (!isHolidayActiveOrUnlocked('chinesenewyear')) {
+        const message = getHolidayMessage('chinesenewyear');
+        alert(message + '\n\n💡 Tip: Use "🔓 Unlock Animations" button to test animations outside holiday periods!');
+        return;
+      }
+      
+      if (isAnimationUnlocked) {
+        alert('🧧 Chinese New Year Animation Test! (🔓 Unlocked Mode - Animation will auto-lock after completion)');
+        autoLockAfterAnimation(6000); // Chinese NY animation is 6 seconds
+      } else {
+        alert('🧧 Chinese New Year Animation Test! (Holiday is currently active)');
+      }
+      
+      const cnyLoader = document.createElement('div');
+      cnyLoader.className = 'cny-loader active';
+      cnyLoader.innerHTML = `
+        <div class="cny-scene">
+          <div class="background-fireworks">
+            <div class="bg-firework fw-1">🎆</div>
+            <div class="bg-firework fw-2">🎇</div>
+            <div class="bg-firework fw-3">🎆</div>
+            <div class="bg-firework fw-4">🎇</div>
+            <div class="bg-firework fw-5">🎆</div>
+            <div class="bg-firework fw-6">🎇</div>
+          </div>
+          <div class="dragon-dance dragon-1">
+            <div class="dragon-part dragon-head">🐲</div>
+            <div class="dragon-part dragon-body">🐉</div>
+            <div class="dragon-part dragon-tail">🐲</div>
+          </div>
+          <div class="dragon-dance dragon-2">
+            <div class="dragon-part dragon-head">🐲</div>
+            <div class="dragon-part dragon-body">🐉</div>
+            <div class="dragon-part dragon-tail">🐲</div>
+          </div>
+          <div class="dragon-dance dragon-3">
+            <div class="dragon-part dragon-head">🐲</div>
+            <div class="dragon-part dragon-body">🐉</div>
+            <div class="dragon-part dragon-tail">🐲</div>
+          </div>
+          <div class="zodiac-horse">&#8238;🐴&#8236;</div>
+          <div class="racing-horse racing-1">&#8238;🏇&#8236;</div>
+          <div class="racing-horse racing-2">&#8238;🏇&#8236;</div>
+          <div class="racing-horse racing-3">&#8238;🏇&#8236;</div>
+          <div class="racing-horse racing-4">&#8238;🏇&#8236;</div>
+          <div class="racing-horse racing-5">&#8238;🏇&#8236;</div>
+          <div class="racing-horse racing-6">&#8238;🏇&#8236;</div>
+          <div class="racing-horse racing-7">&#8238;🏇&#8236;</div>
+          <div class="racing-horse racing-8">&#8238;🏇&#8236;</div>
+          <div class="racing-horse racing-9">&#8238;🏇&#8236;</div>
+          <div class="racing-horse racing-10">&#8238;🏇&#8236;</div>
+          <div class="racing-horse racing-11">&#8238;🏇&#8236;</div>
+          <div class="racing-horse racing-12">&#8238;🏇&#8236;</div>
+          <div class="racing-horse racing-13">&#8238;🏇&#8236;</div>
+          <div class="racing-horse racing-14">&#8238;🏇&#8236;</div>
+          <div class="racing-horse racing-15">&#8238;🏇&#8236;</div>
+          <div class="lantern-container">
+            <div class="lantern lantern-1">🏮</div>
+            <div class="lantern lantern-2">🏮</div>
+            <div class="lantern lantern-3">🏮</div>
+            <div class="lantern lantern-4">🏮</div>
+            <div class="lantern lantern-5">🏮</div>
+            <div class="lantern lantern-6">🏮</div>
+            <div class="lantern lantern-7">🏮</div>
+            <div class="lantern lantern-8">🏮</div>
+          </div>
+          <div class="firecracker-container">
+            <div class="firecracker fc-1">🧨</div>
+            <div class="firecracker fc-2">🧨</div>
+            <div class="firecracker fc-3">🧨</div>
+            <div class="firecracker fc-4">🧨</div>
+          </div>
+          <div class="hongbao-container">
+            <div class="hongbao hb-1">🧧</div>
+            <div class="hongbao hb-2">🧧</div>
+            <div class="hongbao hb-3">🧧</div>
+            <div class="hongbao hb-4">🧧</div>
+            <div class="hongbao hb-5">🧧</div>
+            <div class="hongbao hb-6">🧧</div>
+          </div>
+          <div class="dumpling-container">
+            <div class="dumpling d-1">🥟</div>
+            <div class="dumpling d-2">🥟</div>
+            <div class="dumpling d-3">🥟</div>
+          </div>
+          <div class="cny-center-text">🧧 Happy Chinese New Year 2026! 🐴</div>
+          <div class="coin-container">
+            <div class="coin coin-1">🪙</div>
+            <div class="coin coin-2">🪙</div>
+            <div class="coin coin-3">🪙</div>
+            <div class="coin coin-4">🪙</div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(cnyLoader);
+      
+      const dragons = cnyLoader.querySelectorAll('.dragon-dance');
+      const bgFireworks = cnyLoader.querySelectorAll('.bg-firework');
+      const horse = cnyLoader.querySelector('.zodiac-horse');
+      const centerText = cnyLoader.querySelector('.cny-center-text');
+      const lanterns = cnyLoader.querySelectorAll('.lantern');
+      const firecrackers = cnyLoader.querySelectorAll('.firecracker');
+      const hongbaos = cnyLoader.querySelectorAll('.hongbao');
+      const dumplings = cnyLoader.querySelectorAll('.dumpling');
+      const coins = cnyLoader.querySelectorAll('.coin');
+      
+      // Start background fireworks
+      bgFireworks.forEach((fw, index) => {
+        setTimeout(() => {
+          fw.classList.add('bursting');
+        }, index * 300);
+      });
+      
+      setTimeout(() => { 
+        dragons.forEach((dragon, index) => {
+          setTimeout(() => {
+            dragon.classList.add('dancing');
+          }, index * 800);
+        });
+        horse.classList.add('galloping');
+        
+        // Racing horses appear in waves - ensuring multiple visible at once
+        const racingHorses = cnyLoader.querySelectorAll('.racing-horse');
+        racingHorses.forEach((rHorse, index) => {
+          const randomDelay = Math.random() * 4000 + (index * 200); // Staggered + random delay
+          setTimeout(() => {
+            rHorse.classList.add('racing');
+          }, randomDelay);
+        });
+        
+        centerText.classList.add('show');
+      }, 100);
+      
+      setTimeout(() => { 
+        lanterns.forEach((l, i) => setTimeout(() => l.classList.add('dropping'), i * 100));
+      }, 1000);
+      
+      setTimeout(() => { 
+        firecrackers.forEach((f, i) => setTimeout(() => f.classList.add('exploding'), i * 200));
+      }, 2000);
+      
+      setTimeout(() => { 
+        hongbaos.forEach((h, i) => setTimeout(() => h.classList.add('falling'), i * 150));
+        dumplings.forEach((d, i) => setTimeout(() => d.classList.add('falling'), i * 200));
+      }, 3000);
+      
+      setTimeout(() => { 
+        coins.forEach((c, i) => setTimeout(() => c.classList.add('spinning'), i * 150));
+      }, 4000);
+      
+      setTimeout(() => { cnyLoader.classList.add('fade-out'); }, 5000);
+      
+      setTimeout(() => {
+        if (cnyLoader.parentNode) cnyLoader.parentNode.removeChild(cnyLoader);
+        console.log('✅ Chinese New Year animation complete');
+      }, 6000);
+    }
+    
+    function testChineseNewYearVocab() {
+      console.log('🏮 Chinese New Year Vocabulary Test');
+      const cnyWords = [
+        { word: "lantern", meaning: "colorful hanging light decoration", emoji: "🏮" },
+        { word: "dragon", meaning: "mythical creature for parade dance", emoji: "🐉" },
+        { word: "dumpling", meaning: "traditional food for good fortune", emoji: "🥟" },
+        { word: "red envelope", meaning: "money gift in red packet", emoji: "🧧" },
+        { word: "lucky", meaning: "having good fortune", emoji: "🍀" },
+        { word: "zodiac", meaning: "12 animal year cycle", emoji: "🐯" },
+        { word: "firecracker", meaning: "loud explosive for celebration", emoji: "🧨" },
+        { word: "reunion", meaning: "family gathering together", emoji: "👨‍👩‍👧‍👦" },
+        { word: "prosperity", meaning: "wealth and success", emoji: "💰" },
+        { word: "fortune", meaning: "good luck and wealth", emoji: "🎰" },
+        { word: "ancestor", meaning: "family members from past", emoji: "👴" },
+        { word: "temple", meaning: "place for prayer and worship", emoji: "⛩️" },
+        { word: "blessing", meaning: "good wish from others", emoji: "🙏" },
+        { word: "tradition", meaning: "custom passed through generations", emoji: "📜" },
+        { word: "festival", meaning: "special celebration event", emoji: "🎊" }
+      ];
+      
+      createVocabDisplay(cnyWords, '🧧 CHINESE NEW YEAR VOCABULARY (15 words)', '#DC143C');
+      console.log('✅ Chinese New Year vocabulary displayed');
+    }
+    
+    function simulateChineseNewYearEvent() {
+      console.log('🧧 Simulating Full Chinese New Year Event...');
+      
+      alert('🧧 Starting Chinese New Year Event!\n\nFirst: Watch the dragon dance, lanterns, and firecrackers!');
+      testChineseNewYearAnimation();
+      
+      setTimeout(() => {
+        alert('🐉 Animation complete!\n\nNow: Learn the 15 Chinese New Year vocabulary words!\n\nClick on any word to hear it spoken.');
+        testChineseNewYearVocab();
+      }, 7000); // After 6s animation + 1s buffer
+    }
+    
+    // 🎃 HALLOWEEN ANIMATION AND VOCABULARY FUNCTIONS 🎃
+    function testHalloweenAnimation() {
+      console.log('🎃 Halloween animation button clicked!');
+      
+      // Check if Halloween is currently active or unlocked
+      if (!isHolidayActiveOrUnlocked('halloween')) {
+        const message = getHolidayMessage('halloween');
+        alert(message + '\n\n💡 Tip: Use "🔓 Unlock Animations" button to test animations outside holiday periods!');
+        return;
+      }
+      
+      if (isAnimationUnlocked) {
+        alert('🎃 Halloween Animation Test! (🔓 Unlocked Mode - Animation will auto-lock after completion)');
+        autoLockAfterAnimation(8000); // Halloween animation is 8 seconds
+      } else {
+        alert('🎃 Halloween Animation Test! (Holiday is currently active)');
+      }
+      
+      const halloweenLoader = document.createElement('div');
+      halloweenLoader.className = 'halloween-loader active';
+      
+      // Base Halloween elements
+      halloweenLoader.innerHTML = `
+        <div class="halloween-emoji" data-emoji="🎃" data-corner="top-left">🎃</div>
+        <div class="halloween-emoji" data-emoji="👻" data-corner="top-right">👻</div>
+        <div class="halloween-emoji" data-emoji="🦇" data-corner="bottom-left">🦇</div>
+        <div class="halloween-emoji" data-emoji="🕷️" data-corner="bottom-right">🕷️</div>
+        <div class="halloween-emoji" data-emoji="🕸️" data-corner="center-left">🕸️</div>
+        <div class="halloween-emoji" data-emoji="💀" data-corner="center-right">💀</div>
+        <div class="halloween-center-text">🎃 Happy Halloween! 🎃</div>
+      `;
+      
+      // Add random spooky elements with varying types and positions
+      const spookyElements = ['🎃', '👻', '🦇', '🕷️', '💀', '🧙‍♀️', '⚰️', '🧛‍♂️'];
+      const spookyAnimations = ['random-pumpkin', 'random-ghost', 'random-bat', 'random-spider', 'random-skull'];
+      const spookyCount = 15; // Number of additional random spooky elements
+      
+      for (let i = 0; i < spookyCount; i++) {
+        const spookyElement = document.createElement('div');
+        spookyElement.className = 'halloween-emoji';
+        
+        // Random spooky emoji
+        const randomEmoji = spookyElements[Math.floor(Math.random() * spookyElements.length)];
+        spookyElement.textContent = randomEmoji;
+        
+        // Random position across the screen
+        const randomTop = Math.random() * 80 + 10; // 10% to 90% from top
+        const randomLeft = Math.random() * 80 + 10; // 10% to 90% from left
+        spookyElement.style.top = randomTop + '%';
+        spookyElement.style.left = randomLeft + '%';
+        spookyElement.style.position = 'absolute';
+        
+        // Choose animation based on emoji type or random
+        let animationClass;
+        if (randomEmoji === '🎃') animationClass = 'random-pumpkin';
+        else if (randomEmoji === '👻') animationClass = 'random-ghost';
+        else if (randomEmoji === '🦇') animationClass = 'random-bat';
+        else if (randomEmoji === '🕷️') animationClass = 'random-spider';
+        else if (randomEmoji === '💀') animationClass = 'random-skull';
+        else animationClass = spookyAnimations[Math.floor(Math.random() * spookyAnimations.length)];
+        
+        // Random delay for staggered appearance (0 to 4 seconds)
+        const randomDelay = Math.random() * 4000;
+        
+        halloweenLoader.appendChild(spookyElement);
+        
+        // Apply random animation with delay
+        setTimeout(() => {
+          spookyElement.style.display = 'block';
+          spookyElement.classList.add(animationClass);
+        }, randomDelay);
+      }
+      
+      document.body.appendChild(halloweenLoader);
+      
+      // Start Halloween emoji animations for main elements
+      const halloweenEmojis = halloweenLoader.querySelectorAll('.halloween-emoji');
+      
+      halloweenEmojis.forEach((emoji, index) => {
+        // Skip the random spooky elements (they have their own timing)
+        if (!emoji.getAttribute('data-corner')) return;
+        
+        setTimeout(() => {
+          emoji.style.display = 'block';
+          emoji.classList.add('fly-in');
+          
+          setTimeout(() => {
+            emoji.classList.add('move-to-corner');
+          }, 1500);
+          
+          setTimeout(() => {
+            emoji.classList.add('enlarge-giant');
+          }, 3000);
+        }, index * 200);
+      });
+      
+      // Remove Halloween loader after animation
+      setTimeout(() => {
+        halloweenLoader.classList.add('fade-out');
+        setTimeout(() => {
+          document.body.removeChild(halloweenLoader);
+          console.log('🎃 Halloween animation completed!');
+        }, 1000);
+      }, 8000);
+    }
+    
+    function testHalloweenVocab() {
+      console.log('👻 Displaying Halloween vocabulary...');
+      
+      const halloweenWords = [
+        { word: "pumpkin", meaning: "orange vegetable used for Halloween", emoji: "🎃" },
+        { word: "ghost", meaning: "spooky floating spirit", emoji: "👻" },
+        { word: "witch", meaning: "person who does magic", emoji: "🧙‍♀️" },
+        { word: "candy", meaning: "sweet treats for trick-or-treat", emoji: "🍬" },
+        { word: "costume", meaning: "special clothes for Halloween", emoji: "👻" }
+      ];
+      
+      createVocabDisplay(halloweenWords, '🎃 HALLOWEEN VOCABULARY (5 words)', '#8B008B');
+      console.log('✅ Halloween vocabulary displayed');
+    }
+    
+    function simulateHalloweenEvent() {
+      console.log('🎃 Simulating Full Halloween Event...');
+      
+      alert('🎃 Starting Halloween Event!\n\nFirst: Watch spooky emojis fly around the screen!');
+      testHalloweenAnimation();
+      
+      setTimeout(() => {
+        alert('👻 Animation complete!\n\nNow: Learn the 5 Halloween vocabulary words!\n\nClick on any word to hear it spoken.');
+        testHalloweenVocab();
+      }, 8000);
+    }
+    
+    // ☀️ SUMMER FUN ANIMATION AND VOCABULARY FUNCTIONS ☀️
+    function testSummerAnimation() {
+      console.log('☀️ Summer animation button clicked!');
+      
+      // Check if Summer is currently active or unlocked
+      if (!isHolidayActiveOrUnlocked('summer')) {
+        const message = getHolidayMessage('summer');
+        alert(message + '\n\n💡 Tip: Use "🔓 Unlock Animations" button to test animations outside holiday periods!');
+        return;
+      }
+      
+      if (isAnimationUnlocked) {
+        alert('☀️ Summer Animation Test! (🔓 Unlocked Mode - Animation will auto-lock after completion)');
+        autoLockAfterAnimation(7000); // Summer animation is 7 seconds
+      } else {
+        alert('☀️ Summer Animation Test! (Holiday is currently active)');
+      }
+      
+      const summerLoader = document.createElement('div');
+      summerLoader.className = 'summer-loader active';
+      summerLoader.innerHTML = `
+        <div class="summer-emoji" data-emoji="☀️" data-corner="top-center">☀️</div>
+        <div class="summer-emoji" data-emoji="�" data-corner="top-left">🌻</div>
+        <div class="summer-emoji" data-emoji="🌻" data-corner="top-right">🌻</div>
+        <div class="summer-emoji" data-emoji="�🏖️" data-corner="bottom-center">🏖️</div>
+        <div class="summer-emoji" data-emoji="🏊‍♀️" data-corner="center-left">🏊‍♀️</div>
+        <div class="summer-emoji" data-emoji="�" data-corner="center-right">�</div>
+        <div class="summer-emoji" data-emoji="🏰" data-corner="bottom-left">🏰</div>
+        <div class="summer-emoji" data-emoji="🌊" data-corner="bottom-right">🌊</div>
+        <div class="summer-emoji" data-emoji="🦋" data-corner="mid-left">🦋</div>
+        <div class="summer-emoji" data-emoji="🌺" data-corner="mid-right">�</div>
+        <div class="summer-emoji" data-emoji="🐝" data-corner="upper-left">🐝</div>
+        <div class="summer-emoji" data-emoji="🌴" data-corner="upper-right">�</div>
+        <div class="summer-center-text">🌻 Vibrant Summer Vibes! 🦋</div>
+      `;
+      
+      document.body.appendChild(summerLoader);
+      
+      // Show center text first
+      setTimeout(() => {
+        const centerText = summerLoader.querySelector('.summer-center-text');
+        centerText.classList.add('show');
+      }, 500);
+      
+      // Start Summer emoji animations
+      const summerEmojis = summerLoader.querySelectorAll('.summer-emoji');
+      
+      summerEmojis.forEach((emoji, index) => {
+        setTimeout(() => {
+          emoji.style.display = 'block';
+          emoji.classList.add('fly-in');
+          
+          // Add special effects based on emoji type
+          const emojiChar = emoji.textContent;
+          if (emojiChar === '☀️') {
+            emoji.classList.add('sun-glow');
+          } else if (emojiChar === '🌊' || emojiChar === '🏄') {
+            emoji.classList.add('beach-wave');
+          } else if (emojiChar === '🌻') {
+            emoji.classList.add('sunflower-dance');
+          } else if (emojiChar === '🦋') {
+            emoji.classList.add('butterfly-flutter');
+          } else if (emojiChar === '🐝') {
+            emoji.classList.add('bee-buzz');
+          } else if (emojiChar === '🌺') {
+            emoji.classList.add('flower-bloom');
+          } else if (emojiChar === '🍉') {
+            emoji.classList.add('fruit-bounce');
+          }
+        }, index * 200); // Faster entrance for more vibrant feel
+      });
+      
+      // Add swimmer crossing animation
+      setTimeout(() => {
+        const swimmer = document.createElement('div');
+        swimmer.className = 'swimmer-crossing';
+        swimmer.textContent = '🏊‍♀️';
+        summerLoader.appendChild(swimmer);
+        
+        setTimeout(() => {
+          swimmer.classList.add('active');
+        }, 100);
+      }, 1500);
+      
+      // Add surfer crossing animation
+      setTimeout(() => {
+        const surfer = document.createElement('div');
+        surfer.className = 'surfer-crossing';
+        surfer.textContent = '🏄‍♀️';
+        summerLoader.appendChild(surfer);
+        
+        setTimeout(() => {
+          surfer.classList.add('active');
+        }, 100);
+      }, 3000);
+      
+      // Remove Summer loader after animation
+      setTimeout(() => {
+        summerLoader.classList.add('fade-out');
+        setTimeout(() => {
+          document.body.removeChild(summerLoader);
+          console.log('☀️ Summer animation completed!');
+        }, 1000);
+      }, 7000);
+    }
+    
+    function testSummerVocab() {
+      console.log('🏖️ Displaying Summer vocabulary...');
+      
+      const summerWords = [
+        { word: "beach", meaning: "sandy place by the ocean", emoji: "🏖️" },
+        { word: "swim", meaning: "move through water", emoji: "🏊" },
+        { word: "ice cream", meaning: "cold sweet summer treat", emoji: "🍦" },
+        { word: "sunscreen", meaning: "cream that protects from sun", emoji: "🧴" },
+        { word: "sandcastle", meaning: "building made from sand", emoji: "🏰" },
+        { word: "sunglasses", meaning: "protect eyes from sun", emoji: "🕶️" }
+      ];
+      
+      createVocabDisplay(summerWords, '☀️ SUMMER FUN VOCABULARY (6 words)', '#FF8C00');
+      console.log('✅ Summer vocabulary displayed');
+    }
+    
+    function simulateSummerEvent() {
+      console.log('☀️ Simulating Full Summer Event...');
+      
+      alert('☀️ Starting Summer Fun Event!\n\nFirst: Watch the sunny beach animation!');
+      testSummerAnimation();
+      
+      setTimeout(() => {
+        alert('🏖️ Animation complete!\n\nNow: Learn the 6 Summer vocabulary words!\n\nClick on any word to hear it spoken.');
+        testSummerVocab();
+      }, 7000);
+    }
+    
+    // 🐰 EASTER SPRING ANIMATION AND VOCABULARY FUNCTIONS 🐰
+    function testEasterAnimation() {
+      console.log('🐰 Easter animation button clicked!');
+      
+      // Check if Easter is currently active or unlocked
+      if (!isHolidayActiveOrUnlocked('easter')) {
+        const message = getHolidayMessage('easter');
+        alert(message + '\n\n💡 Tip: Use "🔓 Unlock Animations" button to test animations outside holiday periods!');
+        return;
+      }
+      
+      if (isAnimationUnlocked) {
+        alert('🐰 Easter Animation Test! (🔓 Unlocked Mode - Animation will auto-lock after completion)');
+        autoLockAfterAnimation(8000); // Easter animation is 8 seconds
+      } else {
+        alert('🐰 Easter Animation Test! (Holiday is currently active)');
+      }
+      
+      const easterLoader = document.createElement('div');
+      easterLoader.className = 'easter-loader active';
+      easterLoader.innerHTML = `
+        <div class="easter-emoji" data-emoji="🐰" data-corner="top-center">🐰</div>
+        <div class="easter-emoji" data-emoji="🥚" data-corner="top-left">🥚</div>
+        <div class="easter-emoji" data-emoji="🥚" data-corner="top-right">🥚</div>
+        <div class="easter-emoji" data-emoji="🌷" data-corner="bottom-left">🌷</div>
+        <div class="easter-emoji" data-emoji="🌷" data-corner="bottom-right">🌷</div>
+        <div class="easter-emoji" data-emoji="🧺" data-corner="center-left">🧺</div>
+        <div class="easter-emoji" data-emoji="🐔" data-corner="center-right">🐔</div>
+        <div class="easter-emoji" data-emoji="🌸" data-corner="mid-left">🌸</div>
+        <div class="easter-emoji" data-emoji="🌺" data-corner="mid-right">🌺</div>
+        <div class="easter-emoji" data-emoji="🦋" data-corner="bottom-center">🦋</div>
+        <div class="easter-center-text">🐰 Spring Easter Joy! 🌷</div>
+      `;
+      
+      document.body.appendChild(easterLoader);
+      
+      // Show center text first
+      setTimeout(() => {
+        const centerText = easterLoader.querySelector('.easter-center-text');
+        centerText.classList.add('show');
+      }, 500);
+      
+      // Start Easter emoji animations
+      const easterEmojis = easterLoader.querySelectorAll('.easter-emoji');
+      
+      easterEmojis.forEach((emoji, index) => {
+        setTimeout(() => {
+          emoji.style.display = 'block';
+          emoji.classList.add('spring-bounce');
+          
+          // Add special effects based on emoji type
+          const emojiChar = emoji.textContent;
+          if (emojiChar === '🐰') {
+            emoji.classList.add('bunny-hop');
+          } else if (emojiChar === '🥚') {
+            emoji.classList.add('egg-wobble');
+          } else if (emojiChar === '🌷' || emojiChar === '🌸' || emojiChar === '🌺') {
+            emoji.classList.add('flower-bloom');
+          } else if (emojiChar === '🐔') {
+            emoji.classList.add('chick-peek');
+          }
+        }, index * 250);
+      });
+      
+      // Remove Easter loader after animation
+      setTimeout(() => {
+        easterLoader.classList.add('fade-out');
+        setTimeout(() => {
+          document.body.removeChild(easterLoader);
+          console.log('🐰 Easter animation completed!');
+        }, 1000);
+      }, 8000);
+    }
+    
+    function testEasterVocab() {
+      console.log('🥚 Displaying Easter vocabulary...');
+      
+      const easterWords = [
+        { word: "egg", meaning: "decorated Easter egg", emoji: "🥚" },
+        { word: "bunny", meaning: "Easter rabbit that brings eggs", emoji: "🐰" },
+        { word: "basket", meaning: "container for Easter eggs", emoji: "🧺" },
+        { word: "chick", meaning: "baby bird that hatches", emoji: "🐔" },
+        { word: "flower", meaning: "spring plant that blooms", emoji: "🌷" },
+        { word: "chocolate", meaning: "sweet Easter treat", emoji: "🍫" }
+      ];
+      
+      createVocabDisplay(easterWords, '🐰 EASTER SPRING VOCABULARY (6 words)', '#FF69B4');
+      console.log('✅ Easter vocabulary displayed');
+    }
+    
+    function simulateEasterEvent() {
+      console.log('🐰 Simulating Full Easter Event...');
+      
+      alert('🐰 Starting Easter Spring Event!\n\nFirst: Watch the beautiful spring animation!');
+      testEasterAnimation();
+      
+      setTimeout(() => {
+        alert('🌷 Animation complete!\n\nNow: Learn the 6 Easter vocabulary words!\n\nClick on any word to hear it spoken.');
+        testEasterVocab();
+      }, 8000);
+    }
+    
+    function testBackToSchoolVocab() {
+      console.log('📝 Displaying Back to School vocabulary...');
+      
+      const backToSchoolWords = [
+        { word: "backpack", meaning: "bag for carrying school supplies", emoji: "🎒" },
+        { word: "pencil", meaning: "writing tool for school", emoji: "✏️" },
+        { word: "book", meaning: "reading material for learning", emoji: "📚" },
+        { word: "teacher", meaning: "person who instructs students", emoji: "👩‍🏫" },
+        { word: "classroom", meaning: "room where lessons are taught", emoji: "🏫" },
+        { word: "homework", meaning: "school work done at home", emoji: "📝" }
+      ];
+      
+      createVocabDisplay(backToSchoolWords, '📚 BACK TO SCHOOL VOCABULARY (6 words)', '#FF8C00');
+      console.log('✅ Back to School vocabulary displayed');
+    }
+    
+    function testSpringBloomVocab() {
+      console.log('🌺 Displaying Spring Bloom vocabulary...');
+      
+      const springBloomWords = [
+        { word: "blossom", meaning: "flower that blooms in spring", emoji: "🌸" },
+        { word: "garden", meaning: "place where flowers grow", emoji: "🌿" },
+        { word: "sunshine", meaning: "bright light from the sun", emoji: "☀️" },
+        { word: "butterfly", meaning: "colorful flying insect", emoji: "🦋" },
+        { word: "rain", meaning: "water that falls from clouds", emoji: "🌧️" }
+      ];
+      
+      createVocabDisplay(springBloomWords, '🌸 SPRING BLOOM VOCABULARY (5 words)', '#32CD32');
+      console.log('✅ Spring Bloom vocabulary displayed');
+    }
+    
+    function testThanksgivingVocab() {
+      console.log('🍂 Displaying Thanksgiving vocabulary...');
+      
+      const thanksgivingWords = [
+        { word: "turkey", meaning: "traditional Thanksgiving bird", emoji: "🦃" },
+        { word: "feast", meaning: "large special meal", emoji: "🍽️" },
+        { word: "grateful", meaning: "feeling thankful", emoji: "🙏" },
+        { word: "harvest", meaning: "gathering crops from fields", emoji: "🌾" },
+        { word: "family", meaning: "relatives who gather together", emoji: "👨‍👩‍👧‍👦" },
+        { word: "pumpkin", meaning: "orange squash used in pies", emoji: "🎃" }
+      ];
+      
+      createVocabDisplay(thanksgivingWords, '🦃 THANKSGIVING VOCABULARY (6 words)', '#D2691E');
+      console.log('✅ Thanksgiving vocabulary displayed');
+    }
+    
+    // 📚 BACK TO SCHOOL ANIMATION AND VOCABULARY FUNCTIONS 📚
+    function testBackToSchoolAnimation() {
+      console.log('📚 Back to School animation button clicked!');
+      if (!isHolidayActiveOrUnlocked('backToSchool')) {
+        const message = getHolidayMessage('backToSchool');
+        alert(message + '\n\n💡 Tip: Use "🔓 Unlock Animations" button to test animations outside holiday periods!');
+        return;
+      }
+      if (isAnimationUnlocked) {
+        alert('📚 Back to School Animation Test! (🔓 Unlocked Mode - Animation will auto-lock after completion)');
+        autoLockAfterAnimation(7000);
+      } else {
+        alert('📚 Back to School Animation Test! (Holiday is currently active)');
+      }
+      const schoolLoader = document.createElement('div');
+      schoolLoader.className = 'backtoschool-loader active';
+      schoolLoader.innerHTML = `
+        <div class="school-emoji" data-emoji="📚" data-corner="top-center">📚</div>
+        <div class="school-emoji" data-emoji="✏️" data-corner="top-left">✏️</div>
+        <div class="school-emoji" data-emoji="🍎" data-corner="top-right">🍎</div>
+        <div class="school-emoji" data-emoji="👩‍🏫" data-corner="center-left">👩‍🏫</div>
+        <div class="school-emoji" data-emoji="🎒" data-corner="center-right">🎒</div>
+        <div class="school-emoji" data-emoji="📝" data-corner="bottom-left">📝</div>
+        <div class="school-emoji" data-emoji="🔔" data-corner="bottom-right">🔔</div>
+        <div class="school-center-text">📚 Ready to Learn! 🍎</div>
+      `;
+      document.body.appendChild(schoolLoader);
+      setTimeout(() => {
+        const centerText = schoolLoader.querySelector('.school-center-text');
+        centerText.classList.add('show');
+      }, 500);
+      const schoolEmojis = schoolLoader.querySelectorAll('.school-emoji');
+      schoolEmojis.forEach((emoji, index) => {
+        setTimeout(() => {
+          emoji.style.display = 'block';
+          emoji.classList.add('learning-bounce');
+          const emojiChar = emoji.textContent;
+          if (emojiChar === '📚') emoji.classList.add('book-flip');
+          else if (emojiChar === '✏️') emoji.classList.add('pencil-write');
+          else if (emojiChar === '🍎') emoji.classList.add('apple-shine');
+          else if (emojiChar === '🔔') emoji.classList.add('bell-ring');
+        }, index * 200);
+      });
+      setTimeout(() => {
+        schoolLoader.classList.add('fade-out');
+        setTimeout(() => {
+          document.body.removeChild(schoolLoader);
+          console.log('📚 Back to School animation completed!');
+        }, 1000);
+      }, 7000);
+    }
+    
+    // 🌸 SPRING BLOOM ANIMATION FUNCTION 🌸
+    function testSpringBloomAnimation() {
+      console.log('🌸 Spring Bloom animation button clicked!');
+      if (!isHolidayActiveOrUnlocked('spring')) {
+        const message = getHolidayMessage('spring');
+        alert(message + '\n\n💡 Tip: Use "🔓 Unlock Animations" button to test animations outside holiday periods!');
+        return;
+      }
+      if (isAnimationUnlocked) {
+        alert('🌸 Spring Bloom Animation Test! (🔓 Unlocked Mode - Animation will auto-lock after completion)');
+        autoLockAfterAnimation(6000);
+      } else {
+        alert('🌸 Spring Bloom Animation Test! (Holiday is currently active)');
+      }
+      const springLoader = document.createElement('div');
+      springLoader.className = 'spring-loader active';
+      
+      // Base spring elements
+      springLoader.innerHTML = `
+        <div class="spring-emoji" data-emoji="🌸" data-corner="top-center">🌸</div>
+        <div class="spring-emoji" data-emoji="🌷" data-corner="top-left">🌷</div>
+        <div class="spring-emoji" data-emoji="🌺" data-corner="top-right">🌺</div>
+        <div class="spring-emoji" data-emoji="🐝" data-corner="center-left">🐝</div>
+        <div class="spring-emoji" data-emoji="🦋" data-corner="center-right">🦋</div>
+        <div class="spring-emoji" data-emoji="🌻" data-corner="bottom-left">🌻</div>
+        <div class="spring-emoji" data-emoji="☀️" data-corner="bottom-right">☀️</div>
+        <div class="spring-center-text">🌸 Spring is Blooming! 🌷</div>
+      `;
+      
+      // Add random sakura flowers with varying sizes and positions
+      const sakuraSizes = ['sakura-small', 'sakura-medium', 'sakura-large', 'sakura-xlarge'];
+      const sakuraCount = 12; // Number of additional random sakura flowers
+      
+      for (let i = 0; i < sakuraCount; i++) {
+        const sakura = document.createElement('div');
+        sakura.className = 'spring-emoji';
+        sakura.textContent = '🌸';
+        
+        // Random position across the screen
+        const randomTop = Math.random() * 80 + 10; // 10% to 90% from top
+        const randomLeft = Math.random() * 80 + 10; // 10% to 90% from left
+        sakura.style.top = randomTop + '%';
+        sakura.style.left = randomLeft + '%';
+        sakura.style.position = 'absolute';
+        
+        // Random size category
+        const randomSize = sakuraSizes[Math.floor(Math.random() * sakuraSizes.length)];
+        
+        // Random delay for staggered appearance
+        const randomDelay = Math.random() * 3000; // 0 to 3 seconds delay
+        
+        springLoader.appendChild(sakura);
+        
+        // Apply random size animation with delay
+        setTimeout(() => {
+          sakura.style.display = 'block';
+          sakura.classList.add(randomSize);
+        }, randomDelay);
+      }
+      
+      document.body.appendChild(springLoader);
+      
+      setTimeout(() => {
+        const centerText = springLoader.querySelector('.spring-center-text');
+        centerText.classList.add('show');
+      }, 500);
+      
+      const springEmojis = springLoader.querySelectorAll('.spring-emoji');
+      springEmojis.forEach((emoji, index) => {
+        // Skip the random sakura flowers (they have their own timing)
+        if (emoji.textContent === '🌸' && !emoji.getAttribute('data-corner')) return;
+        
+        setTimeout(() => {
+          emoji.style.display = 'block';
+          emoji.classList.add('nature-bloom');
+          const emojiChar = emoji.textContent;
+          if (emojiChar === '🐝' || emojiChar === '🦋') emoji.classList.add('bird-fly');
+          else if (emojiChar === '☀️') emoji.classList.add('sun-shine');
+        }, index * 200);
+      });
+      
+      setTimeout(() => {
+        springLoader.classList.add('fade-out');
+        setTimeout(() => {
+          document.body.removeChild(springLoader);
+          console.log('🌸 Spring Bloom animation completed!');
+        }, 1000);
+      }, 6000);
+    }
+    
+    // 🦃 THANKSGIVING ANIMATION FUNCTION 🦃
+    function testThanksgivingAnimation() {
+      console.log('🦃 Thanksgiving animation button clicked!');
+      if (!isHolidayActiveOrUnlocked('thanksgiving')) {
+        const message = getHolidayMessage('thanksgiving');
+        alert(message + '\n\n💡 Tip: Use "🔓 Unlock Animations" button to test animations outside holiday periods!');
+        return;
+      }
+      if (isAnimationUnlocked) {
+        alert('🦃 Thanksgiving Animation Test! (🔓 Unlocked Mode - Animation will auto-lock after completion)');
+        autoLockAfterAnimation(6000);
+      } else {
+        alert('🦃 Thanksgiving Animation Test! (Holiday is currently active)');
+      }
+      const thanksgivingLoader = document.createElement('div');
+      thanksgivingLoader.className = 'thanksgiving-loader active';
+      thanksgivingLoader.innerHTML = `
+        <div class="thanksgiving-feast-table">
+          <div class="feast-dish" style="top: 25%; left: 25%;">🍽️</div>
+          <div class="feast-dish" style="top: 30%; left: 50%;">🥧</div>
+          <div class="feast-dish" style="top: 25%; left: 75%;">🦃</div>
+          <div class="feast-dish" style="top: 50%; left: 20%;">🌽</div>
+          <div class="feast-dish" style="top: 50%; left: 50%;">🍂</div>
+          <div class="feast-dish" style="top: 50%; left: 80%;">🥕</div>
+          <div class="feast-dish" style="top: 75%; left: 30%;">�</div>
+          <div class="feast-dish" style="top: 75%; left: 70%;">🧄</div>
+          <div class="feast-dish" style="top: 85%; left: 50%;">🍷</div>
+        </div>
+        <div class="thanksgiving-emoji" data-emoji="🦃" data-corner="top-center">🦃</div>
+        <div class="thanksgiving-emoji" data-emoji="🍂" data-corner="top-left">🍂</div>
+        <div class="thanksgiving-emoji" data-emoji="🥧" data-corner="top-right">🥧</div>
+        <div class="thanksgiving-emoji" data-emoji="🌽" data-corner="center-left">🌽</div>
+        <div class="thanksgiving-emoji" data-emoji="🍁" data-corner="center-right">🍁</div>
+        <div class="thanksgiving-emoji" data-emoji="🏡" data-corner="bottom-left">🏡</div>
+        <div class="thanksgiving-emoji" data-emoji="❤️" data-corner="bottom-right">❤️</div>
+        <div class="thanksgiving-center-text">🦃 Grateful Hearts! 🍂</div>
+      `;
+      document.body.appendChild(thanksgivingLoader);
+      
+      // Create larger random feast icons
+      const feastFoods = ['🦃', '🥧', '🌽', '🍽️', '🥖', '🧄', '🥕', '🍷', '🍂', '🍁', '🎃', '🌾', '🥗', '🍯', '🥜'];
+      
+      // Track occupied positions to avoid overlapping
+      const occupiedPositions = [];
+      
+      const createRandomFeastIcon = () => {
+        const feastIcon = document.createElement('div');
+        feastIcon.className = 'thanksgiving-large-icon';
+        feastIcon.textContent = feastFoods[Math.floor(Math.random() * feastFoods.length)];
+        
+        // Define safe zones around the feast table (avoid center area)
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        const tableRadius = Math.min(window.innerWidth, window.innerHeight) * 0.3; // Increased for 50% table size
+        const minDistance = 120; // Minimum distance between icons
+        
+        let attempts = 0;
+        let validPosition = false;
+        let finalX, finalY;
+        
+        while (!validPosition && attempts < 20) {
+          // Generate position in a ring around the center (avoiding the table)
+          const angle = Math.random() * 2 * Math.PI;
+          const distance = tableRadius + 120 + Math.random() * 300; // Increased buffer for 50% table size
+          
+          finalX = centerX + Math.cos(angle) * distance;
+          finalY = centerY + Math.sin(angle) * distance;
+          
+          // Ensure position is within screen bounds with margin
+          finalX = Math.max(60, Math.min(window.innerWidth - 60, finalX));
+          finalY = Math.max(60, Math.min(window.innerHeight - 60, finalY));
+          
+          // Check distance from other icons
+          validPosition = true;
+          for (const pos of occupiedPositions) {
+            const dist = Math.sqrt(Math.pow(finalX - pos.x, 2) + Math.pow(finalY - pos.y, 2));
+            if (dist < minDistance) {
+              validPosition = false;
+              break;
+            }
+          }
+          
+          attempts++;
+        }
+        
+        // If we couldn't find a valid position, use a grid-based approach
+        if (!validPosition) {
+          const gridSize = 150;
+          const cols = Math.floor(window.innerWidth / gridSize);
+          const rows = Math.floor(window.innerHeight / gridSize);
+          const totalCells = cols * rows;
+          const randomCell = Math.floor(Math.random() * totalCells);
+          
+          const col = randomCell % cols;
+          const row = Math.floor(randomCell / cols);
+          
+          finalX = col * gridSize + gridSize / 2;
+          finalY = row * gridSize + gridSize / 2;
+          
+          // Avoid center area in grid approach too
+          const distFromCenter = Math.sqrt(Math.pow(finalX - centerX, 2) + Math.pow(finalY - centerY, 2));
+          if (distFromCenter < tableRadius + 90) {
+            // Push to edge if too close to center
+            const pushAngle = Math.atan2(finalY - centerY, finalX - centerX);
+            finalX = centerX + Math.cos(pushAngle) * (tableRadius + 140);
+            finalY = centerY + Math.sin(pushAngle) * (tableRadius + 140);
+          }
+        }
+        
+        // Record this position
+        occupiedPositions.push({ x: finalX, y: finalY });
+        
+        // Remove old positions to keep array manageable
+        if (occupiedPositions.length > 8) {
+          occupiedPositions.shift();
+        }
+        
+        // Random starting position from edge
+        const side = Math.floor(Math.random() * 4);
+        let startX, startY;
+        
+        switch(side) {
+          case 0: // Top
+            startX = Math.random() * window.innerWidth;
+            startY = -100;
+            break;
+          case 1: // Right
+            startX = window.innerWidth + 100;
+            startY = Math.random() * window.innerHeight;
+            break;
+          case 2: // Bottom
+            startX = Math.random() * window.innerWidth;
+            startY = window.innerHeight + 100;
+            break;
+          case 3: // Left
+            startX = -100;
+            startY = Math.random() * window.innerHeight;
+            break;
+        }
+        
+        feastIcon.style.left = startX + 'px';
+        feastIcon.style.top = startY + 'px';
+        thanksgivingLoader.appendChild(feastIcon);
+        
+        // Animate to final position with proper spacing
+        setTimeout(() => {
+          feastIcon.style.transition = 'all 2.5s ease-out';
+          feastIcon.style.left = finalX + 'px';
+          feastIcon.style.top = finalY + 'px';
+          feastIcon.style.transform = 'scale(1) rotate(360deg)';
+          feastIcon.style.opacity = '0.9';
+        }, 100);
+        
+        // Remove after animation
+        setTimeout(() => {
+          if (feastIcon && feastIcon.parentNode) {
+            feastIcon.parentNode.removeChild(feastIcon);
+          }
+        }, 3000);
+      };
+      
+      setTimeout(() => {
+        const centerText = thanksgivingLoader.querySelector('.thanksgiving-center-text');
+        centerText.classList.add('show');
+      }, 500);
+      
+      // Animate feast table
+      setTimeout(() => {
+        const feastTable = thanksgivingLoader.querySelector('.thanksgiving-feast-table');
+        feastTable.classList.add('feast-appear');
+        
+        // Apply random scaling and dancing effects to each feast dish
+        const feastDishes = feastTable.querySelectorAll('.feast-dish');
+        feastDishes.forEach((dish, index) => {
+          // Generate random scale factor between 0.8 and 1.6
+          const randomScale = 0.8 + Math.random() * 0.8;
+          // Generate random animation delay for staggered dancing
+          const randomDelay = Math.random() * 2;
+          
+          // Apply random scale and staggered animation
+          dish.style.setProperty('--random-scale', randomScale);
+          dish.style.animationDelay = `1s, ${3 + randomDelay}s`;
+          
+          // Add random dancing class for variety
+          setTimeout(() => {
+            if (Math.random() > 0.5) {
+              dish.classList.add('feast-dance-wild');
+            }
+          }, 2000 + index * 100);
+        });
+      }, 800);
+      
+      const thanksgivingEmojis = thanksgivingLoader.querySelectorAll('.thanksgiving-emoji');
+      thanksgivingEmojis.forEach((emoji, index) => {
+        setTimeout(() => {
+          emoji.style.display = 'block';
+          emoji.classList.add('harvest-bounce');
+          const emojiChar = emoji.textContent;
+          if (emojiChar === '🦃') emoji.classList.add('turkey-strut');
+          else if (emojiChar === '🥧' || emojiChar === '🌽') emoji.classList.add('feast-glow');
+        }, index * 200);
+      });
+      
+      // Create random feast icons at intervals
+      const iconInterval = setInterval(() => {
+        createRandomFeastIcon();
+      }, 1200); // Increased interval to 1.2 seconds for better spacing
+      
+      setTimeout(() => {
+        clearInterval(iconInterval);
+        thanksgivingLoader.classList.add('fade-out');
+        setTimeout(() => {
+          document.body.removeChild(thanksgivingLoader);
+          console.log('🦃 Thanksgiving animation completed!');
+        }, 1000);
+      }, 6000);
+    }
+    
+    // 🎂 BIRTHDAY CELEBRATION ANIMATION AND VOCABULARY FUNCTIONS 🎂
+    function testBirthdayAnimation() {
+      console.log('🎂 Birthday animation button clicked!');
+      
+      if (!isHolidayActiveOrUnlocked('birthday')) {
+        const message = getHolidayMessage('birthday');
+        alert(message + '\n\n💡 Tip: Use "🔓 Unlock Animations" button to test animations outside holiday periods!');
+        return;
+      }
+      
+      if (isAnimationUnlocked) {
+        alert('🎂 Birthday Animation Test! (🔓 Unlocked Mode - Animation will auto-lock after completion)');
+        autoLockAfterAnimation(7000); // Birthday animation is 7 seconds
+      } else {
+        alert('🎂 Birthday Animation Test! (Holiday is currently active)');
+      }
+      
+      const birthdayLoader = document.createElement('div');
+      birthdayLoader.className = 'birthday-loader active';
+      birthdayLoader.innerHTML = '<div class="birthday-scene"><div class="birthday-emoji cake-celebration" style="top: 20%; left: 20%;">🎂</div><div class="birthday-emoji balloon-float" style="top: 15%; left: 70%;">🎈</div><div class="birthday-emoji gift-surprise" style="top: 70%; left: 15%;">🎁</div><div class="birthday-emoji balloon-float" style="top: 25%; left: 50%;">🎈</div><div class="birthday-emoji gift-surprise" style="top: 65%; left: 75%;">🎁</div><div class="birthday-emoji cake-celebration" style="top: 80%; left: 50%;">🎂</div><div class="birthday-emoji balloon-float" style="top: 40%; left: 85%;">🎈</div><div class="birthday-emoji gift-surprise" style="top: 30%; left: 10%;">🎁</div><div class="birthday-emoji balloon-float" style="top: 60%; left: 30%;">🎈</div><div class="birthday-emoji cake-celebration" style="top: 45%; left: 60%;">🎂</div><div class="birthday-emoji gift-surprise" style="top: 15%; left: 40%;">🎁</div><div class="birthday-emoji balloon-float" style="top: 75%; left: 85%;">🎈</div><div class="birthday-center-text">🎉 Happy Birthday! 🎉</div></div>';
+      
+      document.body.appendChild(birthdayLoader);
+      
+      // Birthday celebration emojis
+      const birthdayEmojis = ['🎂', '🎈', '🎁', '🎉', '🎊', '🕯️', '⭐', '🌟', '💫', '✨', '🥳', '🎭', '🎪', '🎇', '🎆'];
+      
+      // Create birthday firework bursts
+      let burstCount = 0;
+      const maxBursts = 6;
+      
+      const createBirthdayFirework = () => {
+        if (burstCount >= maxBursts) return;
+        
+        const particleCount = 15 + Math.floor(Math.random() * 10);
+        console.log(`Creating ${particleCount} birthday particles for burst ${burstCount + 1}`);
+        
+        for (let i = 0; i < particleCount; i++) {
+          const particle = document.createElement('div');
+          particle.textContent = birthdayEmojis[Math.floor(Math.random() * birthdayEmojis.length)];
+          
+          particle.style.position = 'absolute';
+          particle.style.fontSize = '28px';
+          particle.style.zIndex = '100000';
+          particle.style.pointerEvents = 'none';
+          
+          const angle = Math.random() * 360;
+          const radian = (angle * Math.PI) / 180;
+          const distance = 150 + Math.random() * 300;
+          
+          const centerX = window.innerWidth / 2;
+          const centerY = window.innerHeight / 2;
+          const finalX = centerX + Math.cos(radian) * distance;
+          const finalY = centerY + Math.sin(radian) * distance;
+          
+          particle.style.left = centerX + 'px';
+          particle.style.top = centerY + 'px';
+          particle.style.opacity = '1';
+          particle.style.transform = 'scale(0.5)';
+          
+          birthdayLoader.appendChild(particle);
+          
+          setTimeout(() => {
+            particle.style.transition = 'all 1.8s ease-out';
+            particle.style.left = finalX + 'px';
+            particle.style.top = finalY + 'px';
+            particle.style.transform = 'scale(1) rotate(360deg)';
+            particle.style.opacity = '0';
+          }, Math.random() * 100);
+          
+          setTimeout(() => {
+            if (particle && particle.parentNode) {
+              particle.parentNode.removeChild(particle);
+            }
+          }, 2000);
+        }
+        
+        burstCount++;
+        console.log(`🎆 Birthday firework burst ${burstCount}/${maxBursts}!`);
+        if (burstCount < maxBursts) {
+          setTimeout(createBirthdayFirework, 800);
+        }
+      };
+      
+      const centerText = birthdayLoader.querySelector('.birthday-center-text');
+      setTimeout(() => {
+        centerText.classList.add('show');
+      }, 500);
+      
+      const birthdayEmojiElements = birthdayLoader.querySelectorAll('.birthday-emoji');
+      birthdayEmojiElements.forEach((emoji, index) => {
+        setTimeout(() => {
+          emoji.style.display = 'block';
+          emoji.classList.add('cake-celebration');
+          const emojiChar = emoji.textContent;
+          if (emojiChar === '🎈') emoji.classList.add('balloon-float');
+          else if (emojiChar === '🎁') emoji.classList.add('gift-surprise');
+        }, index * 200);
+      });
+      
+      setTimeout(() => { createBirthdayFirework(); }, 500);
+      
+      setTimeout(() => {
+        birthdayLoader.classList.add('fade-out');
+        setTimeout(() => {
+          document.body.removeChild(birthdayLoader);
+          console.log('🎂 Birthday animation completed!');
+        }, 1000);
+      }, 7000);
+    }
+    
+    function testBirthdayVocab() {
+      console.log('🎈 Displaying Birthday vocabulary...');
+      
+      const birthdayWords = [
+        { word: "cake", meaning: "sweet birthday dessert with candles", emoji: "🎂" },
+        { word: "candle", meaning: "wax stick that burns with flame", emoji: "🕯️" },
+        { word: "gift", meaning: "present given on birthday", emoji: "🎁" },
+        { word: "party", meaning: "celebration with friends", emoji: "🎉" },
+        { word: "balloon", meaning: "colorful inflated decoration", emoji: "🎈" },
+        { word: "wish", meaning: "special hope made when blowing candles", emoji: "⭐" },
+        { word: "friend", meaning: "person who comes to celebrate", emoji: "👫" },
+        { word: "surprise", meaning: "unexpected birthday joy", emoji: "🎊" }
+      ];
+      
+      createVocabDisplay(birthdayWords, '🎂 BIRTHDAY CELEBRATION VOCABULARY (8 words)', '#FF69B4');
+      console.log('✅ Birthday vocabulary displayed');
+    }
+    
+    function simulateBirthdayEvent() {
+      console.log('🎂 Simulating Full Birthday Event...');
+      
+      alert('🎂 Starting Birthday Celebration Event!\n\nFirst: Watch the birthday party animation!');
+      testBirthdayAnimation();
+      
+      setTimeout(() => {
+        alert('🎉 Animation complete!\n\nNow: Learn the 8 Birthday vocabulary words!\n\nClick on any word to hear it spoken.');
+        testBirthdayVocab();
+      }, 7000);
+    }
+    
+    function checkHolidayStatus() {
+      const today = new Date();
+      const currentDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      
+      let statusMessage = `🎯 Holiday Status (${currentDate})\n`;
+      statusMessage += '═══════════════════════\n';
+      
+      // Show unlock status
+      if (isAnimationUnlocked) {
+        statusMessage += '🔓 UNLOCKED MODE\n';
+      } else {
+        statusMessage += '🔒 DATE-BASED MODE\n';
+      }
+      
+      // Comprehensive list of all holiday events
+      const holidayIds = ['easter', 'spring', 'summer', 'backToSchool', 'halloween', 'thanksgiving', 'christmas', 'newyear', 'chinesenewyear', 'birthday'];
+      
+      // Check if EVENTS object exists
+      if (typeof EVENTS === 'undefined' || !EVENTS) {
+        statusMessage += '\n❌ ERROR: Events data not loaded!';
+        alert(statusMessage);
+        return;
+      }
+      
+      // Check if isHolidayActive function exists
+      if (typeof isHolidayActive === 'undefined') {
+        statusMessage += '\n❌ ERROR: isHolidayActive function not available!';
+        alert(statusMessage);
+        return;
+      }
+      
+      let foundEvents = 0;
+      let activeEvents = 0;
+      let missingEvents = [];
+      
+      statusMessage += `\nChecking ${holidayIds.length} holidays:\n`;
+      statusMessage += '─────────────────────────\n';
+      
+      holidayIds.forEach(holidayId => {
+        const event = EVENTS[holidayId];
+        if (event && event.name && event.period) {
+          foundEvents++;
+          let isActive = false;
+          let errorOccurred = false;
+          
+          try {
+            isActive = isHolidayActive(holidayId);
+            if (isActive) activeEvents++;
+          } catch (error) {
+            console.error(`Error checking holiday status for ${holidayId}:`, error);
+            errorOccurred = true;
+          }
+          
+          if (!errorOccurred) {
+            const canRun = isAnimationUnlocked || isActive;
+            const status = canRun ? (isActive ? '✅' : '🔓') : '❌';
+            statusMessage += `${status} ${event.name}\n`;
+          } else {
+            statusMessage += `⚠️ ${event.name} (Error)\n`;
+          }
+        } else {
+          missingEvents.push(holidayId);
+        }
+      });
+      
+      // Summary
+      statusMessage += '─────────────────────────\n';
+      statusMessage += `📊 Total: ${foundEvents}/${holidayIds.length} events\n`;
+      statusMessage += `🟢 Active: ${activeEvents} holidays\n`;
+      
+      if (missingEvents.length > 0) {
+        statusMessage += `❌ Missing: ${missingEvents.join(', ')}\n`;
+      }
+      
+      if (isAnimationUnlocked) {
+        statusMessage += '\n💡 Manual unlock active!';
+      } else {
+        statusMessage += '\n🎯 Use "Unlock Animations" to override!';
+      }
+      
+      alert(statusMessage);
+    }
+    
+    // Event listeners - wrapped in DOMContentLoaded to ensure DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, binding event listeners...');
+        
+        document.getElementById('btn-unlock').addEventListener('click', toggleAnimationUnlock);
+        document.getElementById('btn-status').addEventListener('click', checkHolidayStatus);
+        document.getElementById('btn1').addEventListener('click', testChristmasAnimation);
+        document.getElementById('btn2').addEventListener('click', testNewYearAnimation);
+        document.getElementById('btn3').addEventListener('click', testChristmasVocab);
+        document.getElementById('btn4').addEventListener('click', testNewYearVocab);
+        document.getElementById('btn5').addEventListener('click', simulateChristmasEvent);
+        document.getElementById('btn6').addEventListener('click', testChineseNewYearAnimation);
+        document.getElementById('btn7').addEventListener('click', testChineseNewYearVocab);
+        document.getElementById('btn8').addEventListener('click', simulateChineseNewYearEvent);
+        document.getElementById('btn9').addEventListener('click', testHalloweenAnimation);
+        document.getElementById('btn10').addEventListener('click', testHalloweenVocab);
+        document.getElementById('btn11').addEventListener('click', simulateHalloweenEvent);
+        document.getElementById('btn12').addEventListener('click', testSummerAnimation);
+        document.getElementById('btn13').addEventListener('click', testSummerVocab);
+        document.getElementById('btn14').addEventListener('click', simulateSummerEvent);
+        document.getElementById('btn15').addEventListener('click', testEasterAnimation);
+        document.getElementById('btn16').addEventListener('click', testEasterVocab);
+        document.getElementById('btn17').addEventListener('click', simulateEasterEvent);
+        document.getElementById('btn18').addEventListener('click', testBackToSchoolAnimation);
+        document.getElementById('btn19').addEventListener('click', testSpringBloomAnimation);
+        document.getElementById('btn20').addEventListener('click', testThanksgivingAnimation);
+        document.getElementById('btn21').addEventListener('click', testBackToSchoolVocab);
+        document.getElementById('btn22').addEventListener('click', testSpringBloomVocab);
+        document.getElementById('btn23').addEventListener('click', testThanksgivingVocab);
+        document.getElementById('btn24').addEventListener('click', testBirthdayAnimation);
+        document.getElementById('btn25').addEventListener('click', testBirthdayVocab);
+        document.getElementById('btn26').addEventListener('click', simulateBirthdayEvent);
+        
+        console.log('✅ Test page loaded - buttons ready with holiday date checking');
+    });
+  </script>
+</body>
+</html>
