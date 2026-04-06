@@ -6514,3 +6514,11 @@ input, textarea, select, button {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-12px); } /* dramatic run bounce */
 }
+
+/* FINAL OVERRIDES */
+:root { --zen-bg: #FDFCFB !important; --zen-ink: #2C2A29 !important; --water-bg: rgba(255, 255, 255, 0.35) !important; --water-blur: blur(18px) saturate(160%) !important; --water-shadow: 0 2px 12px 0 rgba(44,42,41,0.07), 0 1.5px 6px 0 rgba(255,255,255,0.12) inset !important; --water-border: 1.5px solid rgba(44,42,41,0.13) !important; }
+#topUserBar.top-user-bar { position: fixed !important; top: 20px !important; right: 20px !important; background: transparent !important; border: none !important; box-shadow: none !important; z-index: 10000 !important; display: flex !important; flex-wrap: nowrap !important; align-items: center !important; gap: 12px !important; }
+#topUserName { font-weight: 700 !important; color: var(--zen-ink) !important; }
+#topUserEmail { font-size: 0.85rem !important; color: #707070 !important; opacity: 0.8 !important; }
+button, .btn, .secondary-action-btn, #registerProfileBtn, #recoverNicknameBtn, #topUserLogoutBtn, #identityToggleBtn, #eventToggleBtn, #listenWordBtn, #pronounceBtn, #phonicsPronounceBtn, #kiwiToggleBtn, .gemini-btn, .word-analyze-btn, .word-sound-btn, .cloud-sync-actions button, .account-auth-actions button { font-weight: 600 !important; color: var(--zen-ink) !important; background: var(--water-bg) !important; backdrop-filter: var(--water-blur) !important; border: var(--water-border) !important; border-radius: 999px !important; box-shadow: var(--water-shadow) !important; padding: 10px 24px !important; transition: all 0.4s ease !important; text-decoration: none !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; margin: 5px !important; outline: none !important; }
+.container, .identity-section, #exercise, .controls { background: transparent !important; border: none !important; box-shadow: none !important; }
