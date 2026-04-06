@@ -70,44 +70,37 @@
       gap: 10px;
     }
 
-    .btn {
-      font-family: inherit;
-      font-weight: 600;
+    /* Glassmorphism Waterdrop Button Style */
+    .btn, .word-analyze-btn, .word-sound-btn {
+      background: rgba(255,255,255,0.35);
       color: var(--ink);
-      border: 1px solid rgba(44, 42, 41, 0.1);
-      border-radius: 14px;
-      padding: 10px 20px;
-      font-size: 0.95rem;
-      margin: 4px;
-      background: rgba(255, 255, 255, 0.4);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      backdrop-filter: blur(20px) saturate(180%);
-      box-shadow: inset 0 2px 8px rgba(255,255,255,0.8), 0 4px 15px rgba(0,0,0,0.03);
-      cursor: pointer;
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      border: 1.5px solid rgba(44,42,41,0.13);
+      border-radius: 999px;
+      -webkit-backdrop-filter: blur(18px) saturate(160%);
+      backdrop-filter: blur(18px) saturate(160%);
+      box-shadow: 0 2px 12px 0 rgba(44,42,41,0.07), 0 1.5px 6px 0 rgba(255,255,255,0.12) inset;
+      font-weight: 600;
+      padding: 10px 18px;
+      transition: background 0.18s, box-shadow 0.18s, color 0.18s, border 0.18s;
+      outline: none;
     }
-
-    .btn:hover {
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: inset 0 2px 8px rgba(255,255,255,0.8), 0 10px 30px rgba(0, 0, 0, 0.06);
-      background: rgba(255, 255, 255, 0.95);
-      border: 1px solid rgba(44, 42, 41, 0.3);
+    .btn:hover, .word-analyze-btn:hover, .word-sound-btn:hover {
+      background: rgba(255,255,255,0.55);
+      color: var(--ink);
+      box-shadow: 0 4px 18px 0 rgba(44,42,41,0.10), 0 2px 8px 0 rgba(255,255,255,0.18) inset;
+      border: 1.5px solid rgba(44,42,41,0.18);
     }
-
-    .btn:active {
-      transform: translateY(1px);
+    .btn.primary, .btn.ghost {
+      background: rgba(255,255,255,0.35);
+      color: var(--ink);
+      border: 1.5px solid rgba(44,42,41,0.13);
+      box-shadow: 0 2px 12px 0 rgba(44,42,41,0.07), 0 1.5px 6px 0 rgba(255,255,255,0.12) inset;
     }
-
-    .btn.primary {
-      background: rgba(255, 255, 255, 0.6);
-    }
-
-    .btn.ghost {
-      background: rgba(255, 255, 255, 0.2);
+    .btn:active, .word-analyze-btn:active, .word-sound-btn:active {
+      background: rgba(255,255,255,0.25);
+      color: var(--ink);
+      box-shadow: 0 1px 4px 0 rgba(44,42,41,0.10), 0 1px 4px 0 rgba(255,255,255,0.10) inset;
+      border: 1.5px solid rgba(44,42,41,0.10);
     }
 
     .meta {
