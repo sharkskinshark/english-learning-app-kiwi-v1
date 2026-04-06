@@ -6293,38 +6293,8 @@ input, textarea, select, button {
    ENVIRONMENT & GHIBLI ANIMATION (Phase 5)
    ======================================================= */
    
-/* Day / Night Cycle Themes */
-body[data-theme="morning"] {
-  --zen-bg: #F0F4E8; /* Soft early morning matcha glow */
-  --zen-ink: #3D5A50; /* Morning mist green-indigo */
-  --zen-border: 1px solid rgba(61, 90, 80, 0.15);
-  --zen-shadow-hard: 0 12px 40px rgba(61, 90, 80, 0.08);
-}
-
-body[data-theme="dusk"] {
-  --zen-bg: #FDF1EA; /* Warm Japanese amber dusk */
-  --zen-ink: #5A3F2F; /* Deep sepia/umber */
-  --zen-border: 1px solid rgba(90, 63, 47, 0.15);
-  --zen-shadow-hard: -20px 12px 40px rgba(90, 63, 47, 0.12);
-  --zen-shadow-hover: -25px 20px 50px rgba(90, 63, 47, 0.18);
-}
-
-body[data-theme="night"] {
-  --zen-bg: #121822; /* Night sky indigo */
-  --zen-ink: #E0E6ED; /* Moonlight text */
-  --zen-paper: #1A2230; /* Dark porcelain cards */
-  --zen-border: 1px solid rgba(255, 255, 255, 0.1);
-  --zen-shadow-hard: 0 12px 40px rgba(0, 0, 0, 0.5);
-  --water-bg: rgba(26, 34, 48, 0.6);
-  --water-blur: blur(30px) saturate(120%);
-  --water-shadow-inner: inset 0 2px 10px rgba(255,255,255,0.1), inset 0 -4px 10px rgba(0,0,0,0.5);
-  transition: background 3s ease, color 3s ease;
-}
-
-body[data-theme="night"] input, body[data-theme="night"] select {
-  background: #253042 !important;
-  color: #FFFFFF !important;
-}
+/* Day / Night Cycle Themes - Background overrides removed to preserve Modern Wa */
+/* morning/dusk/night themes no longer override --zen-bg, --zen-ink, etc. */
 
 /* Ghibli Kiwi Animation Layer */
 #kiwi-container {
@@ -6360,10 +6330,6 @@ body[data-theme="night"] input, body[data-theme="night"] select {
 }
 .kiwi.dad { width: 140px; }
 .kiwi.son { width: 90px; margin-left: -10px; animation-duration: 0.6s !important; }
-
-body[data-theme="night"] .kiwi {
-  filter: drop-shadow(0 15px 15px rgba(0,0,0,0.7)) brightness(0.7) sepia(0.3) hue-rotate(180deg); 
-}
 
 /* SVG Parts Pivoting & Animation */
 .left-leg { transform-origin: 40px 90px; animation: kiwi-walk-leg-left 0.8s infinite linear; }
