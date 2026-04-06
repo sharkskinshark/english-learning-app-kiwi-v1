@@ -4,30 +4,34 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>拼字分析儀表板</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;600&family=Lora:wght@400;600;700&family=Noto+Serif+TC:wght@400;600&family=Noto+Sans+TC:wght@400;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-start: #F8F9FA;
-      --bg-end: #F8F9FA;
-      --ink: #2F435A; /* Fukagawa Indigo */
-      --muted: #4A5B70;
+      /* Modern Wa Palette (現代和風) */
+      --bg-start: #FDFCFB; /* Warm Paper */
+      --bg-end: #FDFCFB;
+      --ink: #2C2A29; /* Charcoal Ink */
+      --muted: #707070;
       --card: #FFFFFF;
-      --border: rgba(47, 67, 90, 0.1);
-      --accent: #2F435A;
-      --accent-soft: rgba(47, 67, 90, 0.05);
-      --first: #4A5B70;
-      --review: #8D5A64; /* A soft plum/crimson for errors but fitting the palette */
-      --ok: #2F435A;
+      --border: rgba(44, 42, 41, 0.08);
+      --accent: #2C2A29;
+      --accent-soft: rgba(44, 42, 41, 0.05);
+      --first: #707070;
+      --review: #8D5A64;
+      --ok: #2C2A29;
     }
 
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      font-family: 'Lora', "Segoe UI", serif;
+      font-family: 'Lora', "Noto Sans TC", sans-serif;
       color: var(--ink);
       background: var(--bg-start);
       min-height: 100vh;
       padding: 20px;
+      line-height: 1.9;
+      letter-spacing: 0.03em;
     }
 
     .shell {
@@ -41,14 +45,16 @@
       border: none;
       border-radius: 24px;
       padding: 24px;
-      box-shadow: 0 12px 40px rgba(47, 67, 90, 0.06);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.03);
     }
 
     .hero h1 {
       margin: 0;
-      font-family: 'Playfair Display', serif;
+      font-family: 'Playfair Display', "Noto Serif TC", serif;
       font-size: clamp(1.5rem, 3.8vw, 2.2rem);
-      letter-spacing: 0.4px;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      text-transform: lowercase;
     }
 
     .hero p {
@@ -74,27 +80,24 @@
     }
 
     .btn.primary {
-      background: #FFFFFF;
-      color: #111111;
-      border: 1px solid #111111;
-      box-shadow: 2px 2px 0px #111111;
+      background: #FDFCFB;
+      color: var(--ink);
+      border: 1px solid rgba(44, 42, 41, 0.2);
+      box-shadow: none;
       border-radius: 9999px;
     }
 
     .btn.ghost {
-      background: rgba(255, 255, 255, 0.4);
-      color: #111111;
-      border: 1px solid rgba(0, 0, 0, 0.1);
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid rgba(44, 42, 41, 0.12);
       border-radius: 9999px;
-      -webkit-backdrop-filter: blur(24px) saturate(150%);
-      backdrop-filter: blur(24px) saturate(150%);
-      box-shadow: inset 0 2px 10px rgba(255,255,255,0.9), inset 0 -4px 10px rgba(0,0,0,0.03), 0 2px 5px rgba(0,0,0,0.05);
     }
 
     .btn:hover {
       transform: translate(-1px, -1px);
-      box-shadow: 4px 4px 0px #111111;
-      background: #fdfdfd;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      background: #FDFCFB;
     }
 
     .meta {
@@ -115,15 +118,17 @@
       border: none;
       border-radius: 24px;
       padding: 14px;
-      box-shadow: 0 12px 40px rgba(47, 67, 90, 0.06);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.03);
     }
 
     .vowel-card h2 {
       margin: 0;
-      font-family: 'Playfair Display', serif;
+      font-family: 'Playfair Display', "Noto Serif TC", serif;
       font-size: 1.6rem;
+      font-weight: 400;
       color: var(--accent);
-      text-transform: uppercase;
+      text-transform: lowercase;
+      letter-spacing: 0.1em;
     }
 
     .vowel-card .sum {
@@ -144,7 +149,7 @@
       margin-top: 10px;
       height: 8px;
       width: 100%;
-      background: #edf4fd;
+      background: rgba(44, 42, 41, 0.06);
       border-radius: 999px;
       overflow: hidden;
       display: flex;
@@ -168,14 +173,16 @@
       border: none;
       border-radius: 24px;
       padding: 16px;
-      box-shadow: 0 12px 40px rgba(47, 67, 90, 0.06);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.03);
     }
 
     .section h3 {
       margin: 0 0 10px;
-      font-family: 'Playfair Display', serif;
+      font-family: 'Playfair Display', "Noto Serif TC", serif;
+      font-weight: 400;
       color: var(--ink);
       font-size: 1.2rem;
+      letter-spacing: 0.1em;
     }
 
     .note {
@@ -191,16 +198,16 @@
     }
 
     th, td {
-      border-bottom: 1px solid #e7effa;
+      border-bottom: 1px solid rgba(44, 42, 41, 0.08);
       padding: 8px 6px;
       text-align: left;
       vertical-align: top;
     }
 
     th {
-      color: #0f4d90;
+      color: var(--ink);
       font-weight: 700;
-      background: #f7fbff;
+      background: rgba(44, 42, 41, 0.03);
     }
 
     tr:last-child td { border-bottom: none; }
@@ -215,8 +222,8 @@
       margin-right: 6px;
     }
 
-    .pill.first { background: #fff4dd; color: #8a5800; }
-    .pill.review { background: #ffe2e2; color: #9b1c1c; }
+    .pill.first { background: rgba(112, 112, 112, 0.1); color: #5A5450; }
+    .pill.review { background: rgba(141, 90, 100, 0.12); color: #8D5A64; }
 
     .rule-grid {
       display: grid;
@@ -225,21 +232,21 @@
     }
 
     .rule {
-      background: #f8fbff;
-      border: 1px solid #d8e8fb;
+      background: rgba(44, 42, 41, 0.02);
+      border: 1px solid rgba(44, 42, 41, 0.08);
       border-radius: 12px;
       padding: 12px;
     }
 
     .rule h4 {
       margin: 0 0 6px;
-      color: #105699;
+      color: var(--ink);
       font-size: 1rem;
     }
 
     .rule p {
       margin: 0;
-      color: #2c4662;
+      color: var(--muted);
       line-height: 1.6;
       font-size: 0.94rem;
     }
@@ -247,16 +254,16 @@
     .empty {
       color: var(--ok);
       font-weight: 700;
-      background: #e8fbf8;
-      border: 1px solid #b7ede7;
+      background: rgba(44, 42, 41, 0.03);
+      border: 1px solid rgba(44, 42, 41, 0.1);
       padding: 12px;
       border-radius: 10px;
     }
 
     .word-analyze-btn {
       border: none;
-      background: #eaf4ff;
-      color: #0d4a8b;
+      background: rgba(44, 42, 41, 0.06);
+      color: var(--ink);
       font-weight: 700;
       border-radius: 8px;
       padding: 4px 10px;
@@ -265,42 +272,42 @@
     }
 
     .word-analyze-btn:hover {
-      background: #d6eaff;
+      background: rgba(44, 42, 41, 0.12);
       transform: translateY(-1px);
     }
 
     .word-analyze-btn.active {
-      background: #0d5eb1;
-      color: #fff;
+      background: var(--ink);
+      color: #FDFCFB;
     }
 
     .kk-code {
       display: inline-block;
       padding: 2px 8px;
       border-radius: 8px;
-      background: #f4f9ff;
-      color: #134d8c;
-      border: 1px solid #d8e8fb;
+      background: rgba(44, 42, 41, 0.04);
+      color: var(--ink);
+      border: 1px solid rgba(44, 42, 41, 0.1);
       font-size: 0.9rem;
     }
 
     .analysis-panel {
       margin-top: 10px;
-      background: #f8fbff;
-      border: 1px solid #d8e8fb;
+      background: rgba(44, 42, 41, 0.02);
+      border: 1px solid rgba(44, 42, 41, 0.08);
       border-radius: 12px;
       padding: 12px;
     }
 
     .analysis-panel h4 {
       margin: 0;
-      color: #0d4a8b;
+      color: var(--ink);
       font-size: 1.08rem;
     }
 
     .analysis-panel .sub {
       margin-top: 6px;
-      color: #44607c;
+      color: var(--muted);
       font-size: 0.92rem;
     }
 
@@ -314,8 +321,8 @@
     .word-sound-btn {
       border: none;
       border-radius: 8px;
-      background: #0d5eb1;
-      color: #fff;
+      background: var(--ink);
+      color: #FDFCFB;
       font-weight: 700;
       padding: 7px 12px;
       cursor: pointer;
@@ -323,7 +330,7 @@
     }
 
     .word-sound-btn:hover {
-      background: #094a8d;
+      background: #1a1817;
       transform: translateY(-1px);
     }
 
@@ -335,9 +342,9 @@
     }
 
     .detail-badge {
-      background: #ecf5ff;
-      color: #0f4d90;
-      border: 1px solid #d5e7fb;
+      background: rgba(44, 42, 41, 0.05);
+      color: var(--ink);
+      border: 1px solid rgba(44, 42, 41, 0.1);
       border-radius: 999px;
       padding: 3px 10px;
       font-size: 0.86rem;
@@ -353,13 +360,13 @@
 
     .detail-item {
       background: #fff;
-      border: 1px solid #deecfb;
+      border: 1px solid rgba(44, 42, 41, 0.08);
       border-radius: 10px;
       padding: 10px;
     }
 
     .detail-item strong {
-      color: #0f4d90;
+      color: var(--ink);
       display: block;
       margin-bottom: 6px;
     }
@@ -371,11 +378,11 @@
     }
 
     .voice-line {
-      background: #f7fbff;
-      border: 1px solid #d8e8fb;
+      background: rgba(44, 42, 41, 0.02);
+      border: 1px solid rgba(44, 42, 41, 0.08);
       border-radius: 8px;
       padding: 7px 8px;
-      color: #274564;
+      color: var(--muted);
       font-size: 0.9rem;
       line-height: 1.45;
     }
@@ -391,21 +398,21 @@
     }
 
     .voice-chip.voiced {
-      background: #e3f6ff;
-      color: #0c5f8d;
-      border: 1px solid #bee7fa;
+      background: rgba(44, 42, 41, 0.06);
+      color: #2C2A29;
+      border: 1px solid rgba(44, 42, 41, 0.12);
     }
 
     .voice-chip.unvoiced {
-      background: #fff1e4;
-      color: #9c5412;
-      border: 1px solid #ffd9ba;
+      background: rgba(141, 90, 100, 0.08);
+      color: #8D5A64;
+      border: 1px solid rgba(141, 90, 100, 0.15);
     }
 
     .voice-chip.mixed {
-      background: #f1ebff;
-      color: #5f3f98;
-      border: 1px solid #ddd0ff;
+      background: rgba(112, 112, 112, 0.08);
+      color: #5A5450;
+      border: 1px solid rgba(112, 112, 112, 0.15);
     }
 
     .letter-row {
@@ -422,21 +429,21 @@
       min-width: 26px;
       height: 26px;
       border-radius: 8px;
-      border: 1px solid #dbe8f8;
+      border: 1px solid rgba(44, 42, 41, 0.1);
       font-weight: 700;
       font-size: 0.9rem;
     }
 
     .letter-chip.vowel {
-      background: #fff4dd;
-      color: #8a5800;
-      border-color: #f3dfb3;
+      background: rgba(141, 90, 100, 0.1);
+      color: #8D5A64;
+      border-color: rgba(141, 90, 100, 0.2);
     }
 
     .letter-chip.consonant {
-      background: #e9f4ff;
-      color: #0f4d90;
-      border-color: #d2e6fb;
+      background: rgba(44, 42, 41, 0.05);
+      color: var(--ink);
+      border-color: rgba(44, 42, 41, 0.12);
     }
 
     @media (max-width: 640px) {
