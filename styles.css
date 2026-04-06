@@ -19,9 +19,9 @@
   --water-shadow-inner: none;
   --water-radius: 0;
   
-  /* Classical Typography */
-  --font-heading: 'Playfair Display', "Noto Serif TC", serif;
-  --font-body: 'Lora', "Noto Sans TC", sans-serif;
+  /* Unified Sans Typography */
+  --font-heading: "Segoe UI", Roboto, Arial, "Noto Sans TC", sans-serif;
+  --font-body: "Segoe UI", Roboto, Arial, "Noto Sans TC", sans-serif;
 }
 
 /* Global Overrides */
