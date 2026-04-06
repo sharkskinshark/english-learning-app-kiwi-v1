@@ -1,23 +1,23 @@
 /* =======================================================
-   OPTION 4 UI REDESIGN: Fukagawa Indigo (深川藍瓷風格)
+   OPTION 5 UI REDESIGN: Modern Wa (現代和風)
    ======================================================= */
 :root {
-  /* Fukagawa Porcelain Palette */
-  --zen-bg: #FCFBFA; /* Translucent porcelain white */
-  --zen-ink: #1A365D; /* Deep Fukagawa Indigo */
-  --zen-ink-light: #4A5B70;
-  --zen-paper: #FFFFFF;
+  /* Modern Wa Palette */
+  --zen-bg: #FDFCFB; /* Warm Paper */
+  --zen-ink: #2C2A29; /* Charcoal Ink */
+  --zen-ink-light: #707070;
+  --zen-paper: transparent;
   
-  /* Soft Indigo Shadows */
-  --zen-border: 1px solid rgba(26, 54, 93, 0.08); /* Lighter border */
-  --zen-shadow-hard: 0 16px 48px rgba(26, 54, 93, 0.05); /* Softer drop shadow */
-  --zen-shadow-hover: 0 24px 60px rgba(26, 54, 93, 0.1);
+  /* Soft minimal accents */
+  --zen-border: 1px solid rgba(44, 42, 41, 0.08); /* Delicate divider */
+  --zen-shadow-hard: none; /* Flat design */
+  --zen-shadow-hover: 0 15px 35px rgba(0, 0, 0, 0.03); /* Faint breathing shadow */
   
-  /* Water Drop Glassmorphism for Controls */
-  --water-bg: rgba(255, 255, 255, 0.4);
-  --water-blur: blur(32px) saturate(180%);
-  --water-shadow-inner: inset 0 2px 10px rgba(255,255,255,0.9), inset 0 -4px 10px rgba(26, 54, 93, 0.02);
-  --water-radius: 9999px;
+  /* Overriding old glass settings to null */
+  --water-bg: transparent;
+  --water-blur: none;
+  --water-shadow-inner: none;
+  --water-radius: 0;
   
   /* Classical Typography */
   --font-heading: 'Playfair Display', "Noto Serif TC", serif;
@@ -50,91 +50,96 @@ body::before {
 /* Headings */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading) !important;
-  font-weight: 600 !important; /* Lighter font weight for elegance */
+  font-weight: 400 !important; /* Elegant light weight */
   color: var(--zen-ink) !important;
-  letter-spacing: 0.05em !important; /* Elegant spacing */
-  margin-bottom: 0.8rem;
+  letter-spacing: 0.1em !important; /* Very wide spacing */
+  margin-bottom: 1.5rem;
+  text-transform: lowercase; /* Poetic minimalist touch */
 }
 
 h1 {
   color: var(--zen-ink) !important;
-  font-weight: 700 !important;
-  font-size: 2.2rem;
+  font-weight: 300 !important;
+  font-size: 2.4rem;
+  letter-spacing: 0.15em !important;
 }
 
-/* Container & Cards (Fukagawa) */
+/* Container & Cards (Modern Wa) */
 .container,
 .identity-section, .event-section, .daily-section, .calendar-section, .leaderboards-section, .progress-section, #exercise, .controls {
   background: var(--zen-paper) !important;
-  border: var(--zen-border) !important;
-  border-radius: 20px !important; /* Elegant slight rounding */
-  box-shadow: var(--zen-shadow-hard) !important;
+  border: none !important;
+  border-bottom: var(--zen-border) !important; /* Subtle divider instead of box */
+  border-radius: 0 !important; /* Sharp pure geometry */
+  box-shadow: none !important; /* Purely flat */
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
-  padding: 45px !important; /* Generous Whitespace (Ma) */
-  margin-bottom: 40px !important; /* Breathing room between sections */
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  padding: 60px 40px !important; /* Hyper Generous Whitespace (Ma) */
+  margin-bottom: 0 !important; /* Stacked seamlessly */
+  transition: transform 0.6s ease;
   position: relative;
 }
 
-/* Interactive Elements (Water Drop Glass Buttons) */
+/* Interactive Elements (Ghost UI) */
 button, .btn, .secondary-action-btn, #identityToggleBtn, #eventToggleBtn, #listenWordBtn, #pronounceBtn, #phonicsPronounceBtn {
-  font-family: var(--font-heading) !important;
-  font-weight: 600 !important;
+  font-family: var(--font-body) !important;
+  font-weight: 400 !important;
   color: var(--zen-ink) !important;
-  border: 1px solid rgba(47, 67, 90, 0.15) !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(44, 42, 41, 0.4) !important; /* Underline text button style */
   
-  /* Water drop shape */
-  border-radius: var(--water-radius) !important;
-  padding: 10px 24px !important;
-  font-size: 0.95rem !important;
-  margin: 4px !important;
+  border-radius: 0 !important;
+  padding: 6px 12px !important;
+  font-size: 0.9rem !important;
+  margin: 10px 15px !important;
   
-  /* Glass aesthetics */
-  background: var(--water-bg) !important;
-  -webkit-backdrop-filter: var(--water-blur) !important;
-  backdrop-filter: var(--water-blur) !important;
-  box-shadow: var(--water-shadow-inner), 0 4px 15px rgba(0,0,0,0.05) !important;
+  /* Invisible aesthetic */
+  background: transparent !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
   
   cursor: pointer !important;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-  text-transform: none !important;
-  letter-spacing: 0.5px !important;
+  transition: border-color 0.4s ease, transform 0.3s ease !important;
+  text-transform: lowercase !important;
+  letter-spacing: 0.12em !important;
 }
 
 button:hover, .btn:hover {
   transform: translateY(-2px) !important;
-  box-shadow: var(--water-shadow-inner), 0 8px 25px rgba(47, 67, 90, 0.12) !important;
-  background: rgba(255, 255, 255, 0.95) !important;
-  border: 1px solid rgba(47, 67, 90, 0.3) !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  border-bottom: 1px solid var(--zen-ink) !important; /* Darker line on hover */
   z-index: 10 !important;
 }
 
 button:active, .btn:active {
   transform: translateY(1px) !important;
-  box-shadow: inset 0 2px 5px rgba(47, 67, 90, 0.05), inset 0 -4px 10px rgba(255,255,255,0.5) !important;
+  border-bottom-color: rgba(44, 42, 41, 0.2) !important;
   z-index: 10 !important;
 }
 
 /* Inputs & Selects */
 input, select, textarea {
-  background: #ffffff !important;
+  background: transparent !important;
   border: none !important;
-  border-radius: 9999px !important;
-  padding: 12px 24px !important;
-  box-shadow: inset 0 2px 5px rgba(47, 67, 90, 0.05), 0 2px 10px rgba(47, 67, 90, 0.03) !important;
+  border-bottom: 1px solid rgba(44, 42, 41, 0.2) !important;
+  border-radius: 0 !important;
+  padding: 8px 12px !important;
+  box-shadow: none !important;
   color: var(--zen-ink) !important;
   font-family: var(--font-body) !important;
-  transition: all 0.3s ease !important;
+  transition: border-color 0.4s ease !important;
   font-size: 0.95rem !important;
+  letter-spacing: 0.05em !important;
 }
 
 input:focus, select:focus, textarea:focus {
   outline: none !important;
-  background: #ffffff !important;
-  border: none !important;
-  box-shadow: var(--zen-shadow-hard) !important;
-  transform: translate(-2px, -2px) !important;
+  background: transparent !important;
+  border-bottom: 1px solid var(--zen-ink) !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 /* ======================================================= */
