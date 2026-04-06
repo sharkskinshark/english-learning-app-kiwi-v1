@@ -6534,6 +6534,8 @@ button:hover, .btn:hover { opacity: 0.6 !important; transform: none !important; 
 /* Restore waterdrop glass style for key CTA buttons */
 #registerProfileBtn,
 #recoverNicknameBtn,
+#existingGoogleLoginBtn,
+#googleSignOutBtn,
 #openDashboardBtn {
   background: rgba(255, 255, 255, 0.35) !important;
   color: var(--zen-ink) !important;
@@ -6551,6 +6553,8 @@ button:hover, .btn:hover { opacity: 0.6 !important; transform: none !important; 
 
 #registerProfileBtn:hover,
 #recoverNicknameBtn:hover,
+#existingGoogleLoginBtn:hover,
+#googleSignOutBtn:hover,
 #openDashboardBtn:hover {
   opacity: 1 !important;
   transform: translateY(-1px) !important;
@@ -6561,6 +6565,8 @@ button:hover, .btn:hover { opacity: 0.6 !important; transform: none !important; 
 
 #registerProfileBtn:active,
 #recoverNicknameBtn:active,
+#existingGoogleLoginBtn:active,
+#googleSignOutBtn:active,
 #openDashboardBtn:active {
   transform: translateY(0) !important;
   background: rgba(255, 255, 255, 0.25) !important;
