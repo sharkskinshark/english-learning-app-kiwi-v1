@@ -6536,6 +6536,8 @@ button:hover, .btn:hover { opacity: 0.6 !important; transform: none !important; 
 #recoverNicknameBtn,
 #existingGoogleLoginBtn,
 #googleSignOutBtn,
+#cloudPullBtn,
+#cloudPushBtn,
 #openDashboardBtn {
   background: rgba(255, 255, 255, 0.35) !important;
   color: var(--zen-ink) !important;
@@ -6555,6 +6557,8 @@ button:hover, .btn:hover { opacity: 0.6 !important; transform: none !important; 
 #recoverNicknameBtn:hover,
 #existingGoogleLoginBtn:hover,
 #googleSignOutBtn:hover,
+#cloudPullBtn:hover,
+#cloudPushBtn:hover,
 #openDashboardBtn:hover {
   opacity: 1 !important;
   transform: translateY(-1px) !important;
@@ -6567,6 +6571,8 @@ button:hover, .btn:hover { opacity: 0.6 !important; transform: none !important; 
 #recoverNicknameBtn:active,
 #existingGoogleLoginBtn:active,
 #googleSignOutBtn:active,
+#cloudPullBtn:active,
+#cloudPushBtn:active,
 #openDashboardBtn:active {
   transform: translateY(0) !important;
   background: rgba(255, 255, 255, 0.25) !important;
