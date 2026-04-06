@@ -6538,6 +6538,8 @@ button:hover, .btn:hover { opacity: 0.6 !important; transform: none !important; 
 #googleSignOutBtn,
 #cloudPullBtn,
 #cloudPushBtn,
+#startBtn,
+#listenBtn,
 #openDashboardBtn {
   background: rgba(255, 255, 255, 0.35) !important;
   color: var(--zen-ink) !important;
@@ -6559,6 +6561,8 @@ button:hover, .btn:hover { opacity: 0.6 !important; transform: none !important; 
 #googleSignOutBtn:hover,
 #cloudPullBtn:hover,
 #cloudPushBtn:hover,
+#startBtn:hover,
+#listenBtn:hover,
 #openDashboardBtn:hover {
   opacity: 1 !important;
   transform: translateY(-1px) !important;
@@ -6573,6 +6577,8 @@ button:hover, .btn:hover { opacity: 0.6 !important; transform: none !important; 
 #googleSignOutBtn:active,
 #cloudPullBtn:active,
 #cloudPushBtn:active,
+#startBtn:active,
+#listenBtn:active,
 #openDashboardBtn:active {
   transform: translateY(0) !important;
   background: rgba(255, 255, 255, 0.25) !important;
