@@ -3,25 +3,25 @@
    ======================================================= */
 :root {
   /* Fukagawa Porcelain Palette */
-  --zen-bg: #F8F9FA; /* Extremely subtle cool off-white */
-  --zen-ink: #2F435A; /* Fukagawa Indigo / Aizome */
+  --zen-bg: #FCFBFA; /* Translucent porcelain white */
+  --zen-ink: #1A365D; /* Deep Fukagawa Indigo */
   --zen-ink-light: #4A5B70;
   --zen-paper: #FFFFFF;
   
   /* Soft Indigo Shadows */
-  --zen-border: 1px solid rgba(47, 67, 90, 0.1);
-  --zen-shadow-hard: 0 12px 40px rgba(47, 67, 90, 0.06);
-  --zen-shadow-hover: 0 20px 50px rgba(47, 67, 90, 0.12);
+  --zen-border: 1px solid rgba(26, 54, 93, 0.08); /* Lighter border */
+  --zen-shadow-hard: 0 16px 48px rgba(26, 54, 93, 0.05); /* Softer drop shadow */
+  --zen-shadow-hover: 0 24px 60px rgba(26, 54, 93, 0.1);
   
   /* Water Drop Glassmorphism for Controls */
-  --water-bg: rgba(255, 255, 255, 0.6);
-  --water-blur: blur(24px) saturate(150%);
-  --water-shadow-inner: inset 0 2px 10px rgba(255,255,255,0.9), inset 0 -4px 10px rgba(47, 67, 90, 0.03);
+  --water-bg: rgba(255, 255, 255, 0.4);
+  --water-blur: blur(32px) saturate(180%);
+  --water-shadow-inner: inset 0 2px 10px rgba(255,255,255,0.9), inset 0 -4px 10px rgba(26, 54, 93, 0.02);
   --water-radius: 9999px;
   
   /* Classical Typography */
-  --font-heading: 'Playfair Display', serif;
-  --font-body: 'Lora', serif;
+  --font-heading: 'Playfair Display', "Noto Serif TC", serif;
+  --font-body: 'Lora', "Noto Sans TC", sans-serif;
 }
 
 /* Global Overrides */
@@ -29,6 +29,8 @@ html, body {
   background: var(--zen-bg) !important;
   color: var(--zen-ink) !important;
   font-family: var(--font-body) !important;
+  line-height: 1.9 !important; /* Generous line height (Modern Wa) */
+  letter-spacing: 0.03em !important;
   margin: 0;
   padding: 0;
 }
@@ -48,28 +50,30 @@ body::before {
 /* Headings */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading) !important;
-  font-weight: 700 !important;
+  font-weight: 600 !important; /* Lighter font weight for elegance */
   color: var(--zen-ink) !important;
-  letter-spacing: -0.5px;
+  letter-spacing: 0.05em !important; /* Elegant spacing */
+  margin-bottom: 0.8rem;
 }
 
 h1 {
   color: var(--zen-ink) !important;
-  font-weight: 800 !important;
+  font-weight: 700 !important;
+  font-size: 2.2rem;
 }
 
 /* Container & Cards (Fukagawa) */
 .container,
 .identity-section, .event-section, .daily-section, .calendar-section, .leaderboards-section, .progress-section, #exercise, .controls {
   background: var(--zen-paper) !important;
-  border: none !important;
-  border-radius: 24px !important; /* Rounded/Soft corners */
+  border: var(--zen-border) !important;
+  border-radius: 20px !important; /* Elegant slight rounding */
   box-shadow: var(--zen-shadow-hard) !important;
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
-  padding: 30px !important;
-  margin-bottom: 30px !important;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  padding: 45px !important; /* Generous Whitespace (Ma) */
+  margin-bottom: 40px !important; /* Breathing room between sections */
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
   position: relative;
 }
 
