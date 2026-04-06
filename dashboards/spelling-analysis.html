@@ -71,33 +71,43 @@
     }
 
     .btn {
-      border: none;
-      border-radius: 10px;
-      padding: 10px 16px;
+      font-family: inherit;
       font-weight: 600;
+      color: var(--ink);
+      border: 1px solid rgba(44, 42, 41, 0.1);
+      border-radius: 14px;
+      padding: 10px 20px;
+      font-size: 0.95rem;
+      margin: 4px;
+      background: rgba(255, 255, 255, 0.4);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      backdrop-filter: blur(20px) saturate(180%);
+      box-shadow: inset 0 2px 8px rgba(255,255,255,0.8), 0 4px 15px rgba(0,0,0,0.03);
       cursor: pointer;
-      transition: transform 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
-    }
-
-    .btn.primary {
-      background: #FDFCFB;
-      color: var(--ink);
-      border: 1px solid rgba(44, 42, 41, 0.2);
-      box-shadow: none;
-      border-radius: 9999px;
-    }
-
-    .btn.ghost {
-      background: transparent;
-      color: var(--ink);
-      border: 1px solid rgba(44, 42, 41, 0.12);
-      border-radius: 9999px;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .btn:hover {
-      transform: translate(-1px, -1px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-      background: #FDFCFB;
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: inset 0 2px 8px rgba(255,255,255,0.8), 0 10px 30px rgba(0, 0, 0, 0.06);
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(44, 42, 41, 0.3);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn.primary {
+      background: rgba(255, 255, 255, 0.6);
+    }
+
+    .btn.ghost {
+      background: rgba(255, 255, 255, 0.2);
     }
 
     .meta {
@@ -261,24 +271,29 @@
     }
 
     .word-analyze-btn {
-      border: none;
-      background: rgba(44, 42, 41, 0.06);
+      border: 1px solid rgba(44, 42, 41, 0.1);
+      background: rgba(255, 255, 255, 0.4);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
       color: var(--ink);
       font-weight: 700;
-      border-radius: 8px;
-      padding: 4px 10px;
+      border-radius: 12px;
+      padding: 6px 12px;
       cursor: pointer;
-      transition: transform 0.14s ease, background-color 0.14s ease;
+      transition: all 0.3s ease;
+      box-shadow: inset 0 1px 4px rgba(255,255,255,0.8);
     }
 
     .word-analyze-btn:hover {
-      background: rgba(44, 42, 41, 0.12);
-      transform: translateY(-1px);
+      background: rgba(255, 255, 255, 0.9);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
 
     .word-analyze-btn.active {
       background: var(--ink);
-      color: #FDFCFB;
+      color: #fff;
+      border-color: var(--ink);
     }
 
     .kk-code {
@@ -319,19 +334,22 @@
     }
 
     .word-sound-btn {
-      border: none;
-      border-radius: 8px;
-      background: var(--ink);
-      color: #FDFCFB;
+      border: 1px solid rgba(44, 42, 41, 0.1);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.6);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      color: var(--ink);
       font-weight: 700;
-      padding: 7px 12px;
+      padding: 8px 16px;
       cursor: pointer;
-      transition: transform 0.14s ease, background-color 0.14s ease;
+      transition: all 0.3s ease;
     }
 
     .word-sound-btn:hover {
-      background: #1a1817;
-      transform: translateY(-1px);
+      background: rgba(255, 255, 255, 0.95);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
 
     .detail-badges {
