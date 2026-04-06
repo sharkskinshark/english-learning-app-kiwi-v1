@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>拼字分析儀表板</title>
+  <style>
+    :root {
+      --bg-start: #F8F9FA;
+      --bg-end: #F8F9FA;
+      --ink: #2F435A; /* Fukagawa Indigo */
+      --muted: #4A5B70;
+      --card: #FFFFFF;
+      --border: rgba(47, 67, 90, 0.1);
+      --accent: #2F435A;
+      --accent-soft: rgba(47, 67, 90, 0.05);
+      --first: #4A5B70;
+      --review: #8D5A64; /* A soft plum/crimson for errors but fitting the palette */
+      --ok: #2F435A;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Lora', "Segoe UI", serif;
+      color: var(--ink);
+      background: var(--bg-start);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .shell {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      background: var(--card);
+      color: var(--ink);
+      border: none;
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 12px 40px rgba(47, 67, 90, 0.06);
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.5rem, 3.8vw, 2.2rem);
+      letter-spacing: 0.4px;
+    }
+
+    .hero p {
+      margin: 10px 0 0;
+      opacity: 0.95;
+      line-height: 1.65;
+    }
+
+    .toolbar {
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
+    }
+
+    .btn.primary {
+      background: #FFFFFF;
+      color: #111111;
+      border: 1px solid #111111;
+      box-shadow: 2px 2px 0px #111111;
+      border-radius: 9999px;
+    }
+
+    .btn.ghost {
+      background: rgba(255, 255, 255, 0.4);
+      color: #111111;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 9999px;
+      -webkit-backdrop-filter: blur(24px) saturate(150%);
+      backdrop-filter: blur(24px) saturate(150%);
+      box-shadow: inset 0 2px 10px rgba(255,255,255,0.9), inset 0 -4px 10px rgba(0,0,0,0.03), 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .btn:hover {
+      transform: translate(-1px, -1px);
+      box-shadow: 4px 4px 0px #111111;
+      background: #fdfdfd;
+    }
+
+    .meta {
+      margin-top: 10px;
+      font-size: 0.92rem;
+      opacity: 0.9;
+    }
+
+    .grid {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+    }
+
+    .vowel-card {
+      background: var(--card);
+      border: none;
+      border-radius: 24px;
+      padding: 14px;
+      box-shadow: 0 12px 40px rgba(47, 67, 90, 0.06);
+    }
+
+    .vowel-card h2 {
+      margin: 0;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+
+    .vowel-card .sum {
+      margin-top: 4px;
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .split {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    .bar {
+      margin-top: 10px;
+      height: 8px;
+      width: 100%;
+      background: #edf4fd;
+      border-radius: 999px;
+      overflow: hidden;
+      display: flex;
+    }
+
+    .bar .first {
+      background: var(--first);
+      height: 100%;
+      width: 0;
+    }
+
+    .bar .review {
+      background: var(--review);
+      height: 100%;
+      width: 0;
+    }
+
+    .section {
+      margin-top: 20px;
+      background: var(--card);
+      border: none;
+      border-radius: 24px;
+      padding: 16px;
+      box-shadow: 0 12px 40px rgba(47, 67, 90, 0.06);
+    }
+
+    .section h3 {
+      margin: 0 0 10px;
+      font-family: 'Playfair Display', serif;
+      color: var(--ink);
+      font-size: 1.2rem;
+    }
+
+    .note {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+
+    th, td {
+      border-bottom: 1px solid #e7effa;
+      padding: 8px 6px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: #0f4d90;
+      font-weight: 700;
+      background: #f7fbff;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      margin-right: 6px;
+    }
+
+    .pill.first { background: #fff4dd; color: #8a5800; }
+    .pill.review { background: #ffe2e2; color: #9b1c1c; }
+
+    .rule-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+    }
+
+    .rule {
+      background: #f8fbff;
+      border: 1px solid #d8e8fb;
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .rule h4 {
+      margin: 0 0 6px;
+      color: #105699;
+      font-size: 1rem;
+    }
+
+    .rule p {
+      margin: 0;
+      color: #2c4662;
+      line-height: 1.6;
+      font-size: 0.94rem;
+    }
+
+    .empty {
+      color: var(--ok);
+      font-weight: 700;
+      background: #e8fbf8;
+      border: 1px solid #b7ede7;
+      padding: 12px;
+      border-radius: 10px;
+    }
+
+    .word-analyze-btn {
+      border: none;
+      background: #eaf4ff;
+      color: #0d4a8b;
+      font-weight: 700;
+      border-radius: 8px;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: transform 0.14s ease, background-color 0.14s ease;
+    }
+
+    .word-analyze-btn:hover {
+      background: #d6eaff;
+      transform: translateY(-1px);
+    }
+
+    .word-analyze-btn.active {
+      background: #0d5eb1;
+      color: #fff;
+    }
+
+    .kk-code {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 8px;
+      background: #f4f9ff;
+      color: #134d8c;
+      border: 1px solid #d8e8fb;
+      font-size: 0.9rem;
+    }
+
+    .analysis-panel {
+      margin-top: 10px;
+      background: #f8fbff;
+      border: 1px solid #d8e8fb;
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .analysis-panel h4 {
+      margin: 0;
+      color: #0d4a8b;
+      font-size: 1.08rem;
+    }
+
+    .analysis-panel .sub {
+      margin-top: 6px;
+      color: #44607c;
+      font-size: 0.92rem;
+    }
+
+    .demo-actions {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .word-sound-btn {
+      border: none;
+      border-radius: 8px;
+      background: #0d5eb1;
+      color: #fff;
+      font-weight: 700;
+      padding: 7px 12px;
+      cursor: pointer;
+      transition: transform 0.14s ease, background-color 0.14s ease;
+    }
+
+    .word-sound-btn:hover {
+      background: #094a8d;
+      transform: translateY(-1px);
+    }
+
+    .detail-badges {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .detail-badge {
+      background: #ecf5ff;
+      color: #0f4d90;
+      border: 1px solid #d5e7fb;
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-size: 0.86rem;
+      font-weight: 700;
+    }
+
+    .detail-grid {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 10px;
+    }
+
+    .detail-item {
+      background: #fff;
+      border: 1px solid #deecfb;
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .detail-item strong {
+      color: #0f4d90;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .voice-guide {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .voice-line {
+      background: #f7fbff;
+      border: 1px solid #d8e8fb;
+      border-radius: 8px;
+      padding: 7px 8px;
+      color: #274564;
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .voice-chip {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-right: 6px;
+      letter-spacing: 0.2px;
+    }
+
+    .voice-chip.voiced {
+      background: #e3f6ff;
+      color: #0c5f8d;
+      border: 1px solid #bee7fa;
+    }
+
+    .voice-chip.unvoiced {
+      background: #fff1e4;
+      color: #9c5412;
+      border: 1px solid #ffd9ba;
+    }
+
+    .voice-chip.mixed {
+      background: #f1ebff;
+      color: #5f3f98;
+      border: 1px solid #ddd0ff;
+    }
+
+    .letter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .letter-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      border: 1px solid #dbe8f8;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .letter-chip.vowel {
+      background: #fff4dd;
+      color: #8a5800;
+      border-color: #f3dfb3;
+    }
+
+    .letter-chip.consonant {
+      background: #e9f4ff;
+      color: #0f4d90;
+      border-color: #d2e6fb;
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 12px; }
+      .hero { padding: 18px; }
+      .section { padding: 12px; }
+      table { font-size: 0.9rem; }
+      .word-analyze-btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="hero">
+      <h1>拼字錯誤分析 Dashboard</h1>
+      <p>
+        這裡會統計每個母音 a, e, i, o, u 的常犯錯誤。
+        指標 = 第一次輸入答錯次數 + 在 Review 階段再次答錯次數。
+      </p>
+      <div class="toolbar">
+        <button class="btn primary" id="refreshBtn">重新計算分析</button>
+        <button class="btn ghost" id="backBtn">回練習頁</button>
+      </div>
+      <div class="meta" id="metaLine">讀取中...</div>
+    </header>
+
+    <section class="grid" id="vowelGrid"></section>
+
+    <section class="section">
+      <h3>常見困難單字（依錯誤總和排序）</h3>
+      <p class="note">只統計拼字題（spelling mode）。單字旁顯示 KK 音標（近似），母音順序會對齊拼字順序；點單字可看子音/母音拼字分析。</p>
+      <div id="wordTableWrap"></div>
+    </section>
+
+    <section class="section" id="wordDetailSection">
+      <h3>單字拼字分析（點上表單字）</h3>
+      <div id="wordAnalysisPanel" class="analysis-panel">
+        請先點選上方任一單字，這裡會顯示 KK 音標、子音母音分段與拼字規則說明。
+      </div>
+    </section>
+
+    <section class="section">
+      <h3>子音 / 母音 拼字記憶規則</h3>
+      <div class="rule-grid">
+        <article class="rule">
+          <h4>1) CVC + e（Magic e）</h4>
+          <p>短母音 CVC（如 cap）加上尾巴 e 會讓母音變長音（cape）。記法：最後的 e 雖然不發音，卻會「拉長前面母音」。</p>
+        </article>
+        <article class="rule">
+          <h4>2) 雙母音組合（Vowel Team）</h4>
+          <p>常見組合如 ai, ea, oa, ee, oi, ou。可先背固定音感：ai/ay 常是 /eɪ/，ee/ea 常是 /iː/，oa 常是 /oʊ/。</p>
+        </article>
+        <article class="rule">
+          <h4>3) y 當母音</h4>
+          <p>在字尾時，y 常像母音：happy 的 y 像 /i/，fly 的 y 像 /aɪ/。看到尾巴 y，先用母音思考，不要只當子音。</p>
+        </article>
+        <article class="rule">
+          <h4>4) 子音二合字（Digraph）</h4>
+          <p>ch, sh, th, ph, ng 兩個字母常對應一個音。拼字時要把它們當「一組」記，不要拆開逐字猜。</p>
+        </article>
+        <article class="rule">
+          <h4>5) 雙寫子音（Doubling）</h4>
+          <p>短母音 + 單子音結尾，接 -ing/-ed 常雙寫（run→running, stop→stopped）。先判斷前面是不是短母音。</p>
+        </article>
+        <article class="rule">
+          <h4>6) ck 與 k 的常見位置</h4>
+          <p>短母音後常見 ck（back, duck）；其餘位置多見 k（kite, milk）。可用「短母音後面愛 ck」快速記憶。</p>
+        </article>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      const REVIEW_KEY = 'englishAppReview';
+      const VOWELS = ['a', 'e', 'i', 'o', 'u'];
+
+      const refreshBtn = document.getElementById('refreshBtn');
+      const backBtn = document.getElementById('backBtn');
+      const metaLine = document.getElementById('metaLine');
+      const vowelGrid = document.getElementById('vowelGrid');
+      const wordTableWrap = document.getElementById('wordTableWrap');
+      const wordAnalysisPanel = document.getElementById('wordAnalysisPanel');
+      const synth = window.speechSynthesis;
+
+      const VOICELESS_TOKENS = new Set(['p', 't', 'k', 'f', 's', 'sh', 'ch', 'th']);
+      const VOICED_TOKENS = new Set(['b', 'd', 'g', 'v', 'z', 'zh', 'j', 'm', 'n', 'ng', 'l', 'r', 'w', 'y', 'h', 'kw']);
+
+      let activeTroubleWordMap = {};
+      let activeSelectedWord = '';
+
+      function safeNum(v) {
+        const n = Number(v);
+        return Number.isFinite(n) ? n : 0;
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function normalizeWord(word) {
+        return String(word || '').toLowerCase().replace(/[^a-z]/g, '');
+      }
+
+      function isLetter(ch) {
+        return /[a-z]/i.test(ch);
+      }
+
+      function isVowelAt(word, index) {
+        const ch = String(word[index] || '').toLowerCase();
+        if (!isLetter(ch)) return false;
+        if (VOWELS.includes(ch)) return true;
+        if (ch === 'y') {
+          const prev = String(word[index - 1] || '').toLowerCase();
+          return index > 0 && isLetter(prev) && !VOWELS.includes(prev);
+        }
+        return false;
+      }
+
+      function buildCVPattern(word) {
+        const letters = normalizeWord(word);
+        if (!letters) return '-';
+        let pattern = '';
+        for (let i = 0; i < letters.length; i++) {
+          pattern += isVowelAt(letters, i) ? 'V' : 'C';
+        }
+        if (/[^aeiouy]e$/i.test(letters) && /[aeiouy]/.test(letters.slice(0, -1))) {
+          pattern += ' (e)';
+        }
+        return pattern;
+      }
+
+      function detectPhonicsRule(word, pattern) {
+        const letters = normalizeWord(word);
+        if (!letters) return '無可分析資料';
+
+        if (/[^aeiouy]e$/i.test(letters) && /[aeiou]/.test(letters.slice(0, -1))) {
+          return 'Magic e：尾端 e 多半不發音，但會拉長前面的母音。';
+        }
+        if (/aa|ee|ea|ai|ay|oa|oe|ie|oo|ue|oi|oy|ou|ow/.test(letters)) {
+          return 'Vowel team：雙母音組合，建議把兩個字母當一個音記憶。';
+        }
+        if (/^CVC$/.test(pattern)) {
+          return 'Closed syllable：CVC 常見短母音，先快讀子音再接短母音。';
+        }
+        if (/^CV$/.test(pattern)) {
+          return 'Open syllable：字尾是母音時，通常偏向長母音。';
+        }
+        if (/^CCVC|CVCC/.test(pattern)) {
+          return 'Consonant blend：連續子音請整組辨識，不要逐字母拆太細。';
+        }
+        return '先抓子音群，再抓母音核心，最後處理字尾子音。';
+      }
+
+      function chunkForSounding(word) {
+        const letters = normalizeWord(word);
+        if (!letters) return [];
+
+        const chunks = [];
+        let i = 0;
+        while (i < letters.length) {
+          let onset = '';
+          while (i < letters.length && !/[aeiouy]/.test(letters[i])) {
+            onset += letters[i];
+            i++;
+          }
+
+          let nucleus = '';
+          while (i < letters.length && /[aeiouy]/.test(letters[i])) {
+            nucleus += letters[i];
+            i++;
+          }
+
+          let coda = '';
+          while (i < letters.length && !/[aeiouy]/.test(letters[i])) {
+            if (i === letters.length - 1 && letters[i] === 'e' && /[aeiou]/.test(nucleus)) break;
+            coda += letters[i];
+            i++;
+          }
+
+          const part = `${onset}${nucleus}${coda}`;
+          if (part) chunks.push(part);
+        }
+
+        if (/[^aeiouy]e$/i.test(letters)) chunks.push('(silent e)');
+        return chunks;
+      }
+
+      function splitGroups(word) {
+        const letters = normalizeWord(word);
+        return {
+          vowelGroups: letters.match(/[aeiouy]+/g) || [],
+          consonantGroups: letters.match(/[^aeiouy]+/g) || []
+        };
+      }
+
+      function getVowelMemoryTip(word) {
+        const letters = normalizeWord(word);
+        const firstVowel = (letters.match(/[aeiou]/) || [])[0] || '';
+        const tips = {
+          a: 'a 常見短音 /ae/（cat），若是 a_e 常轉長音 /e/（cake）。',
+          e: 'e 常見短音 /eh/（pen），字尾 e 也可能不發音但影響前面母音。',
+          i: 'i 常見短音 /ih/（sit），i_e 常見長音 /ai/（time）。',
+          o: 'o 常見短音 /ah/（hot），o_e 常見長音 /o/（home）。',
+          u: 'u 常見短音 /uh/（bus），u_e 可能讀 /yu/（cube）或 /u/。'
+        };
+        return tips[firstVowel] || '先找母音核心，再對照子音群，拼讀會更穩定。';
+      }
+
+      function mapVowelSegmentToKK(segment, options = {}) {
+        const seg = String(segment || '').toLowerCase();
+        if (!seg) return '-';
+
+        const longVowelMap = { a: 'eI', e: 'i', i: 'aI', o: 'oU', u: 'ju' };
+        const vowelMap = { a: 'ae', e: 'eh', i: 'ih', o: 'ah', u: 'uh', y: 'i' };
+        const groupMap = {
+          ai: 'eI', ay: 'eI', ea: 'i', ee: 'i', ie: 'i',
+          oa: 'oU', oe: 'oU', oo: 'u',
+          oi: 'OI', oy: 'OI',
+          ou: 'aU', ow: 'aU',
+          au: 'ao', aw: 'ao',
+          er: 'er', ir: 'er', ur: 'er', ar: 'ar', or: 'or'
+        };
+
+        if (options.isSilentEEnding) return '(silent-e)';
+        if (options.isMagicECarrier && seg.length === 1 && longVowelMap[seg]) {
+          return longVowelMap[seg];
+        }
+        if (groupMap[seg]) return groupMap[seg];
+
+        return seg.split('').map((ch) => vowelMap[ch] || ch).join('-');
+      }
+
+      function mapConsonantSegmentToKK(segment) {
+        const seg = String(segment || '').toLowerCase();
+        if (!seg) return [];
+
+        const out = [];
+        const singleMap = {
+          b: 'b', d: 'd', f: 'f', h: 'h', j: 'j', k: 'k', l: 'l',
+          m: 'm', n: 'n', p: 'p', q: 'k', r: 'r', s: 's', t: 't',
+          v: 'v', w: 'w', z: 'z'
+        };
+        const digraphMap = [
+          ['tch', 'ch'], ['dge', 'j'], ['ch', 'ch'], ['sh', 'sh'],
+          ['th', 'th'], ['ph', 'f'], ['ng', 'ng'], ['wh', 'w'],
+          ['qu', 'kw'], ['ck', 'k']
+        ];
+
+        let i = 0;
+        while (i < seg.length) {
+          const rest = seg.slice(i);
+          let matched = false;
+
+          for (const [grp, sound] of digraphMap) {
+            if (rest.startsWith(grp)) {
+              out.push(sound);
+              i += grp.length;
+              matched = true;
+              break;
+            }
+          }
+          if (matched) continue;
+
+          const ch = seg[i];
+          const next = seg[i + 1] || '';
+          if (ch === 'c') {
+            out.push(/[eiy]/.test(next) ? 's' : 'k');
+          } else if (ch === 'g') {
+            out.push(/[eiy]/.test(next) ? 'j' : 'g');
+          } else if (ch === 'x') {
+            out.push('k', 's');
+          } else {
+            out.push(singleMap[ch] || ch);
+          }
+          i++;
+        }
+
+        return out;
+      }
+
+      function buildKKData(word) {
+        const letters = normalizeWord(word);
+        if (!letters) return { kk: '-', vowelOrderText: '-' };
+
+        const parts = letters.match(/[aeiouy]+|[^aeiouy]+/g) || [];
+        const tokens = [];
+        const vowelTrace = [];
+
+        for (let idx = 0; idx < parts.length; idx++) {
+          const part = parts[idx];
+          const isVowelPart = /^[aeiouy]+$/.test(part);
+
+          if (!isVowelPart) {
+            tokens.push(...mapConsonantSegmentToKK(part));
+            continue;
+          }
+
+          const prev = parts[idx - 1] || '';
+          const next = parts[idx + 1] || '';
+          const next2 = parts[idx + 2] || '';
+          const isLast = idx === parts.length - 1;
+          const isSilentEEnding =
+            part === 'e' &&
+            isLast &&
+            /^[^aeiouy]+$/.test(prev) &&
+            vowelTrace.length > 0;
+
+          const isMagicECarrier =
+            part.length === 1 &&
+            /^[aeiou]$/.test(part) &&
+            /^[^aeiouy]+$/.test(next) &&
+            next2 === 'e' &&
+            idx + 2 === parts.length - 1;
+
+          const sound = mapVowelSegmentToKK(part, { isSilentEEnding, isMagicECarrier });
+          tokens.push(sound);
+          vowelTrace.push(`${part}->${sound}`);
+        }
+
+        return {
+          kk: tokens.filter(Boolean).join(' ').replace(/\s+/g, ' ').trim() || '-',
+          vowelOrderText: vowelTrace.join(' | ') || '-'
+        };
+      }
+
+      function toApproxKK(word) {
+        return buildKKData(word).kk;
+      }
+
+      function classifyConsonantVoicing(segment) {
+        const tokens = mapConsonantSegmentToKK(segment).map((t) => String(t || '').toLowerCase());
+        if (!tokens.length) {
+          return {
+            tag: '混合',
+            className: 'mixed',
+            text: '混合發聲，依字母群調整',
+            tip: '先慢速拼讀並觀察口型。'
+          };
+        }
+
+        const allVoiceless = tokens.every((t) => VOICELESS_TOKENS.has(t));
+        const allVoiced = tokens.every((t) => VOICED_TOKENS.has(t));
+
+        if (allVoiceless) {
+          return {
+            tag: '無聲',
+            className: 'unvoiced',
+            text: '無聲，輕聲帶過',
+            tip: '氣流送出即可，喉嚨震動要少。'
+          };
+        }
+
+        if (allVoiced) {
+          return {
+            tag: '有聲',
+            className: 'voiced',
+            text: '有聲，清楚發出',
+            tip: '喉嚨有震動，嘴型保持穩定。'
+          };
+        }
+
+        return {
+          tag: '混合',
+          className: 'mixed',
+          text: '混合發聲（先輕後有聲）',
+          tip: '先讀無聲子音，再接有聲部分。'
+        };
+      }
+
+      function buildVoicingGuide(word) {
+        const letters = normalizeWord(word);
+        if (!letters) return [];
+
+        const parts = letters.match(/[aeiouy]+|[^aeiouy]+/g) || [];
+        const guide = [];
+
+        parts.forEach((part) => {
+          const isVowelPart = /^[aeiouy]+$/.test(part);
+          if (isVowelPart) {
+            guide.push({
+              kind: 'vowel',
+              segment: part,
+              tag: '有聲',
+              className: 'voiced',
+              text: '母音請有聲並稍微拉開',
+              tip: '口型要清楚，母音不要含糊帶過。'
+            });
+            return;
+          }
+
+          const voicing = classifyConsonantVoicing(part);
+          guide.push({
+            kind: 'consonant',
+            segment: part,
+            tag: voicing.tag,
+            className: voicing.className,
+            text: voicing.text,
+            tip: voicing.tip
+          });
+        });
+
+        return guide;
+      }
+
+      function renderVoicingGuideHtml(word) {
+        const guide = buildVoicingGuide(word);
+        if (!guide.length) return '-';
+
+        return `<div class="voice-guide">${guide.map((item) => `
+          <div class="voice-line">
+            <span class="voice-chip ${escapeHtml(item.className)}">${escapeHtml(item.tag)}</span>
+            ${item.kind === 'vowel' ? '母音' : '子音'}段 <strong>${escapeHtml(item.segment)}</strong>：${escapeHtml(item.text)}
+            <div>${escapeHtml(item.tip)}</div>
+          </div>
+        `).join('')}</div>`;
+      }
+
+      function pickEnglishVoice() {
+        if (!synth || typeof synth.getVoices !== 'function') return null;
+        const voices = synth.getVoices() || [];
+        const preferred = ['Google UK English Female', 'Microsoft Sonia', 'Samantha', 'Karen', 'Moira'];
+        for (const name of preferred) {
+          const hit = voices.find((v) => v.name && v.name.includes(name));
+          if (hit) return hit;
+        }
+        return voices.find((v) => String(v.lang || '').toLowerCase().startsWith('en-gb'))
+          || voices.find((v) => String(v.lang || '').toLowerCase().startsWith('en'))
+          || null;
+      }
+
+      function speakWordDemo(word) {
+        if (!word) return;
+        if (!synth || typeof window.SpeechSynthesisUtterance !== 'function') {
+          metaLine.textContent = '目前瀏覽器不支援語音示範。';
+          return;
+        }
+
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.lang = 'en-GB';
+        utterance.rate = 0.8;
+        utterance.pitch = 1.0;
+        utterance.volume = 0.95;
+
+        const voice = pickEnglishVoice();
+        if (voice) utterance.voice = voice;
+
+        try {
+          synth.cancel();
+          synth.speak(utterance);
+        } catch {
+          metaLine.textContent = '語音示範啟動失敗，請稍後再試。';
+        }
+      }
+
+      function renderLetterChips(word) {
+        const letters = normalizeWord(word);
+        if (!letters) return '-';
+        return letters
+          .split('')
+          .map((ch, idx) => {
+            const type = isVowelAt(letters, idx) ? 'vowel' : 'consonant';
+            return `<span class="letter-chip ${type}">${escapeHtml(ch)}</span>`;
+          })
+          .join('');
+      }
+
+      function setActiveWordButton(word) {
+        wordTableWrap.querySelectorAll('.word-analyze-btn').forEach((btn) => {
+          const hit = btn.getAttribute('data-word') === word;
+          btn.classList.toggle('active', hit);
+        });
+      }
+
+      function renderWordAnalysis(word) {
+        const row = activeTroubleWordMap[word];
+        if (!row) {
+          wordAnalysisPanel.innerHTML = '請先點選上方任一單字，這裡會顯示 KK 音標、子音母音分段與拼字規則說明。';
+          return;
+        }
+
+        const pattern = buildCVPattern(row.word);
+        const chunks = chunkForSounding(row.word);
+        const rule = detectPhonicsRule(row.word, pattern);
+        const groups = splitGroups(row.word);
+        const memoryTip = getVowelMemoryTip(row.word);
+        const kkData = buildKKData(row.word);
+        const kk = row.kk || kkData.kk;
+        const vowelOrderText = row.vowelOrderText || kkData.vowelOrderText;
+
+        wordAnalysisPanel.innerHTML = `
+          <h4>${escapeHtml(row.word)} <span class="kk-code">/${escapeHtml(kk)}/</span></h4>
+          <div class="sub">KK 為近似值，提供記憶與拼讀輔助。發聲提示會標示子音/母音是有聲、無聲或輕聲。</div>
+          <div class="demo-actions">
+            <button class="word-sound-btn" data-speak-word="${escapeHtml(row.word)}">🔊 示範單字發音</button>
+          </div>
+
+          <div class="detail-badges">
+            <span class="detail-badge">第一次錯：${row.firstWrong}</span>
+            <span class="detail-badge">Review 再錯：${row.reviewWrong}</span>
+            <span class="detail-badge">總和：${row.totalWrong}</span>
+          </div>
+
+          <div class="detail-grid">
+            <div class="detail-item">
+              <strong>字母結構（母音/子音）</strong>
+              <div class="letter-row">${renderLetterChips(row.word)}</div>
+            </div>
+            <div class="detail-item">
+              <strong>CV Pattern</strong>
+              <div>${escapeHtml(pattern)}</div>
+            </div>
+            <div class="detail-item">
+              <strong>母音群</strong>
+              <div>${escapeHtml(groups.vowelGroups.join(' | ') || '-')}</div>
+            </div>
+            <div class="detail-item">
+              <strong>母音順序對照（拼字→KK）</strong>
+              <div>${escapeHtml(vowelOrderText)}</div>
+            </div>
+            <div class="detail-item">
+              <strong>子音群</strong>
+              <div>${escapeHtml(groups.consonantGroups.join(' | ') || '-')}</div>
+            </div>
+            <div class="detail-item">
+              <strong>拼讀切段</strong>
+              <div>${escapeHtml(chunks.join(' - ') || '-')}</div>
+            </div>
+            <div class="detail-item">
+              <strong>規則提示</strong>
+              <div>${escapeHtml(rule)}</div>
+            </div>
+            <div class="detail-item" style="grid-column: 1 / -1;">
+              <strong>發聲提示（子音 / 母音）</strong>
+              ${renderVoicingGuideHtml(row.word)}
+            </div>
+            <div class="detail-item" style="grid-column: 1 / -1;">
+              <strong>記憶提示</strong>
+              <div>${escapeHtml(memoryTip)}</div>
+            </div>
+          </div>
+        `;
+
+        activeSelectedWord = row.word;
+        setActiveWordButton(row.word);
+      }
+
+      function loadReviewStore() {
+        try {
+          const raw = localStorage.getItem(REVIEW_KEY);
+          const parsed = raw ? JSON.parse(raw) : {};
+          return parsed && typeof parsed === 'object' ? parsed : {};
+        } catch (err) {
+          return {};
+        }
+      }
+
+      function getWordVowels(word) {
+        const lower = String(word || '').toLowerCase();
+        return VOWELS.filter((v) => lower.includes(v));
+      }
+
+      function getSpellingEvents(entry, phase) {
+        const history = Array.isArray(entry && entry.history) ? entry.history : [];
+        return history.filter((evt) => {
+          if (!evt || typeof evt !== 'object') return false;
+          const mode = evt.mode === 'meaning' ? 'meaning' : 'spelling';
+          const evtPhase = evt.phase === 'review' ? 'review' : 'learn';
+          return mode === 'spelling' && evtPhase === phase;
+        });
+      }
+
+      function buildStats(store) {
+        const vowelStats = {
+          a: { firstWrong: 0, reviewWrong: 0, totalWrong: 0, words: new Set() },
+          e: { firstWrong: 0, reviewWrong: 0, totalWrong: 0, words: new Set() },
+          i: { firstWrong: 0, reviewWrong: 0, totalWrong: 0, words: new Set() },
+          o: { firstWrong: 0, reviewWrong: 0, totalWrong: 0, words: new Set() },
+          u: { firstWrong: 0, reviewWrong: 0, totalWrong: 0, words: new Set() }
+        };
+
+        const troubleWords = [];
+
+        Object.entries(store).forEach(([word, entry]) => {
+          if (!word) return;
+
+          const learnSpelling = getSpellingEvents(entry, 'learn');
+          const firstLearn = learnSpelling.length > 0 ? learnSpelling[0] : null;
+          const firstWrong = firstLearn && firstLearn.correct === false ? 1 : 0;
+
+          const reviewSpelling = getSpellingEvents(entry, 'review');
+          const spellingAttempts = learnSpelling.length + reviewSpelling.length;
+          if (spellingAttempts <= 0) return;
+
+          const reviewWrong = reviewSpelling.reduce((sum, evt) => {
+            return sum + (evt.correct === false ? 1 : 0);
+          }, 0);
+
+          const totalWrong = safeNum(firstWrong) + safeNum(reviewWrong);
+          const vowels = getWordVowels(word);
+          if (totalWrong > 0) {
+            vowels.forEach((v) => {
+              const ref = vowelStats[v];
+              ref.firstWrong += firstWrong;
+              ref.reviewWrong += reviewWrong;
+              ref.totalWrong += totalWrong;
+              ref.words.add(word);
+            });
+          }
+
+          const kkData = buildKKData(word);
+
+          troubleWords.push({
+            word,
+            firstWrong,
+            reviewWrong,
+            totalWrong,
+            spellingAttempts,
+            hasMistake: totalWrong > 0,
+            vowels: vowels.join(', '),
+            kk: kkData.kk,
+            vowelOrderText: kkData.vowelOrderText
+          });
+        });
+
+        troubleWords.sort((a, b) => {
+          if (b.hasMistake !== a.hasMistake) return Number(b.hasMistake) - Number(a.hasMistake);
+          if (b.totalWrong !== a.totalWrong) return b.totalWrong - a.totalWrong;
+          if (b.spellingAttempts !== a.spellingAttempts) return b.spellingAttempts - a.spellingAttempts;
+          if (b.reviewWrong !== a.reviewWrong) return b.reviewWrong - a.reviewWrong;
+          return a.word.localeCompare(b.word);
+        });
+
+        return { vowelStats, troubleWords };
+      }
+
+      function renderVowelCards(vowelStats) {
+        const maxTotal = Math.max(1, ...VOWELS.map((v) => safeNum(vowelStats[v].totalWrong)));
+
+        vowelGrid.innerHTML = VOWELS.map((v) => {
+          const s = vowelStats[v];
+          const firstPct = Math.round((safeNum(s.firstWrong) / maxTotal) * 100);
+          const reviewPct = Math.round((safeNum(s.reviewWrong) / maxTotal) * 100);
+          return `
+            <article class="vowel-card">
+              <h2>${v}</h2>
+              <div class="sum">${s.totalWrong} 次</div>
+              <div class="split">
+                <span class="pill first">第一次錯 ${s.firstWrong}</span>
+                <span class="pill review">Review再錯 ${s.reviewWrong}</span>
+                <div>涉及單字數：${s.words.size}</div>
+              </div>
+              <div class="bar" aria-hidden="true">
+                <div class="first" style="width:${firstPct}%"></div>
+                <div class="review" style="width:${reviewPct}%"></div>
+              </div>
+            </article>
+          `;
+        }).join('');
+      }
+
+      function renderWordTable(words) {
+        if (!words.length) {
+          wordTableWrap.innerHTML = '<div class="empty">目前尚無拼字作答資料。先完成幾題 spelling 練習後再查看分析。</div>';
+          activeSelectedWord = '';
+          renderWordAnalysis('');
+          return;
+        }
+
+        const mistakeWords = words.filter((row) => row.hasMistake);
+        const sourceWords = mistakeWords.length ? mistakeWords : words;
+        const top = sourceWords.slice(0, 25);
+        const tableLead = mistakeWords.length
+          ? '<p class="note" style="margin: 8px 0 10px;">以下為拼錯字排行，可點單字看 KK 與子音母音分析。</p>'
+          : '<p class="note" style="margin: 8px 0 10px;">目前沒有偵測到拼錯字；以下顯示近期練習單字，仍可點選查看 KK 與拼字分析。</p>';
+        const rows = top.map((row, idx) => {
+          return `
+            <tr>
+              <td>${idx + 1}</td>
+              <td><button class="word-analyze-btn" data-word="${escapeHtml(row.word)}">${escapeHtml(row.word)}</button></td>
+              <td><span class="kk-code">/${escapeHtml(row.kk)}/</span></td>
+              <td>${row.vowels || '-'}</td>
+              <td>${row.firstWrong}</td>
+              <td>${row.reviewWrong}</td>
+              <td><strong>${row.totalWrong}</strong></td>
+            </tr>
+          `;
+        }).join('');
+
+        wordTableWrap.innerHTML = `
+          ${tableLead}
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>單字</th>
+                <th>KK 音標（近似）</th>
+                <th>含母音</th>
+                <th>第一次輸入錯</th>
+                <th>Review 又錯</th>
+                <th>總和</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        `;
+
+        wordTableWrap.querySelectorAll('.word-analyze-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            renderWordAnalysis(btn.getAttribute('data-word') || '');
+          });
+        });
+
+        const preferred = activeTroubleWordMap[activeSelectedWord] ? activeSelectedWord : top[0].word;
+        renderWordAnalysis(preferred);
+      }
+
+      function render() {
+        const store = loadReviewStore();
+        const wordsInStore = Object.keys(store).length;
+        const { vowelStats, troubleWords } = buildStats(store);
+        activeTroubleWordMap = troubleWords.reduce((acc, row) => {
+          acc[row.word] = row;
+          return acc;
+        }, {});
+
+        renderVowelCards(vowelStats);
+        renderWordTable(troubleWords);
+
+        const now = new Date();
+        metaLine.textContent = `資料來源：${REVIEW_KEY} | 單字紀錄 ${wordsInStore} 筆 | 分析時間 ${now.toLocaleString('zh-TW')}`;
+      }
+
+      refreshBtn.addEventListener('click', render);
+      backBtn.addEventListener('click', () => {
+        window.location.href = '../index.html';
+      });
+
+      wordAnalysisPanel.addEventListener('click', (event) => {
+        const button = event.target.closest('.word-sound-btn');
+        if (!button) return;
+        const word = button.getAttribute('data-speak-word') || '';
+        speakWordDemo(word);
+      });
+
+      render();
+    })();
+  </script>
+  <script src="../environment.js"></script>
+</body>
+</html>

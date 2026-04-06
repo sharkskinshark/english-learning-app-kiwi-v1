@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Holiday Status - Custom Popup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        button {
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #2E8B57, #98FB98);
+            color: white;
+            border: 2px solid #fff;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 6px 15px rgba(46, 139, 87, 0.5);
+            margin: 10px;
+        }
+        
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+        }
+        
+        .popup-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .popup-header {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2E8B57;
+            border-bottom: 2px solid #98FB98;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .holiday-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .holiday-status {
+            font-size: 16px;
+            margin-right: 10px;
+            min-width: 25px;
+        }
+        
+        .holiday-name {
+            flex-grow: 1;
+            font-weight: 500;
+        }
+        
+        .holiday-period {
+            font-size: 12px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .summary {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 4px solid #2E8B57;
+        }
+        
+        .close-button {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            float: right;
+            margin-top: 15px;
+        }
+        
+        .close-button:hover {
+            background: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Holiday Status - Custom Popup Test</h1>
+    
+    <button onclick="showHolidayStatus()">📅 Check Holiday Status (Custom Popup)</button>
+    <button onclick="showHolidayStatusAlert()">📅 Check Holiday Status (Alert)</button>
+    
+    <!-- Custom Popup -->
+    <div id="popup-overlay" class="popup-overlay">
+        <div class="popup-content">
+            <div class="popup-header">🎯 Holiday Status Report</div>
+            <div id="popup-body"></div>
+            <button class="close-button" onclick="closePopup()">Close</button>
+        </div>
+    </div>
+
+    <script src="events.js"></script>
+    <script>
+        let isAnimationUnlocked = false;
+        
+        function showPopup() {
+            document.getElementById('popup-overlay').style.display = 'block';
+        }
+        
+        function closePopup() {
+            document.getElementById('popup-overlay').style.display = 'none';
+        }
+        
+        function showHolidayStatus() {
+            const today = new Date();
+            const currentDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            
+            const holidayIds = ['easter', 'spring', 'summer', 'backToSchool', 'halloween', 'thanksgiving', 'christmas', 'newyear', 'chinesenewyear', 'birthday'];
+            
+            let popupContent = `<div style="margin-bottom: 15px;">`;
+            popupContent += `<strong>Date:</strong> ${currentDate}<br>`;
+            popupContent += `<strong>Mode:</strong> ${isAnimationUnlocked ? '🔓 Unlocked' : '🔒 Date-based'}<br>`;
+            popupContent += `<strong>Total Events:</strong> ${holidayIds.length}`;
+            popupContent += `</div>`;
+            
+            let foundEvents = 0;
+            let activeEvents = 0;
+            let missingEvents = [];
+            
+            holidayIds.forEach(holidayId => {
+                const event = EVENTS[holidayId];
+                if (event && event.name && event.period) {
+                    foundEvents++;
+                    let isActive = false;
+                    let errorOccurred = false;
+                    
+                    try {
+                        isActive = isHolidayActive(holidayId);
+                        if (isActive) activeEvents++;
+                    } catch (error) {
+                        console.error(`Error checking holiday status for ${holidayId}:`, error);
+                        errorOccurred = true;
+                    }
+                    
+                    const canRun = isAnimationUnlocked || isActive;
+                    let status, statusClass;
+                    
+                    if (errorOccurred) {
+                        status = '⚠️';
+                        statusClass = 'error';
+                    } else if (canRun) {
+                        status = isActive ? '✅' : '🔓';
+                        statusClass = 'active';
+                    } else {
+                        status = '❌';
+                        statusClass = 'inactive';
+                    }
+                    
+                    popupContent += `<div class="holiday-item">`;
+                    popupContent += `<span class="holiday-status">${status}</span>`;
+                    popupContent += `<span class="holiday-name">${event.name}</span>`;
+                    popupContent += `<span class="holiday-period">${event.period.start} to ${event.period.end}</span>`;
+                    popupContent += `</div>`;
+                } else {
+                    missingEvents.push(holidayId);
+                }
+            });
+            
+            // Summary
+            popupContent += `<div class="summary">`;
+            popupContent += `<strong>📊 Summary:</strong><br>`;
+            popupContent += `• Found: ${foundEvents}/${holidayIds.length} events<br>`;
+            popupContent += `• Active: ${activeEvents} holidays<br>`;
+            
+            if (missingEvents.length > 0) {
+                popupContent += `• Missing: ${missingEvents.join(', ')}<br>`;
+            }
+            
+            if (isAnimationUnlocked) {
+                popupContent += `<br>💡 Manual unlock is active - all animations available!`;
+            } else {
+                popupContent += `<br>🎯 Use "Unlock Animations" to override date restrictions!`;
+            }
+            popupContent += `</div>`;
+            
+            document.getElementById('popup-body').innerHTML = popupContent;
+            showPopup();
+        }
+        
+        function showHolidayStatusAlert() {
+            // Same compact version as the fixed test-buttons.html
+            const today = new Date();
+            const currentDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            
+            let statusMessage = `🎯 Holiday Status (${currentDate})\n`;
+            statusMessage += '═══════════════════════\n';
+            
+            if (isAnimationUnlocked) {
+                statusMessage += '🔓 UNLOCKED MODE\n';
+            } else {
+                statusMessage += '🔒 DATE-BASED MODE\n';
+            }
+            
+            const holidayIds = ['easter', 'spring', 'summer', 'backToSchool', 'halloween', 'thanksgiving', 'christmas', 'newyear', 'chinesenewyear', 'birthday'];
+            
+            let foundEvents = 0;
+            let activeEvents = 0;
+            let missingEvents = [];
+            
+            statusMessage += `\nChecking ${holidayIds.length} holidays:\n`;
+            statusMessage += '─────────────────────────\n';
+            
+            holidayIds.forEach(holidayId => {
+                const event = EVENTS[holidayId];
+                if (event && event.name && event.period) {
+                    foundEvents++;
+                    let isActive = false;
+                    let errorOccurred = false;
+                    
+                    try {
+                        isActive = isHolidayActive(holidayId);
+                        if (isActive) activeEvents++;
+                    } catch (error) {
+                        console.error(`Error checking holiday status for ${holidayId}:`, error);
+                        errorOccurred = true;
+                    }
+                    
+                    if (!errorOccurred) {
+                        const canRun = isAnimationUnlocked || isActive;
+                        const status = canRun ? (isActive ? '✅' : '🔓') : '❌';
+                        statusMessage += `${status} ${event.name}\n`;
+                    } else {
+                        statusMessage += `⚠️ ${event.name} (Error)\n`;
+                    }
+                } else {
+                    missingEvents.push(holidayId);
+                }
+            });
+            
+            statusMessage += '─────────────────────────\n';
+            statusMessage += `📊 Total: ${foundEvents}/${holidayIds.length} events\n`;
+            statusMessage += `🟢 Active: ${activeEvents} holidays\n`;
+            
+            if (missingEvents.length > 0) {
+                statusMessage += `❌ Missing: ${missingEvents.join(', ')}\n`;
+            }
+            
+            if (isAnimationUnlocked) {
+                statusMessage += '\n💡 Manual unlock active!';
+            } else {
+                statusMessage += '\n🎯 Use "Unlock Animations" to override!';
+            }
+            
+            alert(statusMessage);
+        }
+        
+        // Close popup when clicking overlay
+        document.getElementById('popup-overlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePopup();
+            }
+        });
+    </script>
+</body>
+</html>

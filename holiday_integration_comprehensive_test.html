@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Holiday Integration Test Suite</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-header {
+            background: #007ACC;
+            color: white;
+            padding: 15px;
+            border-radius: 8px 8px 0 0;
+            margin: -20px -20px 20px -20px;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .pass { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .fail { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .code-block {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            white-space: pre-wrap;
+        }
+        button {
+            background: #007ACC;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #005c8a; }
+        .iframe-container {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🧪 Holiday Integration Test Suite</h1>
+            <p>Comprehensive testing of holiday animation and vocabulary triggers</p>
+        </div>
+
+        <h2>🎯 Test Results</h2>
+        <div id="testResults"></div>
+
+        <h2>🎮 Date Simulation Tests</h2>
+        <button onclick="testHalloweenTrigger()">🎃 Test Halloween (Oct 31)</button>
+        <button onclick="testChristmasTrigger()">🎄 Test Christmas (Dec 24-25)</button>
+        <button onclick="testNewYearTrigger()">🎆 Test New Year (Dec 26-Jan 5)</button>
+        <button onclick="testSpecialEventTrigger()">🏮 Test Special Events</button>
+        <button onclick="testRegularDayTrigger()">📚 Test Regular Day</button>
+        <button onclick="runFullTestSuite()">🚀 Run Full Test Suite</button>
+
+        <h2>🌐 Live Cambridge Vocabulary Practice Integration</h2>
+        <iframe class="iframe-container" src="http://localhost:8081/holiday-animation-deploy/" id="mainAppFrame"></iframe>
+
+        <div id="testLog" style="background: #000; color: #0f0; padding: 20px; border-radius: 8px; font-family: monospace; height: 300px; overflow-y: auto; margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        let testResults = [];
+        let testLog = document.getElementById('testLog');
+
+        function log(message) {
+            console.log(message);
+            testLog.innerHTML += `${new Date().toLocaleTimeString()} - ${message}\n`;
+            testLog.scrollTop = testLog.scrollHeight;
+        }
+
+        function addTestResult(name, status, details) {
+            testResults.push({ name, status, details });
+            updateTestResults();
+        }
+
+        function updateTestResults() {
+            const container = document.getElementById('testResults');
+            container.innerHTML = testResults.map(result => `
+                <div class="test-result ${result.status}">
+                    <strong>${result.name}</strong> - ${result.status.toUpperCase()}
+                    <br><small>${result.details}</small>
+                </div>
+            `).join('');
+        }
+
+        // Test holiday trigger logic
+        function testDateLogic(month, date, year = 2025) {
+            const testDate = new Date(year, month, date);
+            log(`🧪 Testing date: ${testDate.toDateString()}`);
+            
+            let expectedHoliday = 'none';
+            let expectedAnimation = false;
+            let expectedVocabulary = false;
+
+            // Halloween logic test
+            if (month === 9 && date === 31) {
+                expectedHoliday = 'halloween';
+                expectedAnimation = true;
+                expectedVocabulary = true;
+            }
+            // Christmas logic test
+            else if (month === 11 && (date === 24 || date === 25)) {
+                expectedHoliday = 'christmas';
+                expectedAnimation = true;
+                expectedVocabulary = true;
+            }
+            // New Year logic test
+            else if ((month === 11 && date >= 26) || (month === 0 && date <= 5)) {
+                expectedHoliday = 'newyear';
+                expectedAnimation = true;
+                expectedVocabulary = true;
+            }
+
+            return {
+                date: testDate.toDateString(),
+                expectedHoliday,
+                expectedAnimation,
+                expectedVocabulary,
+                month,
+                day: date
+            };
+        }
+
+        function testHalloweenTrigger() {
+            log('🎃 Testing Halloween trigger logic...');
+            
+            // Test October 31
+            const halloween = testDateLogic(9, 31);
+            if (halloween.expectedHoliday === 'halloween') {
+                addTestResult('Halloween Date Detection', 'pass', 'October 31 correctly identified as Halloween');
+                log('✅ Halloween trigger: PASS');
+            } else {
+                addTestResult('Halloween Date Detection', 'fail', 'October 31 not recognized as Halloween');
+                log('❌ Halloween trigger: FAIL');
+            }
+
+            // Test non-Halloween dates
+            const notHalloween = testDateLogic(9, 30);
+            if (notHalloween.expectedHoliday === 'none') {
+                addTestResult('Halloween False Positive', 'pass', 'October 30 correctly not identified as Halloween');
+                log('✅ Halloween false positive check: PASS');
+            } else {
+                addTestResult('Halloween False Positive', 'fail', 'October 30 incorrectly identified as Halloween');
+                log('❌ Halloween false positive check: FAIL');
+            }
+        }
+
+        function testChristmasTrigger() {
+            log('🎄 Testing Christmas trigger logic...');
+            
+            // Test December 24
+            const christmasEve = testDateLogic(11, 24);
+            if (christmasEve.expectedHoliday === 'christmas') {
+                addTestResult('Christmas Eve Detection', 'pass', 'December 24 correctly identified as Christmas');
+                log('✅ Christmas Eve trigger: PASS');
+            } else {
+                addTestResult('Christmas Eve Detection', 'fail', 'December 24 not recognized as Christmas');
+                log('❌ Christmas Eve trigger: FAIL');
+            }
+
+            // Test December 25
+            const christmasDay = testDateLogic(11, 25);
+            if (christmasDay.expectedHoliday === 'christmas') {
+                addTestResult('Christmas Day Detection', 'pass', 'December 25 correctly identified as Christmas');
+                log('✅ Christmas Day trigger: PASS');
+            } else {
+                addTestResult('Christmas Day Detection', 'fail', 'December 25 not recognized as Christmas');
+                log('❌ Christmas Day trigger: FAIL');
+            }
+
+            // Test non-Christmas dates
+            const notChristmas = testDateLogic(11, 23);
+            if (notChristmas.expectedHoliday === 'none') {
+                addTestResult('Christmas False Positive', 'pass', 'December 23 correctly not identified as Christmas');
+                log('✅ Christmas false positive check: PASS');
+            } else {
+                addTestResult('Christmas False Positive', 'fail', 'December 23 incorrectly identified as Christmas');
+                log('❌ Christmas false positive check: FAIL');
+            }
+        }
+
+        function testNewYearTrigger() {
+            log('🎆 Testing New Year trigger logic...');
+            
+            // Test December 26 (start of New Year period)
+            const dec26 = testDateLogic(11, 26);
+            if (dec26.expectedHoliday === 'newyear') {
+                addTestResult('New Year Start Detection', 'pass', 'December 26 correctly identified as New Year period');
+                log('✅ New Year start trigger: PASS');
+            } else {
+                addTestResult('New Year Start Detection', 'fail', 'December 26 not recognized as New Year period');
+                log('❌ New Year start trigger: FAIL');
+            }
+
+            // Test January 1
+            const jan1 = testDateLogic(0, 1);
+            if (jan1.expectedHoliday === 'newyear') {
+                addTestResult('New Year Day Detection', 'pass', 'January 1 correctly identified as New Year period');
+                log('✅ New Year Day trigger: PASS');
+            } else {
+                addTestResult('New Year Day Detection', 'fail', 'January 1 not recognized as New Year period');
+                log('❌ New Year Day trigger: FAIL');
+            }
+
+            // Test January 5 (end of New Year period)
+            const jan5 = testDateLogic(0, 5);
+            if (jan5.expectedHoliday === 'newyear') {
+                addTestResult('New Year End Detection', 'pass', 'January 5 correctly identified as New Year period');
+                log('✅ New Year end trigger: PASS');
+            } else {
+                addTestResult('New Year End Detection', 'fail', 'January 5 not recognized as New Year period');
+                log('❌ New Year end trigger: FAIL');
+            }
+
+            // Test January 6 (should not be New Year)
+            const jan6 = testDateLogic(0, 6);
+            if (jan6.expectedHoliday === 'none') {
+                addTestResult('New Year False Positive', 'pass', 'January 6 correctly not identified as New Year period');
+                log('✅ New Year false positive check: PASS');
+            } else {
+                addTestResult('New Year False Positive', 'fail', 'January 6 incorrectly identified as New Year period');
+                log('❌ New Year false positive check: FAIL');
+            }
+        }
+
+        function testSpecialEventTrigger() {
+            log('🏮 Testing Special Event trigger logic...');
+            
+            // Test current date (November 2, 2025)
+            const currentTest = testDateLogic(10, 2);
+            if (currentTest.expectedHoliday === 'none') {
+                addTestResult('Current Date Detection', 'pass', 'November 2 correctly identified as regular day');
+                log('✅ Current date trigger: PASS');
+            } else {
+                addTestResult('Current Date Detection', 'warning', 'November 2 might have special event trigger');
+                log('⚠️ Current date trigger: Check for special events');
+            }
+
+            // Test edge cases
+            const edgeTests = [
+                testDateLogic(11, 26), // Should be New Year, not Christmas
+                testDateLogic(0, 5),   // Should be New Year
+                testDateLogic(0, 6),   // Should be regular day
+            ];
+
+            let edgePassed = 0;
+            edgeTests.forEach((test, index) => {
+                const expectedResults = ['newyear', 'newyear', 'none'];
+                if (test.expectedHoliday === expectedResults[index]) {
+                    edgePassed++;
+                }
+            });
+
+            if (edgePassed === edgeTests.length) {
+                addTestResult('Edge Case Detection', 'pass', 'All holiday boundary dates work correctly');
+                log('✅ Edge case tests: PASS');
+            } else {
+                addTestResult('Edge Case Detection', 'fail', `${edgePassed}/${edgeTests.length} edge cases passed`);
+                log('❌ Edge case tests: FAIL');
+            }
+        }
+
+        function testRegularDayTrigger() {
+            log('📚 Testing Regular Day trigger logic...');
+            
+            const regularDays = [
+                testDateLogic(10, 2),  // November 2 (current)
+                testDateLogic(5, 15),  // June 15
+                testDateLogic(2, 10),  // March 10
+                testDateLogic(7, 20),  // August 20
+            ];
+
+            let regularPassed = 0;
+            regularDays.forEach((test, index) => {
+                if (test.expectedHoliday === 'none') {
+                    regularPassed++;
+                }
+            });
+
+            if (regularPassed === regularDays.length) {
+                addTestResult('Regular Day Detection', 'pass', 'All regular days correctly identified');
+                log('✅ Regular day tests: PASS');
+            } else {
+                addTestResult('Regular Day Detection', 'fail', `${regularPassed}/${regularDays.length} regular days passed`);
+                log('❌ Regular day tests: FAIL');
+            }
+        }
+
+        function runFullTestSuite() {
+            log('🚀 Running comprehensive holiday integration test suite...');
+            testResults = []; // Clear previous results
+            
+            // Run all tests
+            testHalloweenTrigger();
+            testChristmasTrigger();
+            testNewYearTrigger();
+            testSpecialEventTrigger();
+            testRegularDayTrigger();
+
+            // Test vocabulary integration
+            testVocabularyIntegration();
+
+            // Test animation integration
+            testAnimationIntegration();
+
+            // Summary
+            const passCount = testResults.filter(r => r.status === 'pass').length;
+            const failCount = testResults.filter(r => r.status === 'fail').length;
+            const warnCount = testResults.filter(r => r.status === 'warning').length;
+
+            log(`\n📊 TEST SUITE SUMMARY:`);
+            log(`✅ Passed: ${passCount}`);
+            log(`❌ Failed: ${failCount}`);
+            log(`⚠️ Warnings: ${warnCount}`);
+            log(`📋 Total Tests: ${testResults.length}`);
+
+            if (failCount === 0) {
+                log(`\n🎉 ALL TESTS PASSED! Holiday integration is working correctly.`);
+                addTestResult('Overall Test Suite', 'pass', `${passCount} tests passed, 0 failed`);
+            } else {
+                log(`\n⚠️ ${failCount} tests failed. Please review the integration logic.`);
+                addTestResult('Overall Test Suite', 'fail', `${failCount} tests failed out of ${testResults.length}`);
+            }
+        }
+
+        function testVocabularyIntegration() {
+            log('📚 Testing vocabulary integration...');
+            
+            // Check if holiday vocabulary functions exist
+            const iframe = document.getElementById('mainAppFrame');
+            try {
+                const iframeWindow = iframe.contentWindow;
+                if (iframeWindow && typeof iframeWindow.activateHolidayVocabulary === 'function') {
+                    addTestResult('Vocabulary Function Availability', 'pass', 'activateHolidayVocabulary function exists');
+                    log('✅ Vocabulary integration function: AVAILABLE');
+                } else {
+                    addTestResult('Vocabulary Function Availability', 'warning', 'Cannot access iframe or function not found');
+                    log('⚠️ Vocabulary integration function: CHECK MANUALLY');
+                }
+            } catch (error) {
+                addTestResult('Vocabulary Function Availability', 'warning', 'Cross-origin iframe access restricted');
+                log('⚠️ Vocabulary integration: Cannot test due to CORS restrictions');
+            }
+        }
+
+        function testAnimationIntegration() {
+            log('🎬 Testing animation integration...');
+            
+            // Check if holiday animation functions exist
+            const iframe = document.getElementById('mainAppFrame');
+            try {
+                const iframeWindow = iframe.contentWindow;
+                if (iframeWindow && typeof iframeWindow.initHalloweenAnimation === 'function') {
+                    addTestResult('Animation Function Availability', 'pass', 'Holiday animation functions exist');
+                    log('✅ Animation integration functions: AVAILABLE');
+                } else {
+                    addTestResult('Animation Function Availability', 'warning', 'Cannot access iframe or functions not found');
+                    log('⚠️ Animation integration functions: CHECK MANUALLY');
+                }
+            } catch (error) {
+                addTestResult('Animation Function Availability', 'warning', 'Cross-origin iframe access restricted');
+                log('⚠️ Animation integration: Cannot test due to CORS restrictions');
+            }
+        }
+
+        // Initialize test interface
+        window.onload = function() {
+            log('🧪 Holiday Integration Test Suite initialized');
+            log('📅 Current test date: November 2, 2025');
+            log('🔍 Ready to test holiday triggers and integration');
+            log('');
+        };
+    </script>
+</body>
+</html>

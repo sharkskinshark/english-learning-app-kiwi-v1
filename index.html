@@ -1,0 +1,2482 @@
+<!doctype html>
+<!-- Version: 2025-11-02-v2 - Two-stage tooltip -->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-touch-fullscreen" content="yes" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="theme-color" content="#2b8cf3" />
+  <!-- Eliminate 300ms delay on mobile -->
+  <style>
+    html { -ms-touch-action: manipulation; touch-action: manipulation; }
+    * { -ms-touch-action: manipulation; touch-action: manipulation; }
+  </style>
+  <title>Cambridge Vocabulary Practice</title>
+  <!-- Google Fonts: Playfair Display & Lora -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20260406-15">
+  <!-- Vercel Speed Insights - Simplified working implementation -->
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <!-- Enhanced performance tracking with manual Core Web Vitals -->
+  <script>
+    // Manual Core Web Vitals tracking for Vercel Speed Insights
+    function trackWebVitals() {
+      // Track page load time
+      window.addEventListener('load', () => {
+        const loadTime = performance.now();
+        console.log('📊 Page Load Time:', Math.round(loadTime), 'ms');
+        
+        // Manual LCP tracking
+        if ('PerformanceObserver' in window) {
+          const observer = new PerformanceObserver((list) => {
+            for (const entry of list.getEntries()) {
+              if (entry.entryType === 'largest-contentful-paint') {
+                console.log('📈 LCP:', Math.round(entry.startTime), 'ms');
+                // Send to Vercel if available
+                if (window.va) {
+                  window.va('event', 'Web Vital', {
+                    name: 'LCP',
+                    value: Math.round(entry.startTime),
+                    id: 'lcp-' + Math.random().toString(36).substr(2, 9)
+                  });
+                }
+              }
+            }
+          });
+          observer.observe({ entryTypes: ['largest-contentful-paint'] });
+        }
+        
+        // Check Analytics and Speed Insights
+        if (window.va) {
+          console.log('✅ Vercel Analytics loaded');
+          window.va('event', 'page_view', {
+            device: /Mobile|Android|iPhone|iPad/.test(navigator.userAgent) ? 'mobile' : 'desktop',
+            loadTime: Math.round(loadTime),
+            timestamp: new Date().toISOString(),
+            url: window.location.href
+          });
+        } else {
+          console.log('⚠️ Vercel Analytics not available');
+        }
+
+        if (window.si) {
+          console.log('✅ Vercel Speed Insights loaded');
+          window.si('event', 'page_load', {
+            device: /Mobile|Android|iPhone|iPad/.test(navigator.userAgent) ? 'mobile' : 'desktop',
+            loadTime: Math.round(loadTime)
+          });
+        } else {
+          console.log('⚠️ Vercel Speed Insights not available');
+        }
+        
+        // Global browser detection to prevent variable redeclarations
+        window.BrowserDetection = {
+          isMobile: /Mobile|Android|iPhone|iPad/.test(navigator.userAgent),
+          isSafari: /Safari/i.test(navigator.userAgent) && !/Chrome|CriOS|Edge|Edg/i.test(navigator.userAgent),
+          isChrome: /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor),
+          isEdge: /Edge|Edg/i.test(navigator.userAgent),
+          isFirefox: /Firefox/.test(navigator.userAgent),
+          isIPhone: /iPhone/i.test(navigator.userAgent),
+          get isIPhoneSafari() { return this.isIPhone && this.isSafari; },
+          get isMobileEdge() { return this.isEdge && (this.isMobile || window.innerWidth <= 768); }
+        };
+        
+        // Global DOM elements to prevent redeclarations
+        window.AppElements = {
+          get mainContent() { return document.getElementById('mainContent'); }
+        };
+        
+        console.log('📱 Device Type:', window.BrowserDetection.isMobile ? 'Mobile' : 'Desktop');
+        console.log('🌐 User Agent:', navigator.userAgent);
+        console.log('🔗 Current URL:', window.location.href);
+      });
+      
+      // Track interactions for mobile specifically
+      let interactionCount = 0;
+      document.addEventListener('click', function(e) {
+        interactionCount++;
+        if (window.va && /Mobile|Android|iPhone|iPad/.test(navigator.userAgent)) {
+          window.va('event', 'mobile_interaction', {
+            element: e.target.tagName,
+            count: interactionCount,
+            timestamp: new Date().toISOString()
+          });
+        }
+        if (window.si) {
+          window.si('event', 'interaction', {
+            type: 'click',
+            element: e.target.tagName
+          });
+        }
+      });
+
+      // Force send data after 5 seconds
+      setTimeout(() => {
+        if (window.va) {
+          window.va('event', 'session_active', {
+            duration: 5000,
+            device: /Mobile|Android|iPhone|iPad/.test(navigator.userAgent) ? 'mobile' : 'desktop'
+          });
+        }
+        console.log('📊 Forced session tracking sent');
+      }, 5000);
+    }
+    
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', trackWebVitals);
+    } else {
+      trackWebVitals();
+    }
+  </script>
+  
+
+</head>
+<body>
+
+  <!-- Holiday animations will be injected here by JavaScript -->
+
+  <div id="mainContent">
+    <div class="container">
+      <div class="header">
+        <div class="logo-container">
+          <h1>Cambridge Vocabulary Practice</h1>
+        </div>
+        <div id="topUserBar" class="top-user-bar hidden">
+          <span id="topUserName" class="top-user-name"></span>
+          <span id="topUserEmail" class="top-user-email"></span>
+          <button id="topUserLogoutBtn" class="secondary-action-btn">登出</button>
+        </div>
+        <h2>Improve your Listening, Spelling and Understanding</h2>
+      </div>
+
+      <section id="identitySection" class="identity-section">
+        <div class="identity-section-header">
+          <h2>登入 / 註冊 👤</h2>
+          <button id="identityToggleBtn" type="button" class="identity-toggle-btn hidden" aria-expanded="true" aria-label="收合登入區塊" title="收合登入區塊">
+            <span class="identity-toggle-icon" aria-hidden="true">▾</span>
+          </button>
+        </div>
+        <div class="identity-section-body">
+        <div class="username-area">
+          <input type="text" id="usernameInput" placeholder="輸入暱稱" maxlength="20">
+          <input type="password" id="birthdayInput" placeholder="輸入西元生日" maxlength="8" inputmode="numeric" pattern="[0-9]*">
+          <button id="registerProfileBtn">完成註冊</button>
+          <button id="recoverNicknameBtn" class="secondary-action-btn">找回暱稱</button>
+        </div>
+        <label class="birthday-visibility-toggle">
+          <input type="checkbox" id="birthdayVisibilityToggle">
+          <span>顯示生日數字</span>
+        </label>
+        <div id="identityHint" class="identity-hint">註冊成功條件：名稱 + 生日 + Gmail 登入，三者缺一不可。</div>
+
+        <div class="account-auth-panel">
+          <h3>Google 帳號登入</h3>
+          <div class="account-auth-actions">
+            <div id="googleSignInContainer"></div>
+            <button id="existingGoogleLoginBtn" class="secondary-action-btn">已註冊者 Gmail 直接登入</button>
+            <button id="googleSignOutBtn" class="secondary-action-btn hidden">切換 / 登出 Google</button>
+          </div>
+          <div id="authStatusHint" class="identity-hint">請先登入 Google，再完成註冊或直接登入。</div>
+        </div>
+
+        <div class="cloud-sync-panel">
+          <h3>雲端同步（Google 帳號）☁️</h3>
+          <div class="cloud-sync-actions">
+            <button id="cloudPullBtn" class="secondary-action-btn">從雲端下載</button>
+            <button id="cloudPushBtn">上傳到雲端</button>
+          </div>
+          <label class="cloud-sync-toggle">
+            <input type="checkbox" id="autoCloudSyncChk">
+            <span id="autoCloudSyncLabel">每次完成練習後自動上傳（帳號雲端）</span>
+          </label>
+          <div id="cloudSyncHint" class="identity-hint">請先登入 Google，才可使用上傳與下載。</div>
+        </div>
+        </div>
+      </section>
+
+      <section id="eventSection" class="event-section hidden">
+        <div class="event-section-header">
+          <h2 id="eventTitle">Special Event 🎉</h2>
+          <button id="eventToggleBtn" type="button" class="event-toggle-btn" aria-expanded="true" aria-label="收合節日單字區塊" title="收合節日單字區塊">
+            <span class="event-toggle-icon" aria-hidden="true">▾</span>
+          </button>
+        </div>
+        <div id="eventMarquee" class="event-marquee hidden" aria-label="節日主題跑馬燈動畫">
+          <div id="eventMarqueeParticles" class="event-marquee-particles" aria-hidden="true"></div>
+          <div id="eventMarqueeTrack" class="event-marquee-track"></div>
+        </div>
+        <div class="event-content">
+          <div id="eventWords" class="event-words"></div>
+          <div id="eventChallenges" class="event-challenges"></div>
+        </div>
+      </section>
+
+      <div id="learningContent" class="hidden">
+      <section class="controls">
+        <label>Type:
+          <select id="modeSelect">
+            <option value="spelling">Spelling (type the word)</option>
+            <option value="meaning">Meaning (pick the right meaning)</option>
+            <option value="phonics">Phonics Helper</option>
+          </select>
+        </label>
+
+        <label>Practice Mode:
+          <select id="practiceMode">
+            <option value="learn">Learn New Words</option>
+            <option value="review">Review Mode</option>
+          </select>
+        </label>
+
+        <div id="learnControls">
+          <label>Level:
+            <select id="levelSelect">
+              <option value="starters">Starters (Beginner)</option>
+              <option value="movers">Movers (Elementary)</option>
+              <option value="flyers">Flyers (Pre-Intermediate)</option>
+            </select>
+          </label>
+
+          <label>Category:
+            <select id="categorySelect"><option value="">Loading categories...</option></select>
+          </label>
+        </div>
+
+        <button id="startBtn">開始練習</button>
+        <div id="loadingMessage">Loading vocabulary...</div>
+        <button id="listenBtn" style="display:none">🔊 Listen to Word</button>
+        
+        <div id="reviewStats" class="review-stats hidden">
+          <span>Words to Review: <span id="reviewCount">0</span></span>
+          <span>Mastered: <span id="masteredCount">0</span></span>
+          <span>Cycle Completed: <span id="cycleCount">0</span></span>
+        </div>
+      </section>
+
+      <section id="exercise" class="exercise hidden">
+        <div id="progress" class="progress">0 / 0</div>
+        <div id="prompt" class="prompt">Press Start to begin</div>
+
+        <div id="spellingArea" class="mode-area">
+          <div class="listen-spell">
+            <button id="listenWordBtn" class="icon-btn">🔊 Listen to Word</button>
+            <input id="spellingInput" placeholder="Type what you hear..." autocomplete="off">
+            <button id="submitSpelling" class="btn">Check Answer</button>
+          </div>
+          <div id="spellingResult" class="hidden">
+            <p id="resultMessage"></p>
+            <div id="correctAnswer" class="hidden">
+              <p>Correct spelling: <span id="correctSpelling"></span></p>
+              <div id="wordImage" class="word-image"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="meaningArea" class="mode-area hidden">
+          <div class="word-row">
+            <span id="wordDisplay"></span>
+            <button id="pronounceBtn" class="icon-btn" title="Listen to pronunciation">🔊</button>
+          </div>
+          <div id="choices" class="choices"></div>
+        </div>
+
+        <div id="phonicsArea" class="mode-area hidden">
+          <div class="word-row">
+            <span id="phonicsWordDisplay" class="word-display"></span>
+            <button id="phonicsPronounceBtn" class="icon-btn" title="Listen to pronunciation">🔊</button>
+          </div>
+          <div id="phonicsHelperContainer"></div>
+        </div>
+
+        <div id="feedback" class="feedback"></div>
+        <div class="controls-row">
+          <button id="nextBtn" class="hidden">Next</button>
+          <button id="restartBtn" class="hidden">Restart</button>
+        </div>
+
+        <div id="score" class="score hidden">Score: 0</div>
+      </section>
+
+      <section id="dailySection" class="daily-section">
+        <h2>Daily Challenges 📅</h2>
+        <div class="daily-streak">
+          <span>Streak: <span id="currentStreak">0</span> days</span>
+          <span>Best: <span id="bestStreak">0</span> days</span>
+        </div>
+        <div id="dailyChallenges" class="daily-challenges"></div>
+      </section>
+
+      <section id="calendarSection" class="calendar-section">
+        <h2>Practice Calendar 📆</h2>
+        <div id="calendarView" class="calendar-view"></div>
+      </section>
+
+      <section id="leaderboardsSection" class="leaderboards-section">
+        <h2>Leaderboards 🏆</h2>
+        <div id="leaderboardsContent" class="leaderboards-content"></div>
+      </section>
+
+      <section id="progressSection" class="progress-section hidden">
+        <h2>Your Progress & Achievements 🏆</h2>
+        <div class="progress-grid">
+          <div class="progress-card" data-level="starters">
+            <h3>Starters 🌱</h3>
+            <div class="progress-details"></div>
+          </div>
+          <div class="progress-card" data-level="movers">
+            <h3>Movers 🚶</h3>
+            <div class="progress-details"></div>
+          </div>
+          <div class="progress-card" data-level="flyers">
+            <h3>Flyers 🦋</h3>
+            <div class="progress-details"></div>
+          </div>
+        </div>
+
+        <div class="achievements-section">
+          <h3>Your Achievements</h3>
+          <div class="achievements-grid" id="achievementsGrid"></div>
+        </div>
+
+        <div class="reports-section">
+          <h3>Monthly HTML Reports</h3>
+          <div class="report-controls">
+            <label class="report-month-label">Month:
+              <input type="month" id="reportMonthInput">
+            </label>
+            <button id="generateMonthlyReportBtn">Save HTML Snapshot</button>
+            <button id="openLatestReportBtn" class="secondary-action-btn">Open Latest</button>
+            <button id="refreshReportHistoryBtn" class="secondary-action-btn">Refresh List</button>
+          </div>
+          <div id="reportHistoryList" class="report-history-list"></div>
+        </div>
+        
+        <button id="showProgress">Show Progress</button>
+      </section>
+
+      <footer class="notes">
+        <div class="analysis-section">
+          <button id="openDashboardBtn" class="analysis-btn">分析</button>
+        </div>
+        <div>For elementary kids: Start with Starters level. Encourage spelling slowly.</div>
+      </footer>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="achievements.js?v=20260406-2"></script>
+  <script src="review.js?v=20260406-2"></script>
+  <script src="daily.js?v=20260406-2"></script>
+  <script src="events.js?v=20260406-2"></script>
+  <script src="app.js?v=20260406-24"></script>
+  <script src="calendar.js?v=20260406-4"></script>
+  <script src="leaderboard.js?v=20260406-4"></script>
+
+  <!-- Achievement notification template -->
+  <div id="achievementNotif" class="achievement-unlock hidden">
+    <div class="achievement-emoji"></div>
+    <div class="achievement-title"></div>
+  </div>
+
+  <!-- Test Buttons for Seasonal Animations and Events -->
+  <!-- Test buttons removed - use test-buttons.html for testing -->
+  <script>
+    // Application main script
+    console.log('📄 English Learning App loaded');
+  </script>
+
+  <script>
+    // Floating scroll detection for enhanced visual feedback
+    function setupFloatingFeedback() {
+      let scrollTimeout;
+      let isScrolling = false;
+
+      function handleScroll() {
+        if (!isScrolling) {
+          // Scroll started
+          isScrolling = true;
+        }
+
+        // Clear previous timeout
+        clearTimeout(scrollTimeout);
+
+        // Stop floating animation after scroll ends
+        scrollTimeout = setTimeout(() => {
+          // Scroll ended
+          isScrolling = false;
+        }, 150); // Stop animation 150ms after scroll ends
+      }
+
+      // Add scroll event listener with throttling for performance
+      let ticking = false;
+      window.addEventListener('scroll', function() {
+        if (!ticking) {
+          requestAnimationFrame(function() {
+            handleScroll();
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }, { passive: true });
+
+      console.log('✨ Floating scroll feedback initialized');
+    }
+
+    // Initialize floating feedback
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', setupFloatingFeedback);
+    } else {
+      setupFloatingFeedback();
+    }
+  </script>
+
+  <script>
+    // Halloween Loading Animation (only on 2025/10/31)
+    // 🎃 HALLOWEEN ANIMATION FUNCTION 🎃
+    function initHalloweenAnimation() {
+      if (!isHolidayActive('halloween')) {
+        console.log('🎃 Halloween holiday is not active');
+        return;
+      }
+
+      console.log('🎃 Halloween animation starting!');
+
+      const halloweenLoader = document.createElement('div');
+      halloweenLoader.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);z-index:100000;overflow:hidden;';
+      halloweenLoader.innerHTML = '<div class="halloween-elements"></div>';
+
+      document.body.appendChild(halloweenLoader);
+      const mainContent = window.AppElements.mainContent;
+      if (mainContent) mainContent.style.opacity = '0';
+
+      const container = halloweenLoader.querySelector('.halloween-elements');
+
+      // Stage 1: Spooky emojis fly from corners to center (0-2s)
+      const spookyEmojis = [
+        { emoji: '🎃', startX: 0, startY: 0 },
+        { emoji: '👻', startX: 100, startY: 0 },
+        { emoji: '🦇', startX: 0, startY: 100 },
+        { emoji: '💀', startX: 100, startY: 100 },
+        { emoji: '🕷️', startX: 50, startY: 0 },
+        { emoji: '🕸️', startX: 0, startY: 50 }
+      ];
+
+      spookyEmojis.forEach((item, i) => {
+        const elem = document.createElement('div');
+        elem.textContent = item.emoji;
+        elem.style.cssText = `position:absolute;font-size:60px;left:${item.startX}%;top:${item.startY}%;opacity:0;transition:all 1.5s ease-out;`;
+        container.appendChild(elem);
+
+        setTimeout(() => {
+          elem.style.left = '50%';
+          elem.style.top = '50%';
+          elem.style.transform = 'translate(-50%, -50%)';
+          elem.style.opacity = '1';
+        }, i * 250);
+      });
+
+      // Stage 2: Show Halloween text (1.5s)
+      const text = document.createElement('div');
+      text.textContent = '🎃 Happy Halloween! 👻';
+      text.style.cssText = 'position:absolute;top:20%;left:50%;transform:translateX(-50%);font-size:52px;color:#FF6347;text-shadow:3px 3px 6px #000;opacity:0;transition:opacity 0.5s;';
+      container.appendChild(text);
+      setTimeout(() => { text.style.opacity = '1'; }, 1500);
+
+      // Stage 3: Scatter emojis to edges (2.5s)
+      setTimeout(() => {
+        const corners = [
+          { x: '20%', y: '20%' },
+          { x: '80%', y: '20%' },
+          { x: '20%', y: '80%' },
+          { x: '80%', y: '80%' },
+          { x: '50%', y: '20%' },
+          { x: '20%', y: '50%' }
+        ];
+
+        spookyEmojis.forEach((item, i) => {
+          const elems = container.querySelectorAll('div');
+          const elem = elems[i];
+          if (elem) {
+            elem.style.left = corners[i].x;
+            elem.style.top = corners[i].y;
+            elem.style.transform = 'translate(-50%, -50%)';
+          }
+        });
+      }, 2500);
+
+      // Stage 4: Enlarge to giant spooky size (4s)
+      setTimeout(() => {
+        const elems = container.querySelectorAll('div');
+        spookyEmojis.forEach((item, i) => {
+          const elem = elems[i];
+          if (elem && elem.textContent.length <= 2) {
+            elem.style.fontSize = '180px';
+            elem.style.opacity = '0.7';
+          }
+        });
+      }, 4000);
+
+      // Stage 5: Floating ghosts and bats (3-6s)
+      setTimeout(() => {
+        const floatingItems = ['👻', '🦇', '🎃', '💀'];
+        for (let i = 0; i < 20; i++) {
+          const ghost = document.createElement('div');
+          ghost.textContent = floatingItems[Math.floor(Math.random() * floatingItems.length)];
+          const startX = Math.random() * 100;
+          ghost.style.cssText = `position:absolute;font-size:45px;left:${startX}%;top:110%;opacity:0.6;transition:all 3s linear;transform:rotate(${Math.random() * 360}deg);`;
+          container.appendChild(ghost);
+
+          setTimeout(() => {
+            ghost.style.top = '-10%';
+            ghost.style.left = `${startX + (-20 + Math.random() * 40)}%`;
+            ghost.style.transform = `rotate(${Math.random() * 720}deg)`;
+          }, i * 150);
+        }
+      }, 3000);
+
+      // Stage 6: Candy rain (4.5-6.5s)
+      setTimeout(() => {
+        const candies = ['🍬', '🍭', '🍫', '🍰'];
+        for (let i = 0; i < 30; i++) {
+          const candy = document.createElement('div');
+          candy.textContent = candies[Math.floor(Math.random() * candies.length)];
+          const randomX = Math.random() * 100;
+          candy.style.cssText = `position:absolute;font-size:35px;left:${randomX}%;top:-50px;transition:all 2.5s linear;opacity:0.8;`;
+          container.appendChild(candy);
+
+          setTimeout(() => {
+            candy.style.top = '110%';
+            candy.style.transform = `rotate(${Math.random() * 720}deg)`;
+          }, i * 70);
+        }
+      }, 4500);
+
+      // Fade out (6.5s)
+      setTimeout(() => {
+        halloweenLoader.style.opacity = '0';
+        halloweenLoader.style.transition = 'opacity 0.8s';
+      }, 6500);
+
+      setTimeout(() => {
+        halloweenLoader.remove();
+        if (mainContent) mainContent.style.opacity = '1';
+        console.log('🎃 Halloween animation completed!');
+      }, 7300);
+    }
+    
+    // Christmas Loading Animation (Dec 24-25, 2025) 🎄
+    function initChristmasAnimation() {
+      const today = new Date();
+      const isChristmasEve = today.getFullYear() === 2025 && 
+                           today.getMonth() === 11 && // December is month 11 (0-indexed)
+                           today.getDate() === 24;
+      const isChristmasDay = today.getFullYear() === 2025 && 
+                           today.getMonth() === 11 && // December is month 11 (0-indexed) 
+                           today.getDate() === 25;
+      const isChristmasTime = isChristmasEve || isChristmasDay;
+      
+      // Use global browser detection
+      const { isEdge, isSafari, isIPhone, isIPhoneSafari, isMobileEdge } = window.BrowserDetection;
+      
+      console.log('🎄 Christmas check:', {
+        date: today.toDateString(),
+        isChristmasEve,
+        isChristmasDay, 
+        isChristmasTime,
+        year: today.getFullYear(),
+        month: today.getMonth(),
+        day: today.getDate(),
+        userAgent: navigator.userAgent,
+        screenSize: window.innerWidth + 'x' + window.innerHeight
+      });
+      
+      // Use new holiday checking system instead of manual date calculations
+      if (isHolidayActive('christmas')) {
+        console.log('🎄✨ Christmas holiday is active! Starting Christmas animation...');
+        
+        // Create Christmas loader with night sky background
+        const christmasLoader = document.createElement('div');
+        christmasLoader.className = 'christmas-loader active';
+        christmasLoader.innerHTML = `
+          <!-- Christmas Night Sky Scene -->
+          <div class="christmas-sky">
+            <!-- Santa's Sleigh Scene -->
+            <div class="santa-sleigh-scene">
+              <!-- Leading Reindeer -->
+              <div class="reindeer reindeer-1">🦌</div>
+              <div class="reindeer reindeer-2">🦌</div>
+              <div class="reindeer reindeer-3">🦌</div>
+              
+              <!-- Santa on Sleigh -->
+              <div class="santa-sleigh">🎅🛷</div>
+              
+              <!-- Flying Path Trail -->
+              <div class="sleigh-trail">✨</div>
+            </div>
+            
+            <!-- Falling Snow -->
+            <div class="snow-container">
+              <div class="snowflake snow-1">❄️</div>
+              <div class="snowflake snow-2">❄️</div>
+              <div class="snowflake snow-3">❄️</div>
+              <div class="snowflake snow-4">❄️</div>
+              <div class="snowflake snow-5">❄️</div>
+              <div class="snowflake snow-6">❄️</div>
+              <div class="snowflake snow-7">❄️</div>
+              <div class="snowflake snow-8">❄️</div>
+              <div class="snowflake snow-9">❄️</div>
+              <div class="snowflake snow-10">❄️</div>
+              <div class="snowflake snow-11">❄️</div>
+              <div class="snowflake snow-12">❄️</div>
+              <div class="snowflake snow-13">❄️</div>
+              <div class="snowflake snow-14">❄️</div>
+              <div class="snowflake snow-15">❄️</div>
+              <div class="snowflake snow-16">❄️</div>
+              <div class="snowflake snow-17">❄️</div>
+              <div class="snowflake snow-18">❄️</div>
+              <div class="snowflake snow-19">❄️</div>
+              <div class="snowflake snow-20">❄️</div>
+              <div class="snowflake snow-21">❄️</div>
+              <div class="snowflake snow-22">❄️</div>
+              <div class="snowflake snow-23">❄️</div>
+              <div class="snowflake snow-24">❄️</div>
+              <div class="snowflake snow-25">❄️</div>
+              <div class="snowflake snow-26">❄️</div>
+              <div class="snowflake snow-27">❄️</div>
+              <div class="snowflake snow-28">❄️</div>
+              <div class="snowflake snow-29">❄️</div>
+              <div class="snowflake snow-30">❄️</div>
+              <div class="snowflake snow-31">❄️</div>
+              <div class="snowflake snow-32">❄️</div>
+              <div class="snowflake snow-33">❄️</div>
+              <div class="snowflake snow-34">❄️</div>
+              <div class="snowflake snow-35">❄️</div>
+              <div class="snowflake snow-36">❄️</div>
+            </div>
+            
+            <!-- Flying Gifts and Toys -->
+            <div class="gifts-container">
+              <div class="flying-gift gift-1">🎁</div>
+              <div class="flying-gift gift-2">🧸</div>
+              <div class="flying-gift gift-3">📦</div>
+              <div class="flying-gift gift-4">🎀</div>
+              <div class="flying-gift gift-5">🪀</div>
+              <div class="flying-gift gift-6">🎮</div>
+              <div class="flying-gift gift-7">🎁</div>
+              <div class="flying-gift gift-8">🧸</div>
+              <div class="flying-gift gift-9">📦</div>
+              <div class="flying-gift gift-10">🎀</div>
+              <div class="flying-gift gift-11">🪀</div>
+              <div class="flying-gift gift-12">🎮</div>
+            </div>
+            
+            <!-- Christmas Trees -->
+            <div class="trees-container">
+              <div class="christmas-tree tree-1">🎄<span class="tree-star">⭐</span></div>
+              <div class="christmas-tree tree-2">🎄<span class="tree-star">⭐</span></div>
+              <div class="christmas-tree tree-3">🎄<span class="tree-star">⭐</span></div>
+              <div class="christmas-tree tree-4">🎄<span class="tree-star">⭐</span></div>
+              <div class="christmas-tree tree-5">🎄<span class="tree-star">⭐</span></div>
+              <div class="christmas-tree tree-6">🎄<span class="tree-star">⭐</span></div>
+            </div>
+            
+            <!-- Background Elements -->
+            <div class="christmas-stars">
+              <div class="star star-1">⭐</div>
+              <div class="star star-2">🌟</div>
+              <div class="star star-3">⭐</div>
+              <div class="star star-4">🌟</div>
+            </div>
+            
+            <!-- Christmas Message -->
+            <div class="christmas-center-text">${isChristmasEve ? '🎅 Santa is Coming Tonight! 🎄' : '🎄 Merry Christmas! 🎁'}</div>
+          </div>
+        `;
+        
+        document.body.appendChild(christmasLoader);
+        
+        // Add Christmas-active class to body
+        document.body.classList.add('christmas-active');
+        
+        // Hide main content during animation
+        const mainContent = window.AppElements.mainContent;
+        if (mainContent) {
+          mainContent.style.opacity = '0';
+          mainContent.style.visibility = 'hidden';
+        }
+        
+        // Christmas firework emojis
+        const christmasEmojis = ['🎄', '🎅', '⭐', '🌟', '❄️', '🎁', '🔔', '🕯️', '🧦', '🎀', '✨', '💫'];
+        
+        // Create Christmas firework bursts
+        let burstCount = 0;
+        const maxBursts = 8;
+        
+        const createChristmasFirework = () => {
+          if (burstCount >= maxBursts) return;
+          
+          const particleCount = 18 + Math.floor(Math.random() * 12);
+          console.log(`Creating ${particleCount} particles for burst ${burstCount + 1}`);
+          
+          for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.textContent = christmasEmojis[Math.floor(Math.random() * christmasEmojis.length)];
+            
+            // Set basic styles directly
+            particle.style.position = 'absolute';
+            particle.style.fontSize = '32px';
+            particle.style.zIndex = '100000';
+            particle.style.pointerEvents = 'none';
+            
+            // Random angle and distance
+            const angle = Math.random() * 360;
+            const radian = (angle * Math.PI) / 180;
+            const distance = 200 + Math.random() * 400;
+            
+            // Calculate start and end positions
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            const finalX = centerX + Math.cos(radian) * distance;
+            const finalY = centerY + Math.sin(radian) * distance;
+            
+            // Set initial position at center
+            particle.style.left = centerX + 'px';
+            particle.style.top = centerY + 'px';
+            particle.style.opacity = '1';
+            particle.style.transform = 'scale(0.5)';
+            
+            christmasLoader.appendChild(particle);
+            console.log(`Particle ${i}: from (${centerX}, ${centerY}) to (${finalX}, ${finalY})`);
+            
+            // Animate using direct style changes
+            setTimeout(() => {
+              particle.style.transition = 'all 2s ease-out';
+              particle.style.left = finalX + 'px';
+              particle.style.top = finalY + 'px';
+              particle.style.transform = 'scale(1) rotate(360deg)';
+              particle.style.opacity = '0';
+              
+              console.log(`Animating particle ${i} to (${finalX}, ${finalY})`);
+            }, Math.random() * 100);
+            
+            // Clean up
+            setTimeout(() => {
+              if (particle && particle.parentNode) {
+                particle.parentNode.removeChild(particle);
+              }
+            }, 2200);
+          }
+          
+          burstCount++;
+          console.log(`🎆 Christmas firework burst ${burstCount}/${maxBursts}!`);
+          if (burstCount < maxBursts) {
+            setTimeout(createChristmasFirework, 700);
+          }
+        };
+        
+        // Christmas animation sequence (8 seconds total)
+        const sleighScene = christmasLoader.querySelector('.santa-sleigh-scene');
+        const centerText = christmasLoader.querySelector('.christmas-center-text');
+        const stars = christmasLoader.querySelectorAll('.star');
+        const snowflakes = christmasLoader.querySelectorAll('.snowflake');
+        const gifts = christmasLoader.querySelectorAll('.flying-gift');
+        const trees = christmasLoader.querySelectorAll('.christmas-tree');
+        
+        // Stage 0.5: Start fireworks early
+        setTimeout(() => {
+          createChristmasFirework();
+          console.log('🎆 Christmas fireworks beginning!');
+        }, 300);
+        
+        // Stage 1: Start Santa's journey and show text (0-1s)
+        setTimeout(() => {
+          sleighScene.classList.add('flying');
+          centerText.classList.add('show');
+          console.log('🎅 Stage 1: Santa begins his journey across the sky...');
+        }, 100);
+        
+        // Stage 1.5: Grow Christmas trees (0.5s)
+        setTimeout(() => {
+          trees.forEach((tree, index) => {
+            setTimeout(() => {
+              tree.classList.add('growing');
+            }, index * 150);
+          });
+          console.log('🎄 Stage 1.5: Christmas trees growing...');
+        }, 500);
+        
+        // Stage 2: Activate twinkling stars (1s)
+        setTimeout(() => {
+          stars.forEach((star, index) => {
+            setTimeout(() => {
+              star.classList.add('twinkle');
+            }, index * 200);
+          });
+          console.log('⭐ Stage 2: Stars begin twinkling...');
+        }, 1000);
+        
+        // Stage 3: Start snowfall (2s)
+        setTimeout(() => {
+          snowflakes.forEach((snowflake, index) => {
+            setTimeout(() => {
+              snowflake.classList.add('falling');
+            }, index * 300);
+          });
+          console.log('❄️ Stage 3: Snow begins falling...');
+        }, 2000);
+        
+        // Stage 3.5: Gifts start dropping (2.5s)
+        setTimeout(() => {
+          gifts.forEach((gift, index) => {
+            setTimeout(() => {
+              gift.classList.add('dropping');
+            }, index * 250);
+          });
+          console.log('🎁 Stage 3.5: Gifts and toys dropping from the sky...');
+        }, 2500);
+        
+        // Stage 4: Santa waves and speeds up (3.5s)
+        setTimeout(() => {
+          sleighScene.classList.add('waving');
+          console.log('🎅 Stage 4: Santa waves as he flies by...');
+        }, 3500);
+        
+        // Stage 5: Santa disappears into distance (5s)
+        setTimeout(() => {
+          sleighScene.classList.add('disappearing');
+          console.log('🛷 Stage 5: Santa disappears into the night...');
+        }, 5000);
+        
+        // Stage 6: Fade out scene (6s)
+        setTimeout(() => {
+          christmasLoader.classList.add('fade-out');
+          console.log('🌙 Stage 6: Christmas scene fading out...');
+        }, 6000);
+        
+        // Stage 7: Complete cleanup (8s - extended for fireworks)
+        setTimeout(() => {
+          if (christmasLoader && christmasLoader.parentNode) {
+            christmasLoader.parentNode.removeChild(christmasLoader);
+          }
+          
+          // Remove Christmas-active class and show main content
+          document.body.classList.remove('christmas-active');
+          if (mainContent) {
+            mainContent.style.opacity = '1';
+            mainContent.style.visibility = 'visible';
+          }
+          
+          console.log('🎄 Christmas Santa sleigh animation with fireworks completed');
+        }, 8000);
+        
+      } else {
+        console.log('🎄 Not Christmas time 2025 - skipping Christmas animation');
+      }
+    }
+
+    // 🎄 CHRISTMAS SANTA SLEIGH TEST FUNCTION 🎄
+    function testChristmasAnimation() {
+      console.log('🎅 Starting Christmas Santa Sleigh Animation Simulation...');
+      
+      const christmasLoader = document.createElement('div');
+      christmasLoader.className = 'christmas-loader active';
+      christmasLoader.innerHTML = '<div class="christmas-sky"><div class="santa-sleigh-scene"><div class="reindeer reindeer-1">🦌</div><div class="reindeer reindeer-2">🦌</div><div class="reindeer reindeer-3">🦌</div><div class="santa-sleigh">🎅🛷</div><div class="sleigh-trail">✨</div></div><div class="snow-container"><div class="snowflake snow-1">❄️</div><div class="snowflake snow-2">❄️</div><div class="snowflake snow-3">❄️</div><div class="snowflake snow-4">❄️</div><div class="snowflake snow-5">❄️</div><div class="snowflake snow-6">❄️</div><div class="snowflake snow-7">❄️</div><div class="snowflake snow-8">❄️</div><div class="snowflake snow-9">❄️</div><div class="snowflake snow-10">❄️</div><div class="snowflake snow-11">❄️</div><div class="snowflake snow-12">❄️</div></div><div class="gifts-container"><div class="flying-gift gift-1">🎁</div><div class="flying-gift gift-2">🧸</div><div class="flying-gift gift-3">📦</div><div class="flying-gift gift-4">🎀</div><div class="flying-gift gift-5">🪀</div><div class="flying-gift gift-6">🎮</div><div class="flying-gift gift-7">🎁</div><div class="flying-gift gift-8">🧸</div><div class="flying-gift gift-9">📦</div><div class="flying-gift gift-10">🎀</div><div class="flying-gift gift-11">🪀</div><div class="flying-gift gift-12">🎮</div></div><div class="christmas-stars"><div class="star star-1">⭐</div><div class="star star-2">🌟</div><div class="star star-3">⭐</div><div class="star star-4">🌟</div></div><div class="christmas-center-text">🎅 Santa is Coming Tonight! 🎄</div></div>';
+      
+      document.body.appendChild(christmasLoader);
+      document.body.classList.add('christmas-active');
+      
+      const mainContent = window.AppElements.mainContent;
+      if (mainContent) {
+        mainContent.style.opacity = '0';
+        mainContent.style.visibility = 'hidden';
+      }
+      
+      const sleighScene = christmasLoader.querySelector('.santa-sleigh-scene');
+      const centerText = christmasLoader.querySelector('.christmas-center-text');
+      const stars = christmasLoader.querySelectorAll('.star');
+      const snowflakes = christmasLoader.querySelectorAll('.snowflake');
+      const gifts = christmasLoader.querySelectorAll('.flying-gift');
+      
+      setTimeout(() => {
+        sleighScene.classList.add('flying');
+        centerText.classList.add('show');
+        console.log('🎅 Stage 1: Santa begins his magical journey across the sky...');
+      }, 100);
+      
+      setTimeout(() => {
+        stars.forEach((star, i) => setTimeout(() => star.classList.add('twinkle'), i * 100));
+        snowflakes.forEach((snow, i) => setTimeout(() => snow.classList.add('falling'), i * 150));
+        console.log('⭐❄️ Stage 2: Stars twinkling and snow falling...');
+      }, 500);
+      
+      setTimeout(() => {
+        gifts.forEach((gift, i) => setTimeout(() => gift.classList.add('dropping'), i * 200));
+        console.log('🎁 Stage 3: Gifts dropping from the sky...');
+      }, 1500);
+      
+      setTimeout(() => {
+        sleighScene.classList.add('waving');
+        console.log('🎅 Stage 4: Santa waves...');
+      }, 2500);
+      
+      setTimeout(() => {
+        sleighScene.classList.add('disappearing');
+        console.log('🛷 Stage 5: Santa disappearing...');
+      }, 4000);
+      
+      setTimeout(() => {
+        christmasLoader.classList.add('fade-out');
+        console.log('🌙 Stage 6: Fading out...');
+      }, 4500);
+      
+      setTimeout(() => {
+        if (christmasLoader && christmasLoader.parentNode) {
+          christmasLoader.parentNode.removeChild(christmasLoader);
+        }
+        document.body.classList.remove('christmas-active');
+        if (mainContent) {
+          mainContent.style.opacity = '1';
+          mainContent.style.visibility = 'visible';
+        }
+        console.log('🎅 Christmas animation complete!');
+        alert('🎄 Christmas Animation Complete! Santa flew right-to-left with snow and gifts!');
+      }, 5000);
+    }
+
+    // 🎉 NEW YEAR ANIMATION FUNCTION 🎉
+    function initNewYearAnimation() {
+      const today = new Date();
+      const isNewYearTime = ((today.getMonth() === 11 && today.getDate() >= 26) || 
+                            (today.getMonth() === 0 && today.getDate() <= 5)) && 
+                           today.getFullYear() >= 2025;
+      
+      // Use global browser detection  
+      const { isSafari, isChrome, isEdge, isFirefox, isIPhone, isIPhoneSafari, isMobileEdge } = window.BrowserDetection;
+      
+      console.log('🎉 New Year check:', {
+        date: today.toDateString(),
+        year: today.getFullYear(),
+        browser: isSafari ? 'Safari' : isChrome ? 'Chrome' : isEdge ? 'Edge' : isFirefox ? 'Firefox' : 'Other'
+      });
+      
+      // Use new holiday checking system instead of manual date calculations
+      if (!isHolidayActive('newyear')) {
+        console.log('🎉 New Year holiday is not active - skipping New Year animation');
+        return;
+      }
+      
+      console.log('🎆 New Year holiday is active! Starting New Year animation...');
+      
+      // Get next year number
+      const nextYear = today.getMonth() === 11 && today.getDate() >= 26
+        ? today.getFullYear() + 1
+        : today.getFullYear();
+
+      // Create New Year loader
+      const newYearLoader = document.createElement('div');
+      newYearLoader.className = 'newyear-loader active';
+      newYearLoader.innerHTML = `
+        <!-- New Year Message -->
+        <div class="newyear-center-text">🎉 Happy New Year ${nextYear}! 🎆</div>
+
+        <!-- Firework Launch Point -->
+        <div class="firework-center"></div>
+      `;
+
+      document.body.appendChild(newYearLoader);
+      
+      // New Year firework emojis
+      const fireworkEmojis = ['🎆', '🎇', '✨', '🌟', '💫', '🎊', '🎉', '⭐', '🔥', '💥'];
+      
+      // Hide main content during animation
+      const mainContent = window.AppElements.mainContent;
+      if (mainContent) {
+        mainContent.style.opacity = '0';
+        mainContent.style.visibility = 'hidden';
+      }
+      
+      // Add new-year-active class to body
+      document.body.classList.add('newyear-active');
+      
+      // Show center text immediately
+      const centerText = newYearLoader.querySelector('.newyear-center-text');
+      setTimeout(() => {
+        centerText.classList.add('show');
+      }, 100);
+      
+      // Create firework bursts every 800ms for 7 seconds
+      let burstCount = 0;
+      const maxBursts = 8;
+      
+      // Create 4 random edge fireworks with different timing
+      const createRandomEdgeFirework = (fireworkIndex) => {
+        console.log(`🎆 Creating random edge firework #${fireworkIndex + 1}`);
+        
+        // Random edge positions (avoid center area)
+        const edges = [
+          { x: Math.random() * 0.3 * window.innerWidth, y: Math.random() * 0.4 * window.innerHeight }, // Top-left
+          { x: 0.7 * window.innerWidth + Math.random() * 0.3 * window.innerWidth, y: Math.random() * 0.4 * window.innerHeight }, // Top-right
+          { x: Math.random() * 0.4 * window.innerWidth, y: 0.6 * window.innerHeight + Math.random() * 0.4 * window.innerHeight }, // Bottom-left
+          { x: 0.6 * window.innerWidth + Math.random() * 0.4 * window.innerWidth, y: 0.6 * window.innerHeight + Math.random() * 0.4 * window.innerHeight } // Bottom-right
+        ];
+        
+        const launchPoint = edges[fireworkIndex];
+        const particleCount = 8 + Math.floor(Math.random() * 6); // 8-13 particles per edge firework
+        
+        for (let i = 0; i < particleCount; i++) {
+          const firework = document.createElement('div');
+          firework.textContent = fireworkEmojis[Math.floor(Math.random() * fireworkEmojis.length)];
+          
+          // Set basic styles directly
+          firework.style.position = 'absolute';
+          firework.style.fontSize = '28px';
+          firework.style.zIndex = '100000';
+          firework.style.pointerEvents = 'none';
+          
+          // Calculate angle for radial burst from edge position
+          const angle = Math.random() * 360;
+          const radian = (angle * Math.PI) / 180;
+          
+          // Smaller distance for edge fireworks
+          const distance = 150 + Math.random() * 200; // 150-350px
+          
+          const finalX = launchPoint.x + Math.cos(radian) * distance;
+          const finalY = launchPoint.y + Math.sin(radian) * distance;
+          
+          // Set initial position at edge launch point
+          firework.style.left = launchPoint.x + 'px';
+          firework.style.top = launchPoint.y + 'px';
+          firework.style.opacity = '1';
+          firework.style.transform = 'scale(0.2)';
+          
+          newYearLoader.appendChild(firework);
+          console.log(`Edge Firework ${fireworkIndex + 1} Particle ${i}: from (${launchPoint.x}, ${launchPoint.y}) to (${finalX}, ${finalY})`);
+          
+          // Trigger animation with slight delay
+          setTimeout(() => {
+            firework.style.transition = 'all 2.0s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            firework.style.left = finalX + 'px';
+            firework.style.top = finalY + 'px';
+            firework.style.transform = 'scale(1.0) rotate(360deg)';
+            firework.style.opacity = '0';
+          }, i * 15); // Faster stagger for edge fireworks
+          
+          // Remove particle after animation
+          setTimeout(() => {
+            if (firework && firework.parentNode) {
+              firework.parentNode.removeChild(firework);
+            }
+          }, 2200);
+        }
+      };
+
+      const createFireworkBurst = () => {
+        if (burstCount >= maxBursts) return;
+        
+        // Create 15-25 firework particles per burst for spectacular effect
+        const particleCount = 15 + Math.floor(Math.random() * 10);
+        console.log(`Creating ${particleCount} New Year particles for burst ${burstCount + 1}`);
+        
+        for (let i = 0; i < particleCount; i++) {
+          const firework = document.createElement('div');
+          firework.textContent = fireworkEmojis[Math.floor(Math.random() * fireworkEmojis.length)];
+          
+          // Set basic styles directly
+          firework.style.position = 'absolute';
+          firework.style.fontSize = '32px';
+          firework.style.zIndex = '100000';
+          firework.style.pointerEvents = 'none';
+          
+          // Calculate angle for even distribution in all directions
+          const angle = Math.random() * 360;
+          const radian = (angle * Math.PI) / 180;
+          
+          // Distance from center - responsive to screen size
+          const baseDistance = Math.min(window.innerWidth, window.innerHeight) * 0.3; // 30% of smaller dimension
+          const distance = baseDistance + Math.random() * (baseDistance * 0.8); // 30%-54% of smaller dimension
+          
+          // Calculate start and end positions
+          const centerX = window.innerWidth / 2;
+          const centerY = window.innerHeight / 2;
+          const finalX = centerX + Math.cos(radian) * distance;
+          const finalY = centerY + Math.sin(radian) * distance;
+          
+          // Set initial position at center
+          firework.style.left = centerX + 'px';
+          firework.style.top = centerY + 'px';
+          firework.style.opacity = '1';
+          firework.style.transform = 'scale(0.3)';
+          
+          newYearLoader.appendChild(firework);
+          console.log(`NY Particle ${i}: from (${centerX}, ${centerY}) to (${finalX}, ${finalY})`);
+          
+          // Trigger animation with slight delay for wave effect
+          setTimeout(() => {
+            firework.style.transition = 'all 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            firework.style.left = finalX + 'px';
+            firework.style.top = finalY + 'px';
+            firework.style.transform = 'scale(1.2) rotate(360deg)';
+            firework.style.opacity = '0';
+            
+            console.log(`Animating NY particle ${i} to (${finalX}, ${finalY})`);
+          }, i * 20); // Stagger by 20ms for ripple effect
+          
+          // Remove particle after animation
+          setTimeout(() => {
+            if (firework && firework.parentNode) {
+              firework.parentNode.removeChild(firework);
+            }
+          }, 2700);
+        }
+        
+        burstCount++;
+        console.log(`🎆 Firework burst ${burstCount}/${maxBursts} launched!`);
+        
+        if (burstCount < maxBursts) {
+          setTimeout(createFireworkBurst, 800);
+        }
+      };
+      
+      setTimeout(createFireworkBurst, 500);
+
+      // Launch 4 random edge fireworks at different times throughout animation
+      setTimeout(() => createRandomEdgeFirework(0), 1200);  // Top-left at 1.2s
+      setTimeout(() => createRandomEdgeFirework(1), 2800);  // Top-right at 2.8s
+      setTimeout(() => createRandomEdgeFirework(2), 4200);  // Bottom-left at 4.2s
+      setTimeout(() => createRandomEdgeFirework(3), 5600);  // Bottom-right at 5.6s
+      console.log('🎆 Scheduled 4 random edge fireworks at different timings!');
+
+      // Add 15 more random fireworks at random positions and scales for vivid sky (1-6s)
+      for (let f = 0; f < 15; f++) {
+        setTimeout(() => {
+          const randomX = 0.1 * window.innerWidth + Math.random() * 0.8 * window.innerWidth;
+          const randomY = 0.1 * window.innerHeight + Math.random() * 0.6 * window.innerHeight;
+          const randomScale = 0.6 + Math.random() * 0.8; // Scale between 0.6 and 1.4
+          const particleCount = 8 + Math.floor(Math.random() * 8); // 8-15 particles
+
+          for (let i = 0; i < particleCount; i++) {
+            const firework = document.createElement('div');
+            firework.textContent = fireworkEmojis[Math.floor(Math.random() * fireworkEmojis.length)];
+
+            firework.style.position = 'absolute';
+            firework.style.fontSize = Math.floor(28 * randomScale) + 'px';
+            firework.style.zIndex = '100000';
+            firework.style.pointerEvents = 'none';
+
+            const angle = Math.random() * 360;
+            const radian = (angle * Math.PI) / 180;
+            const distance = (100 + Math.random() * 150) * randomScale;
+
+            const finalX = randomX + Math.cos(radian) * distance;
+            const finalY = randomY + Math.sin(radian) * distance;
+
+            firework.style.left = randomX + 'px';
+            firework.style.top = randomY + 'px';
+            firework.style.opacity = '1';
+            firework.style.transform = 'scale(0.2)';
+
+            newYearLoader.appendChild(firework);
+
+            setTimeout(() => {
+              firework.style.transition = 'all 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+              firework.style.left = finalX + 'px';
+              firework.style.top = finalY + 'px';
+              firework.style.transform = `scale(${randomScale}) rotate(${Math.random() * 720}deg)`;
+              firework.style.opacity = '0';
+            }, i * 15);
+
+            setTimeout(() => {
+              if (firework && firework.parentNode) {
+                firework.parentNode.removeChild(firework);
+              }
+            }, 2000);
+          }
+        }, 1000 + f * 350); // Spread across 6 seconds
+      }
+
+      // DRAMATIC FINALE: Giant firework explosion at 6.5s
+      setTimeout(() => {
+        console.log('💥 DRAMATIC FINALE FIREWORK!');
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        const finaleParticles = 50; // Massive burst!
+
+        for (let i = 0; i < finaleParticles; i++) {
+          const firework = document.createElement('div');
+          firework.textContent = fireworkEmojis[Math.floor(Math.random() * fireworkEmojis.length)];
+
+          firework.style.position = 'absolute';
+          firework.style.fontSize = '50px'; // HUGE size!
+          firework.style.zIndex = '100001';
+          firework.style.pointerEvents = 'none';
+
+          const angle = (i / finaleParticles) * Math.PI * 2; // Perfect circle distribution
+          const radian = angle;
+          const distance = 250 + Math.random() * 350; // Very large explosion radius
+
+          const finalX = centerX + Math.cos(radian) * distance;
+          const finalY = centerY + Math.sin(radian) * distance;
+
+          firework.style.left = centerX + 'px';
+          firework.style.top = centerY + 'px';
+          firework.style.opacity = '1';
+          firework.style.transform = 'scale(0.5)';
+
+          newYearLoader.appendChild(firework);
+
+          setTimeout(() => {
+            firework.style.transition = 'all 2.5s cubic-bezier(0.2, 0.8, 0.2, 1)';
+            firework.style.left = finalX + 'px';
+            firework.style.top = finalY + 'px';
+            firework.style.transform = 'scale(2) rotate(1080deg)'; // Triple spin!
+            firework.style.opacity = '0';
+          }, i * 8); // Fast cascade
+
+          setTimeout(() => {
+            if (firework && firework.parentNode) {
+              firework.parentNode.removeChild(firework);
+            }
+          }, 3000);
+        }
+      }, 6500);
+
+      setTimeout(() => {
+        newYearLoader.classList.add('fade-out');
+      }, 9000);
+
+      setTimeout(() => {
+        if (newYearLoader && newYearLoader.parentNode) {
+          newYearLoader.parentNode.removeChild(newYearLoader);
+        }
+
+        document.body.classList.remove('newyear-active');
+        if (mainContent) {
+          mainContent.style.opacity = '1';
+          mainContent.style.visibility = 'visible';
+        }
+
+        console.log('🎉 New Year firework animation completed');
+      }, 9800);
+    }
+
+    // 🎉 NEW YEAR ANIMATION TEST FUNCTION 🎉
+    function testNewYearAnimation() {
+      console.log('🎊 Starting New Year Firework Animation Simulation...');
+      
+      // Create New Year loader with dynamic background
+      const newYearLoader = document.createElement('div');
+      newYearLoader.className = 'newyear-loader active';
+      newYearLoader.innerHTML = `
+            <div class="reindeer reindeer-3">🦌</div>
+            
+            <!-- Santa on Sleigh -->
+            <div class="santa-sleigh">🎅🛷</div>
+            
+            <!-- Flying Path Trail -->
+            <div class="sleigh-trail">✨</div>
+          </div>
+          
+          <!-- Falling Snow -->
+          <div class="snow-container">
+            <div class="snowflake snow-1">❄️</div>
+            <div class="snowflake snow-2">❄️</div>
+            <div class="snowflake snow-3">❄️</div>
+            <div class="snowflake snow-4">❄️</div>
+            <div class="snowflake snow-5">❄️</div>
+            <div class="snowflake snow-6">❄️</div>
+          </div>
+          
+          <!-- Flying Gifts and Toys -->
+          <div class="gifts-container">
+            <div class="flying-gift gift-1">🎁</div>
+            <div class="flying-gift gift-2">🧸</div>
+            <div class="flying-gift gift-3">📦</div>
+            <div class="flying-gift gift-4">🎀</div>
+            <div class="flying-gift gift-5">🪀</div>
+            <div class="flying-gift gift-6">🎮</div>
+          </div>
+          
+          <!-- Background Elements -->
+          <div class="christmas-stars">
+            <div class="star star-1">⭐</div>
+            <div class="star star-2">🌟</div>
+            <div class="star star-3">⭐</div>
+            <div class="star star-4">🌟</div>
+          </div>
+          
+          <!-- Christmas Message -->
+          <div class="christmas-center-text">🎅 Santa is Coming Tonight! 🎄</div>
+        </div>
+      `;
+      
+      document.body.appendChild(christmasLoader);
+      
+      // Add Christmas-active class to body
+      document.body.classList.add('christmas-active');
+      
+      // Hide main content during animation
+      const mainContent = window.AppElements.mainContent;
+      if (mainContent) {
+        mainContent.style.opacity = '0';
+        mainContent.style.visibility = 'hidden';
+      }
+      
+      const sleighScene = christmasLoader.querySelector('.santa-sleigh-scene');
+      const centerText = christmasLoader.querySelector('.christmas-center-text');
+      const stars = christmasLoader.querySelectorAll('.star');
+      const snowflakes = christmasLoader.querySelectorAll('.snowflake');
+      const gifts = christmasLoader.querySelectorAll('.flying-gift');
+      
+      setTimeout(() => {
+        sleighScene.classList.add('flying');
+        centerText.classList.add('show');
+        console.log('🎅 Stage 1: Santa begins his magical journey across the sky...');
+      }, 100);
+      
+      setTimeout(() => {
+        stars.forEach((star, i) => setTimeout(() => star.classList.add('twinkle'), i * 100));
+        snowflakes.forEach((snow, i) => setTimeout(() => snow.classList.add('falling'), i * 150));
+        console.log('⭐❄️ Stage 2: Stars twinkling and snow falling...');
+      }, 500);
+      
+      setTimeout(() => {
+        gifts.forEach((gift, i) => setTimeout(() => gift.classList.add('dropping'), i * 200));
+        console.log('🎁 Stage 3: Gifts dropping from the sky...');
+      }, 1500);
+      
+      setTimeout(() => {
+        sleighScene.classList.add('waving');
+        console.log('🎅 Stage 4: Santa waves...');
+      }, 2500);
+      
+      setTimeout(() => {
+        sleighScene.classList.add('disappearing');
+        console.log('🛷 Stage 5: Santa disappearing...');
+      }, 4000);
+      
+      setTimeout(() => {
+        christmasLoader.classList.add('fade-out');
+        console.log('🌙 Stage 6: Fading out...');
+      }, 4500);
+      
+      setTimeout(() => {
+        if (christmasLoader && christmasLoader.parentNode) {
+          christmasLoader.parentNode.removeChild(christmasLoader);
+        }
+        document.body.classList.remove('christmas-active');
+        if (mainContent) {
+          mainContent.style.opacity = '1';
+          mainContent.style.visibility = 'visible';
+        }
+        console.log('🎅 Christmas animation complete!');
+        alert('🎄 Christmas Animation Complete! Santa flew right-to-left with snow and gifts!');
+      }, 5000);
+    }
+
+    // 🧧 CHINESE NEW YEAR ANIMATION FUNCTION 🧧
+    function initChineseNewYearAnimation() {
+      const today = new Date();
+
+      console.log('🧧 Chinese New Year check:', {
+        date: today.toDateString(),
+        year: today.getFullYear(),
+        month: today.getMonth(),
+        day: today.getDate()
+      });
+      
+      // Use new holiday checking system instead of manual date calculations
+      if (isHolidayActive('chinesenewyear')) {
+        console.log('🧧✨ Chinese New Year holiday is active! Starting animation...');
+        
+        // Create Chinese New Year loader
+        const cnyLoader = document.createElement('div');
+        cnyLoader.className = 'cny-loader active';
+        cnyLoader.innerHTML = `
+          <div class="cny-scene">
+            <!-- Background Fireworks -->
+            <div class="background-fireworks">
+              <div class="bg-firework fw-1">🎆</div>
+              <div class="bg-firework fw-2">🎇</div>
+              <div class="bg-firework fw-3">🎆</div>
+              <div class="bg-firework fw-4">🎇</div>
+              <div class="bg-firework fw-5">🎆</div>
+              <div class="bg-firework fw-6">🎇</div>
+            </div>
+            
+            <!-- Dragon Dance Parade (Multiple Dragons) -->
+            <div class="dragon-dance dragon-1">
+              <div class="dragon-part dragon-head">🐲</div>
+              <div class="dragon-part dragon-body">🐉</div>
+              <div class="dragon-part dragon-tail">🐲</div>
+            </div>
+            
+            <div class="dragon-dance dragon-2">
+              <div class="dragon-part dragon-head">🐲</div>
+              <div class="dragon-part dragon-body">🐉</div>
+              <div class="dragon-part dragon-tail">🐲</div>
+            </div>
+            
+            <div class="dragon-dance dragon-3">
+              <div class="dragon-part dragon-head">🐲</div>
+              <div class="dragon-part dragon-body">🐉</div>
+              <div class="dragon-part dragon-tail">🐲</div>
+            </div>
+            
+            <!-- Year of the Horse -->
+            <div class="zodiac-horse">&#8238;🐴&#8236;</div>
+            
+            <!-- Racing Horses - Random appearances (15 horses) -->
+            <div class="racing-horse racing-1">&#8238;🏇&#8236;</div>
+            <div class="racing-horse racing-2">&#8238;🏇&#8236;</div>
+            <div class="racing-horse racing-3">&#8238;🏇&#8236;</div>
+            <div class="racing-horse racing-4">&#8238;🏇&#8236;</div>
+            <div class="racing-horse racing-5">&#8238;🏇&#8236;</div>
+            <div class="racing-horse racing-6">&#8238;🏇&#8236;</div>
+            <div class="racing-horse racing-7">&#8238;🏇&#8236;</div>
+            <div class="racing-horse racing-8">&#8238;🏇&#8236;</div>
+            <div class="racing-horse racing-9">&#8238;🏇&#8236;</div>
+            <div class="racing-horse racing-10">&#8238;🏇&#8236;</div>
+            <div class="racing-horse racing-11">&#8238;🏇&#8236;</div>
+            <div class="racing-horse racing-12">&#8238;🏇&#8236;</div>
+            <div class="racing-horse racing-13">&#8238;🏇&#8236;</div>
+            <div class="racing-horse racing-14">&#8238;🏇&#8236;</div>
+            <div class="racing-horse racing-15">&#8238;🏇&#8236;</div>
+            
+            <!-- Falling Lanterns -->
+            <div class="lantern-container">
+              <div class="lantern lantern-1">🏮</div>
+              <div class="lantern lantern-2">🏮</div>
+              <div class="lantern lantern-3">🏮</div>
+              <div class="lantern lantern-4">🏮</div>
+              <div class="lantern lantern-5">🏮</div>
+              <div class="lantern lantern-6">🏮</div>
+              <div class="lantern lantern-7">🏮</div>
+              <div class="lantern lantern-8">🏮</div>
+            </div>
+            
+            <!-- Firecrackers -->
+            <div class="firecracker-container">
+              <div class="firecracker fc-1">🧨</div>
+              <div class="firecracker fc-2">🧨</div>
+              <div class="firecracker fc-3">🧨</div>
+              <div class="firecracker fc-4">🧨</div>
+            </div>
+            
+            <!-- Red Envelopes Falling -->
+            <div class="hongbao-container">
+              <div class="hongbao hb-1">🧧</div>
+              <div class="hongbao hb-2">🧧</div>
+              <div class="hongbao hb-3">🧧</div>
+              <div class="hongbao hb-4">🧧</div>
+              <div class="hongbao hb-5">🧧</div>
+              <div class="hongbao hb-6">🧧</div>
+            </div>
+            
+            <!-- Dumplings -->
+            <div class="dumpling-container">
+              <div class="dumpling d-1">🥟</div>
+              <div class="dumpling d-2">🥟</div>
+              <div class="dumpling d-3">🥟</div>
+            </div>
+            
+            <!-- Center Message -->
+            <div class="cny-center-text">🧧 Happy Chinese New Year 2026! 🐴</div>
+            
+            <!-- Golden Coins for Prosperity -->
+            <div class="coin-container">
+              <div class="coin coin-1">🪙</div>
+              <div class="coin coin-2">🪙</div>
+              <div class="coin coin-3">🪙</div>
+              <div class="coin coin-4">🪙</div>
+            </div>
+          </div>
+        `;
+        
+        document.body.appendChild(cnyLoader);
+        document.body.classList.add('cny-active');
+        
+        // Hide main content during animation
+        const mainContent = window.AppElements.mainContent;
+        if (mainContent) {
+          mainContent.style.opacity = '0';
+          mainContent.style.visibility = 'hidden';
+        }
+        
+        // Animation sequence (6 seconds total)
+        const dragons = cnyLoader.querySelectorAll('.dragon-dance');
+        const bgFireworks = cnyLoader.querySelectorAll('.bg-firework');
+        const horse = cnyLoader.querySelector('.zodiac-horse');
+        const racingHorses = cnyLoader.querySelectorAll('.racing-horse');
+        const centerText = cnyLoader.querySelector('.cny-center-text');
+        const lanterns = cnyLoader.querySelectorAll('.lantern');
+        const firecrackers = cnyLoader.querySelectorAll('.firecracker');
+        const hongbaos = cnyLoader.querySelectorAll('.hongbao');
+        const dumplings = cnyLoader.querySelectorAll('.dumpling');
+        const coins = cnyLoader.querySelectorAll('.coin');
+        
+        // Stage 0: Start background fireworks immediately
+        bgFireworks.forEach((fw, index) => {
+          setTimeout(() => {
+            fw.classList.add('bursting');
+          }, index * 300);
+        });
+        
+        // Stage 1: Dragon dance and horse appear (0-1s)
+        setTimeout(() => {
+          dragons.forEach((dragon, index) => {
+            setTimeout(() => {
+              dragon.classList.add('dancing');
+            }, index * 800);
+          });
+          horse.classList.add('galloping');
+          
+          // Racing horses appear in waves - ensuring multiple visible at once
+          racingHorses.forEach((rHorse, index) => {
+            const randomDelay = Math.random() * 4000 + (index * 200); // Staggered + random delay
+            setTimeout(() => {
+              rHorse.classList.add('racing');
+              console.log(`🏇 Racing horse ${index + 1} starting!`);
+            }, randomDelay);
+          });
+          
+          centerText.classList.add('show');
+          console.log('🐉 Stage 1: Dragon dance begins, Horse gallops in, Racing horses!');
+        }, 100);
+        
+        // Stage 2: Lanterns drop (1s)
+        setTimeout(() => {
+          lanterns.forEach((lantern, index) => {
+            setTimeout(() => {
+              lantern.classList.add('dropping');
+            }, index * 100);
+          });
+          console.log('🏮 Stage 2: Lanterns descending...');
+        }, 1000);
+        
+        // Stage 3: Firecrackers explode (2s)
+        setTimeout(() => {
+          firecrackers.forEach((fc, index) => {
+            setTimeout(() => {
+              fc.classList.add('exploding');
+            }, index * 200);
+          });
+          console.log('🧨 Stage 3: Firecrackers exploding!');
+        }, 2000);
+        
+        // Stage 4: Red envelopes and dumplings fall (3s)
+        setTimeout(() => {
+          hongbaos.forEach((hb, index) => {
+            setTimeout(() => {
+              hb.classList.add('falling');
+            }, index * 150);
+          });
+          dumplings.forEach((d, index) => {
+            setTimeout(() => {
+              d.classList.add('falling');
+            }, index * 200);
+          });
+          console.log('🧧 Stage 4: Red envelopes and dumplings falling!');
+        }, 3000);
+        
+        // Stage 5: Coins for prosperity (4s)
+        setTimeout(() => {
+          coins.forEach((coin, index) => {
+            setTimeout(() => {
+              coin.classList.add('spinning');
+            }, index * 150);
+          });
+          console.log('🪙 Stage 5: Prosperity coins spinning!');
+        }, 4000);
+        
+        // Stage 6: Fade out (5s)
+        setTimeout(() => {
+          cnyLoader.classList.add('fade-out');
+          console.log('🧧 Stage 6: Fading out...');
+        }, 5000);
+        
+        // Stage 7: Complete cleanup (6s)
+        setTimeout(() => {
+          if (cnyLoader && cnyLoader.parentNode) {
+            cnyLoader.parentNode.removeChild(cnyLoader);
+          }
+          
+          document.body.classList.remove('cny-active');
+          if (mainContent) {
+            mainContent.style.opacity = '1';
+            mainContent.style.visibility = 'visible';
+          }
+          
+          console.log('🧧 Chinese New Year animation completed!');
+        }, 6000);
+        
+      } else {
+        console.log('🧧 Chinese New Year holiday is not active - skipping animation');
+      }
+    }
+
+    // 🐰 EASTER ANIMATION FUNCTION 🐰
+    function initEasterAnimation() {
+      const today = new Date();
+
+      console.log('🐰 Easter check:', {
+        date: today.toDateString(),
+        year: today.getFullYear(),
+        month: today.getMonth(),
+        day: today.getDate()
+      });
+
+      if (!isHolidayActive('easter')) {
+        console.log('🐰 Easter holiday is not active - skipping Easter animation');
+        return;
+      }
+
+      console.log('🐰✨ Easter holiday is active! Starting Easter animation...');
+
+      const easterLoader = document.createElement('div');
+      easterLoader.className = 'easter-loader active';
+      easterLoader.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:linear-gradient(to bottom,#87CEEB,#98D8C8);z-index:100000;display:flex;align-items:center;justify-content:center;';
+
+      easterLoader.innerHTML = `
+        <div class="easter-scene" style="position:relative;width:100%;height:100%;">
+          <div class="easter-text" style="position:absolute;top:20%;left:50%;transform:translateX(-50%);font-size:48px;color:#fff;text-shadow:2px 2px 4px rgba(0,0,0,0.3);opacity:0;transition:opacity 0.5s;">🐰 Happy Easter! 🥚</div>
+          <div class="easter-eggs" style="position:absolute;width:100%;height:100%;"></div>
+          <div class="easter-bunnies" style="position:absolute;width:100%;height:100%;"></div>
+          <div class="easter-flowers" style="position:absolute;width:100%;height:100%;"></div>
+        </div>
+      `;
+
+      document.body.appendChild(easterLoader);
+      document.body.classList.add('easter-active');
+
+      const mainContent = window.AppElements.mainContent;
+      if (mainContent) {
+        mainContent.style.opacity = '0';
+        mainContent.style.visibility = 'hidden';
+      }
+
+      const easterText = easterLoader.querySelector('.easter-text');
+      const eggsContainer = easterLoader.querySelector('.easter-eggs');
+      const bunniesContainer = easterLoader.querySelector('.easter-bunnies');
+      const flowersContainer = easterLoader.querySelector('.easter-flowers');
+
+      setTimeout(() => {
+        easterText.style.opacity = '1';
+      }, 500);
+
+      // Create bouncing eggs
+      const eggEmojis = ['🥚', '🐣', '🐥'];
+      for (let i = 0; i < 12; i++) {
+        const egg = document.createElement('div');
+        egg.textContent = eggEmojis[Math.floor(Math.random() * eggEmojis.length)];
+        egg.style.cssText = `position:absolute;font-size:40px;left:${Math.random() * 90}%;top:-50px;transition:all 2s ease-in;`;
+        eggsContainer.appendChild(egg);
+
+        setTimeout(() => {
+          egg.style.top = `${60 + Math.random() * 30}%`;
+          egg.style.transform = `rotate(${Math.random() * 360}deg)`;
+        }, i * 200);
+      }
+
+      // Create hopping bunnies
+      for (let i = 0; i < 4; i++) {
+        const bunny = document.createElement('div');
+        bunny.textContent = '🐰';
+        bunny.style.cssText = `position:absolute;font-size:60px;bottom:-100px;left:${i * 25}%;transition:all 1.5s ease-out;`;
+        bunniesContainer.appendChild(bunny);
+
+        setTimeout(() => {
+          bunny.style.bottom = '10%';
+        }, 1000 + i * 300);
+      }
+
+      // Create blooming flowers
+      const flowerEmojis = ['🌷', '🌸', '🌺', '🌻'];
+      for (let i = 0; i < 8; i++) {
+        const flower = document.createElement('div');
+        flower.textContent = flowerEmojis[Math.floor(Math.random() * flowerEmojis.length)];
+        flower.style.cssText = `position:absolute;font-size:0px;bottom:0;left:${Math.random() * 100}%;transition:all 1s ease-out;`;
+        flowersContainer.appendChild(flower);
+
+        setTimeout(() => {
+          flower.style.fontSize = '50px';
+        }, 1500 + i * 200);
+      }
+
+      setTimeout(() => {
+        easterLoader.style.opacity = '0';
+        easterLoader.style.transition = 'opacity 0.8s';
+      }, 5000);
+
+      setTimeout(() => {
+        if (easterLoader && easterLoader.parentNode) {
+          easterLoader.parentNode.removeChild(easterLoader);
+        }
+        document.body.classList.remove('easter-active');
+        if (mainContent) {
+          mainContent.style.opacity = '1';
+          mainContent.style.visibility = 'visible';
+        }
+        console.log('🐰 Easter animation completed!');
+      }, 5800);
+    }
+
+    // 🌸 SPRING ANIMATION FUNCTION 🌸
+    function initSpringAnimation() {
+      const today = new Date();
+
+      console.log('🌸 Spring check:', {
+        date: today.toDateString()
+      });
+
+      if (!isHolidayActive('spring')) {
+        console.log('🌸 Spring holiday is not active - skipping Spring animation');
+        return;
+      }
+
+      console.log('🌸✨ Spring holiday is active! Starting Spring animation...');
+
+      const springLoader = document.createElement('div');
+      springLoader.className = 'spring-loader active';
+      springLoader.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:linear-gradient(to bottom,#E0F6FF,#B4E7CE);z-index:100000;';
+
+      springLoader.innerHTML = '<div class="spring-text" style="position:absolute;top:20%;left:50%;transform:translateX(-50%);font-size:48px;color:#2E7D32;opacity:0;transition:opacity 0.5s;">🌸 Spring is Here! 🦋</div><div class="spring-elements" style="position:absolute;width:100%;height:100%;"></div>';
+
+      document.body.appendChild(springLoader);
+      document.body.classList.add('spring-active');
+
+      const mainContent = window.AppElements.mainContent;
+      if (mainContent) {
+        mainContent.style.opacity = '0';
+        mainContent.style.visibility = 'hidden';
+      }
+
+      const springText = springLoader.querySelector('.spring-text');
+      const elementsContainer = springLoader.querySelector('.spring-elements');
+
+      setTimeout(() => { springText.style.opacity = '1'; }, 300);
+
+      // Butterflies
+      const butterflyEmojis = ['🦋', '🐛'];
+      for (let i = 0; i < 8; i++) {
+        const butterfly = document.createElement('div');
+        butterfly.textContent = butterflyEmojis[i % 2];
+        butterfly.style.cssText = `position:absolute;font-size:40px;left:-50px;top:${Math.random() * 80}%;transition:all 4s ease-in-out;`;
+        elementsContainer.appendChild(butterfly);
+        setTimeout(() => {
+          butterfly.style.left = '110%';
+          butterfly.style.top = `${Math.random() * 80}%`;
+        }, i * 400);
+      }
+
+      // Flowers growing
+      const flowers = ['🌷', '🌸', '🌺', '🌻', '🌼'];
+      for (let i = 0; i < 15; i++) {
+        const flower = document.createElement('div');
+        flower.textContent = flowers[Math.floor(Math.random() * flowers.length)];
+        flower.style.cssText = `position:absolute;font-size:0;bottom:0;left:${Math.random() * 95}%;transition:all 0.8s ease-out;`;
+        elementsContainer.appendChild(flower);
+        setTimeout(() => { flower.style.fontSize = '45px'; }, 1000 + i * 100);
+      }
+
+      // Sakura blossoms popping up randomly and enlarging
+      const sakuraEmojis = ['🌸', '🌺', '🌼'];
+      for (let i = 0; i < 35; i++) {
+        const sakura = document.createElement('div');
+        sakura.textContent = sakuraEmojis[Math.floor(Math.random() * sakuraEmojis.length)];
+        const randomX = Math.random() * 95;
+        const randomY = 10 + Math.random() * 80;
+        const finalSize = 35 + Math.floor(Math.random() * 30);
+        const delay = Math.random() * 4000;
+
+        sakura.style.cssText = `position:absolute;font-size:0;left:${randomX}%;top:${randomY}%;opacity:0;transition:all 1.2s ease-out;transform:rotate(0deg);`;
+        elementsContainer.appendChild(sakura);
+
+        setTimeout(() => {
+          sakura.style.fontSize = `${finalSize}px`;
+          sakura.style.opacity = '1';
+          sakura.style.transform = `rotate(${Math.random() * 360}deg)`;
+        }, delay);
+
+        // Fade out near the end
+        setTimeout(() => {
+          sakura.style.opacity = '0';
+        }, delay + 3000);
+      }
+
+      // Floating sakura petals drifting across screen
+      for (let i = 0; i < 25; i++) {
+        const petal = document.createElement('div');
+        petal.textContent = '🌸';
+        const startY = Math.random() * 100;
+        const startX = -5;
+        const endX = 105 + Math.random() * 10;
+        const endY = startY + (Math.random() * 40 - 20);
+        const size = 25 + Math.floor(Math.random() * 20);
+        const duration = 4 + Math.random() * 3;
+        const delay = Math.random() * 3000;
+
+        petal.style.cssText = `position:absolute;font-size:${size}px;left:${startX}%;top:${startY}%;opacity:0;transition:all ${duration}s ease-in-out;`;
+        elementsContainer.appendChild(petal);
+
+        setTimeout(() => {
+          petal.style.left = `${endX}%`;
+          petal.style.top = `${endY}%`;
+          petal.style.opacity = '0.8';
+          petal.style.transform = `rotate(${360 + Math.random() * 360}deg)`;
+        }, delay);
+      }
+
+      setTimeout(() => {
+        springLoader.style.opacity = '0';
+        springLoader.style.transition = 'opacity 0.8s';
+      }, 5500);
+
+      setTimeout(() => {
+        if (springLoader && springLoader.parentNode) {
+          springLoader.parentNode.removeChild(springLoader);
+        }
+        document.body.classList.remove('spring-active');
+        if (mainContent) {
+          mainContent.style.opacity = '1';
+          mainContent.style.visibility = 'visible';
+        }
+        console.log('🌸 Spring animation completed!');
+      }, 6300);
+    }
+
+    // ☀️ SUMMER ANIMATION FUNCTION ☀️
+    function initSummerAnimation() {
+      if (!isHolidayActive('summer')) {
+        console.log('☀️ Summer holiday is not active');
+        return;
+      }
+
+      console.log('☀️ Summer animation starting!');
+
+      const summerLoader = document.createElement('div');
+      summerLoader.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:linear-gradient(to bottom,#FFD700,#87CEEB,#F0E68C);z-index:100000;overflow:hidden;';
+      summerLoader.innerHTML = '<div style="position:absolute;top:20%;left:50%;transform:translateX(-50%);font-size:48px;color:#FF6347;text-shadow:2px 2px 4px #FFA500;opacity:0;transition:opacity 0.5s;" class="summer-text">☀️ Summer Fun! 🏖️</div><div class="summer-elements"></div>';
+
+      document.body.appendChild(summerLoader);
+      const mainContent = window.AppElements.mainContent;
+      if (mainContent) mainContent.style.opacity = '0';
+
+      setTimeout(() => { summerLoader.querySelector('.summer-text').style.opacity = '1'; }, 300);
+
+      const container = summerLoader.querySelector('.summer-elements');
+
+      // Palm trees at the bottom
+      const palmPositions = [10, 25, 50, 75, 90];
+      palmPositions.forEach((pos, index) => {
+        const palm = document.createElement('div');
+        palm.textContent = '🌴';
+        palm.style.cssText = `position:absolute;font-size:0;bottom:0;left:${pos}%;transform:translateX(-50%);transition:all 0.8s ease-out;`;
+        container.appendChild(palm);
+        setTimeout(() => {
+          palm.style.fontSize = '60px';
+        }, 500 + index * 150);
+      });
+
+      // Surfing guy crossing from right to left
+      const surfer = document.createElement('div');
+      surfer.textContent = '🏄';
+      surfer.style.cssText = 'position:absolute;font-size:70px;top:60%;right:-100px;transition:all 5s linear;transform:scaleX(-1);';
+      container.appendChild(surfer);
+      setTimeout(() => {
+        surfer.style.right = '110%';
+      }, 800);
+
+      // Summer drinks floating up
+      const drinks = ['🍹', '🥤', '🧃', '🍸'];
+      for (let i = 0; i < 12; i++) {
+        const drink = document.createElement('div');
+        drink.textContent = drinks[Math.floor(Math.random() * drinks.length)];
+        const startX = Math.random() * 90;
+        drink.style.cssText = `position:absolute;font-size:45px;left:${startX}%;bottom:-50px;opacity:0;transition:all 3s ease-out;transform:rotate(0deg);`;
+        container.appendChild(drink);
+        setTimeout(() => {
+          drink.style.bottom = `${60 + Math.random() * 30}%`;
+          drink.style.opacity = '0.9';
+          drink.style.transform = `rotate(${Math.random() * 360}deg)`;
+        }, 1000 + i * 250);
+      }
+
+      // Anti-overlap collision detection for static elements
+      const occupiedPositions = [];
+      const minDistance = 100; // Minimum pixels between items
+
+      function isPositionFree(x, y, size) {
+        for (let pos of occupiedPositions) {
+          const distance = Math.sqrt(Math.pow(x - pos.x, 2) + Math.pow(y - pos.y, 2));
+          if (distance < minDistance + size / 2) {
+            return false;
+          }
+        }
+        return true;
+      }
+
+      function getRandomPosition(size, xRange, yRange) {
+        let attempts = 0;
+        const maxAttempts = 50;
+
+        while (attempts < maxAttempts) {
+          const x = xRange.min + Math.random() * (xRange.max - xRange.min);
+          const y = yRange.min + Math.random() * (yRange.max - yRange.min);
+
+          // Convert to pixels for distance calculation
+          const pixelX = (x / 100) * window.innerWidth;
+          const pixelY = (y / 100) * window.innerHeight;
+
+          if (isPositionFree(pixelX, pixelY, size)) {
+            occupiedPositions.push({ x: pixelX, y: pixelY });
+            return { x: x + '%', y: y + '%' };
+          }
+          attempts++;
+        }
+
+        // Fallback: return a random position if we can't find free space
+        return {
+          x: (xRange.min + Math.random() * (xRange.max - xRange.min)) + '%',
+          y: (yRange.min + Math.random() * (yRange.max - yRange.min)) + '%'
+        };
+      }
+
+      // Ice creams appearing and bobbing (no overlap, positioned on sides to avoid blocking text)
+      const iceCreams = ['🍦', '🍧', '🍨'];
+      for (let i = 0; i < 15; i++) {
+        const iceCream = document.createElement('div');
+        iceCream.textContent = iceCreams[Math.floor(Math.random() * iceCreams.length)];
+        const size = 50;
+        // Split into left side (5-35%) and right side (65-95%) to keep center clear
+        const xRange = i < 8 ? { min: 5, max: 35 } : { min: 65, max: 95 };
+        const position = getRandomPosition(size, xRange, { min: 10, max: 60 });
+
+        iceCream.style.cssText = `position:absolute;font-size:0;left:${position.x};top:${position.y};opacity:0;transition:all 1s ease-out;`;
+        container.appendChild(iceCream);
+        setTimeout(() => {
+          iceCream.style.fontSize = '50px';
+          iceCream.style.opacity = '1';
+          // Bobbing animation
+          setTimeout(() => {
+            iceCream.style.transition = 'transform 0.6s ease-in-out';
+            iceCream.style.transform = 'translateY(-10px)';
+            setInterval(() => {
+              iceCream.style.transform = iceCream.style.transform === 'translateY(-10px)' ? 'translateY(10px)' : 'translateY(-10px)';
+            }, 600);
+          }, 1000);
+        }, 1500 + i * 200);
+      }
+
+      // Beach elements (no overlap, positioned on sides to avoid blocking text)
+      const beachEmojis = ['☀️', '🏖️', '🏊', '🕶️', '🌊', '⛱️', '🏐'];
+      for (let i = 0; i < 10; i++) {
+        const elem = document.createElement('div');
+        elem.textContent = beachEmojis[Math.floor(Math.random() * beachEmojis.length)];
+        const size = 54; // 45px * 1.2 scale
+        // Split into left side (5-35%) and right side (65-95%) to keep center clear
+        const xRange = i < 5 ? { min: 5, max: 35 } : { min: 65, max: 95 };
+        const position = getRandomPosition(size, xRange, { min: 20, max: 60 });
+
+        elem.style.cssText = `position:absolute;font-size:45px;left:${position.x};top:${position.y};opacity:0;transition:all 1.2s;`;
+        container.appendChild(elem);
+        setTimeout(() => {
+          elem.style.opacity = '0.8';
+          elem.style.transform = `scale(1.2) rotate(${Math.random() * 360}deg)`;
+        }, 500 + i * 200);
+      }
+
+      setTimeout(() => { summerLoader.style.opacity = '0'; summerLoader.style.transition = 'opacity 0.8s'; }, 5500);
+      setTimeout(() => {
+        summerLoader.remove();
+        if (mainContent) mainContent.style.opacity = '1';
+        console.log('☀️ Summer animation completed!');
+      }, 6300);
+    }
+
+    // 📚 BACK TO SCHOOL ANIMATION FUNCTION 📚
+    function initBackToSchoolAnimation() {
+      if (!isHolidayActive('backToSchool')) {
+        console.log('📚 Back to School holiday is not active');
+        return;
+      }
+
+      console.log('📚 Back to School animation starting!');
+
+      const schoolLoader = document.createElement('div');
+      schoolLoader.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);z-index:100000;';
+      schoolLoader.innerHTML = '<div style="position:absolute;top:20%;left:50%;transform:translateX(-50%);font-size:48px;color:#FFD700;opacity:0;transition:opacity 0.5s;" class="school-text">📚 Back to School! 🎒</div><div class="school-elements"></div>';
+
+      document.body.appendChild(schoolLoader);
+      const mainContent = window.AppElements.mainContent;
+      if (mainContent) mainContent.style.opacity = '0';
+
+      setTimeout(() => { schoolLoader.querySelector('.school-text').style.opacity = '1'; }, 300);
+
+      const container = schoolLoader.querySelector('.school-elements');
+      const items = ['📚', '✏️', '📓', '🎒', '📐', '🖊️', '📖', '✂️'];
+
+      for (let i = 0; i < 25; i++) {
+        const item = document.createElement('div');
+        item.textContent = items[Math.floor(Math.random() * items.length)];
+        item.style.cssText = `position:absolute;font-size:40px;left:${Math.random() * 100}%;top:-50px;transition:all 3s ease-in;transform:rotate(0deg);`;
+        container.appendChild(item);
+        setTimeout(() => {
+          item.style.top = `${100 + Math.random() * 20}%`;
+          item.style.transform = `rotate(${360 + Math.random() * 360}deg)`;
+        }, i * 150);
+      }
+
+      setTimeout(() => { schoolLoader.style.opacity = '0'; schoolLoader.style.transition = 'opacity 0.8s'; }, 5200);
+      setTimeout(() => {
+        schoolLoader.remove();
+        if (mainContent) mainContent.style.opacity = '1';
+        console.log('📚 Back to School animation completed!');
+      }, 6000);
+    }
+
+    // 🦃 THANKSGIVING ANIMATION FUNCTION 🦃
+    function initThanksgivingAnimation() {
+      if (!isHolidayActive('thanksgiving')) {
+        console.log('🦃 Thanksgiving holiday is not active');
+        return;
+      }
+
+      console.log('🦃 Thanksgiving animation starting!');
+
+      const thanksLoader = document.createElement('div');
+      thanksLoader.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:linear-gradient(to bottom,#8B4513,#D2691E,#F4A460);z-index:100000;overflow:hidden;';
+      thanksLoader.innerHTML = '<div class="thanks-elements"></div>';
+
+      document.body.appendChild(thanksLoader);
+      const mainContent = window.AppElements.mainContent;
+      if (mainContent) mainContent.style.opacity = '0';
+
+      const container = thanksLoader.querySelector('.thanks-elements');
+
+      // Stage 1: Big feast table in the middle (0-1.5s)
+      const table = document.createElement('div');
+      table.textContent = '🍽️';
+      table.style.cssText = 'position:absolute;left:50%;top:50%;transform:translate(-50%, -50%) scale(0);font-size:150px;transition:all 0.8s ease-out;';
+      container.appendChild(table);
+
+      setTimeout(() => {
+        table.style.transform = 'translate(-50%, -50%) scale(1)';
+      }, 300);
+
+      // Stage 2: Happy Thanksgiving text (1s)
+      const text = document.createElement('div');
+      text.textContent = '🦃 Happy Thanksgiving! 🥧';
+      text.style.cssText = 'position:absolute;top:10%;left:50%;transform:translateX(-50%);font-size:48px;color:#FFD700;text-shadow:3px 3px 6px #8B4513;opacity:0;transition:opacity 0.5s;';
+      container.appendChild(text);
+      setTimeout(() => { text.style.opacity = '1'; }, 1000);
+
+      // Stage 2.5: Big turkey jumps across screen from right to left (1-5s)
+      setTimeout(() => {
+        const turkey = document.createElement('div');
+        turkey.textContent = '🦃';
+        turkey.style.cssText = 'position:absolute;font-size:120px;left:calc(100% + 150px);top:60%;z-index:1000;transition:none;';
+        container.appendChild(turkey);
+
+        // Animate turkey crossing with jumping motion
+        let position = window.innerWidth + 150; // Start from right off-screen
+        let verticalPosition = 60;
+        let direction = -1; // -1 for up, 1 for down
+        let jumpSpeed = 0;
+
+        const turkeyInterval = setInterval(() => {
+          // Move horizontally from right to left
+          position -= 12; // Decrease to move left
+          turkey.style.left = position + 'px';
+
+          // Jumping motion (bouncing up and down)
+          jumpSpeed += 0.8 * direction;
+          verticalPosition += jumpSpeed;
+
+          // Bounce when reaching peak or bottom
+          if (verticalPosition <= 30 || verticalPosition >= 70) {
+            direction *= -1;
+            jumpSpeed = 0;
+          }
+
+          turkey.style.top = verticalPosition + '%';
+
+          // Remove when fully off left screen
+          if (position < -150) {
+            clearInterval(turkeyInterval);
+            turkey.remove();
+          }
+        }, 30);
+      }, 1000);
+
+      // Stage 3: Foods pop out randomly without overlapping (1.5-5s)
+      const meats = ['🍗', '🦃', '🥩', '🍖'];
+      const veggies = ['🥕', '🌽', '🥔', '🧅', '🥦', '🍅'];
+      const fruits = ['🍎', '🍊', '🍇', '🍐', '🍏', '🍓'];
+      const allFoods = [...meats, ...veggies, ...fruits, '🥧', '🍰', '🥖', '🧈'];
+
+      // Track occupied positions to prevent overlap
+      const occupiedPositions = [];
+      const minDistance = 120; // Minimum pixels between food items
+
+      function isPositionFree(x, y, size) {
+        for (let pos of occupiedPositions) {
+          const distance = Math.sqrt(Math.pow(x - pos.x, 2) + Math.pow(y - pos.y, 2));
+          if (distance < minDistance + size / 2) {
+            return false;
+          }
+        }
+        return true;
+      }
+
+      function getRandomPosition(size) {
+        let attempts = 0;
+        const maxAttempts = 50;
+
+        while (attempts < maxAttempts) {
+          // Generate position in percentage (20% to 80% to avoid edges)
+          const x = 20 + Math.random() * 60;
+          const y = 20 + Math.random() * 60;
+
+          // Convert to pixels for distance calculation
+          const pixelX = (x / 100) * window.innerWidth;
+          const pixelY = (y / 100) * window.innerHeight;
+
+          // Avoid center where table is (40%-60% range)
+          const isCenterZone = (x > 40 && x < 60 && y > 40 && y < 60);
+
+          if (!isCenterZone && isPositionFree(pixelX, pixelY, size)) {
+            occupiedPositions.push({ x: pixelX, y: pixelY });
+            return { x: x + '%', y: y + '%' };
+          }
+          attempts++;
+        }
+
+        // Fallback: return a random position if we can't find free space
+        return {
+          x: (20 + Math.random() * 60) + '%',
+          y: (20 + Math.random() * 60) + '%'
+        };
+      }
+
+      // Create 25 food items
+      setTimeout(() => {
+        for (let i = 0; i < 25; i++) {
+          const food = document.createElement('div');
+          food.textContent = allFoods[Math.floor(Math.random() * allFoods.length)];
+
+          // Random size between 50-90px
+          const finalSize = 50 + Math.floor(Math.random() * 40);
+          const position = getRandomPosition(finalSize);
+
+          food.style.cssText = `position:absolute;font-size:0;left:${position.x};top:${position.y};transform:translate(-50%, -50%) scale(0);opacity:0;transition:all 0.8s ease-out;`;
+          container.appendChild(food);
+
+          setTimeout(() => {
+            food.style.fontSize = `${finalSize}px`;
+            food.style.transform = `translate(-50%, -50%) scale(1) rotate(${-15 + Math.random() * 30}deg)`;
+            food.style.opacity = '1';
+          }, 100 + i * 120);
+        }
+      }, 1500);
+
+      // Stage 4: Falling autumn leaves in background (2-6s)
+      setTimeout(() => {
+        const leaves = ['🍂', '🍁'];
+        for (let i = 0; i < 20; i++) {
+          const leaf = document.createElement('div');
+          leaf.textContent = leaves[Math.floor(Math.random() * leaves.length)];
+          leaf.style.cssText = `position:absolute;font-size:35px;left:${Math.random() * 100}%;top:-50px;transition:all ${3 + Math.random() * 2}s ease-in;opacity:0.6;z-index:-1;`;
+          container.appendChild(leaf);
+
+          setTimeout(() => {
+            leaf.style.top = '110%';
+            leaf.style.transform = `rotate(${Math.random() * 720}deg)`;
+          }, i * 100);
+        }
+      }, 2000);
+
+      // Fade out (6s)
+      setTimeout(() => {
+        thanksLoader.style.opacity = '0';
+        thanksLoader.style.transition = 'opacity 0.8s';
+      }, 6000);
+
+      setTimeout(() => {
+        thanksLoader.remove();
+        if (mainContent) mainContent.style.opacity = '1';
+        console.log('🦃 Thanksgiving animation completed!');
+      }, 6800);
+    }
+
+    // 🎂 BIRTHDAY ANIMATION FUNCTION 🎂
+    function initBirthdayAnimation() {
+      if (!isHolidayActive('birthday')) {
+        console.log('🎂 Birthday holiday is not active');
+        return;
+      }
+
+      console.log('🎂 Birthday animation starting!');
+
+      const birthdayLoader = document.createElement('div');
+      birthdayLoader.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:linear-gradient(135deg,#667eea 0%,#f093fb 50%,#feca57 100%);z-index:100000;transition:background 0.5s;overflow:hidden;';
+      birthdayLoader.innerHTML = '<div class="birthday-elements"></div>';
+
+      document.body.appendChild(birthdayLoader);
+      const mainContent = window.AppElements.mainContent;
+      if (mainContent) mainContent.style.opacity = '0';
+
+      const container = birthdayLoader.querySelector('.birthday-elements');
+
+      // Stage 1: Giant birthday cake appears (0-1.5s)
+      const cake = document.createElement('div');
+      cake.textContent = '🎂';
+      cake.style.cssText = 'position:absolute;left:50%;top:50%;transform:translate(-50%, -50%) scale(0);font-size:180px;transition:all 0.8s ease-out;';
+      container.appendChild(cake);
+
+      // Candles on the cake
+      const candles = [];
+      for (let i = 0; i < 5; i++) {
+        const candle = document.createElement('div');
+        candle.textContent = '🕯️';
+        const offset = (i - 2) * 60;
+        candle.style.cssText = `position:absolute;left:calc(50% + ${offset}px);top:calc(50% - 120px);transform:translate(-50%, -50%) scale(0);font-size:50px;transition:all 0.8s ease-out;`;
+        container.appendChild(candle);
+        candles.push(candle);
+      }
+
+      setTimeout(() => {
+        cake.style.transform = 'translate(-50%, -50%) scale(1)';
+        candles.forEach((candle, i) => {
+          setTimeout(() => {
+            candle.style.transform = 'translate(-50%, -50%) scale(1)';
+          }, i * 100);
+        });
+      }, 300);
+
+      // Stage 2: Blow out candles (1.5-2.5s)
+      setTimeout(() => {
+        candles.forEach((candle, i) => {
+          setTimeout(() => {
+            candle.style.opacity = '0';
+            candle.style.transform = 'translate(-50%, -50%) scale(0.5)';
+          }, i * 100);
+        });
+      }, 1500);
+
+      // Stage 3: Fade cake and go dark (2.5-3s)
+      setTimeout(() => {
+        cake.style.opacity = '0';
+        birthdayLoader.style.background = 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)';
+      }, 2500);
+
+      // Stage 4: Fireworks with gifts (3-5s)
+      setTimeout(() => {
+        const giftEmojis = ['🎁', '🎀', '📦', '🎈', '🎊'];
+
+        // Create 4 firework bursts
+        for (let burst = 0; burst < 4; burst++) {
+          setTimeout(() => {
+            const centerX = 30 + Math.random() * 40;
+            const centerY = 30 + Math.random() * 40;
+
+            // Each burst shoots 12 gifts
+            for (let i = 0; i < 12; i++) {
+              const gift = document.createElement('div');
+              gift.textContent = giftEmojis[Math.floor(Math.random() * giftEmojis.length)];
+              gift.style.cssText = `position:absolute;font-size:40px;left:${centerX}%;top:${centerY}%;opacity:1;transition:all 1.2s ease-out;transform:scale(0);`;
+              container.appendChild(gift);
+
+              setTimeout(() => {
+                const angle = (i / 12) * Math.PI * 2;
+                const distance = 150 + Math.random() * 100;
+                const finalX = centerX + Math.cos(angle) * distance / window.innerWidth * 100;
+                const finalY = centerY + Math.sin(angle) * distance / window.innerHeight * 100;
+
+                gift.style.left = `${finalX}%`;
+                gift.style.top = `${finalY}%`;
+                gift.style.transform = `scale(1) rotate(${Math.random() * 360}deg)`;
+                gift.style.opacity = '0';
+              }, 50);
+            }
+          }, burst * 500);
+        }
+      }, 3000);
+
+      // Stage 5: Confetti and balloons flying out (5-7s)
+      setTimeout(() => {
+        // Change background to bright
+        birthdayLoader.style.background = 'linear-gradient(135deg,#f093fb 0%,#feca57 50%,#667eea 100%)';
+
+        // Birthday text
+        const text = document.createElement('div');
+        text.textContent = '🎉 Happy Birthday! 🎉';
+        text.style.cssText = 'position:absolute;top:15%;left:50%;transform:translateX(-50%);font-size:52px;color:#fff;text-shadow:3px 3px 6px rgba(0,0,0,0.5);opacity:0;transition:opacity 0.5s;';
+        container.appendChild(text);
+        setTimeout(() => { text.style.opacity = '1'; }, 100);
+
+        // Balloons rising from bottom
+        const balloonColors = ['🎈', '🎈', '🎈', '🎈', '🎈'];
+        for (let i = 0; i < 20; i++) {
+          const balloon = document.createElement('div');
+          balloon.textContent = balloonColors[Math.floor(Math.random() * balloonColors.length)];
+          balloon.style.cssText = `position:absolute;font-size:50px;left:${Math.random() * 95}%;bottom:-100px;transition:all 2.5s ease-out;transform:rotate(${-30 + Math.random() * 60}deg);`;
+          container.appendChild(balloon);
+          setTimeout(() => {
+            balloon.style.bottom = `${110 + Math.random() * 20}%`;
+            balloon.style.left = `${parseFloat(balloon.style.left) + (-20 + Math.random() * 40)}%`;
+          }, i * 50);
+        }
+
+        // Confetti explosion from center
+        const confettiEmojis = ['🎊', '🎉', '✨', '💫', '⭐', '🌟'];
+        for (let i = 0; i < 50; i++) {
+          const conf = document.createElement('div');
+          conf.textContent = confettiEmojis[Math.floor(Math.random() * confettiEmojis.length)];
+          conf.style.cssText = `position:absolute;font-size:35px;left:50%;top:50%;opacity:0;transition:all 1.8s ease-out;`;
+          container.appendChild(conf);
+          setTimeout(() => {
+            const angle = Math.random() * Math.PI * 2;
+            const distance = 200 + Math.random() * 300;
+            conf.style.left = `${50 + Math.cos(angle) * distance / window.innerWidth * 100}%`;
+            conf.style.top = `${50 + Math.sin(angle) * distance / window.innerHeight * 100}%`;
+            conf.style.opacity = '1';
+            conf.style.transform = `rotate(${Math.random() * 1080}deg) scale(${0.8 + Math.random() * 0.5})`;
+          }, i * 20);
+        }
+      }, 5000);
+
+      // Stage 6: Giant cake returns with friends for cheerful scene (7-9s)
+      setTimeout(() => {
+        // Clear previous elements to make room
+        container.innerHTML = '';
+
+        // Giant birthday cake returns
+        const finalCake = document.createElement('div');
+        finalCake.textContent = '🎂';
+        finalCake.style.cssText = 'position:absolute;left:50%;top:55%;transform:translate(-50%, -50%) scale(0);font-size:160px;transition:all 0.8s ease-out;';
+        container.appendChild(finalCake);
+
+        setTimeout(() => {
+          finalCake.style.transform = 'translate(-50%, -50%) scale(1)';
+        }, 100);
+
+        // Friends gathering around the cake
+        const friends = [
+          { emoji: '🧑', x: -180, y: -40 },
+          { emoji: '👧', x: -120, y: 20 },
+          { emoji: '👦', x: 120, y: 20 },
+          { emoji: '👨', x: 180, y: -40 },
+          { emoji: '👩', x: -200, y: 40 },
+          { emoji: '🧒', x: 200, y: 40 },
+          { emoji: '👴', x: -150, y: -80 },
+          { emoji: '👵', x: 150, y: -80 }
+        ];
+
+        friends.forEach((friend, i) => {
+          const person = document.createElement('div');
+          person.textContent = friend.emoji;
+          person.style.cssText = `position:absolute;left:calc(50% + ${friend.x}px);top:calc(55% + ${friend.y}px);transform:translate(-50%, -50%) scale(0);font-size:65px;transition:all 0.6s ease-out;`;
+          container.appendChild(person);
+
+          setTimeout(() => {
+            person.style.transform = 'translate(-50%, -50%) scale(1)';
+          }, 300 + i * 100);
+        });
+
+        // Cheerful text
+        const cheerText = document.createElement('div');
+        cheerText.textContent = '🎊 Celebrate Together! 🎊';
+        cheerText.style.cssText = 'position:absolute;top:10%;left:50%;transform:translateX(-50%);font-size:48px;color:#fff;text-shadow:3px 3px 6px rgba(0,0,0,0.5);opacity:0;transition:opacity 0.6s;';
+        container.appendChild(cheerText);
+        setTimeout(() => { cheerText.style.opacity = '1'; }, 400);
+
+        // Floating hearts and stars around everyone
+        const cheerEmojis = ['💖', '💕', '⭐', '✨', '🌟', '💫'];
+        for (let i = 0; i < 25; i++) {
+          const cheer = document.createElement('div');
+          cheer.textContent = cheerEmojis[Math.floor(Math.random() * cheerEmojis.length)];
+          const randomX = 20 + Math.random() * 60;
+          const randomY = 20 + Math.random() * 60;
+          cheer.style.cssText = `position:absolute;font-size:30px;left:${randomX}%;top:${randomY}%;opacity:0;transition:all 1s ease-out;transform:scale(0);`;
+          container.appendChild(cheer);
+
+          setTimeout(() => {
+            cheer.style.opacity = '0.8';
+            cheer.style.transform = `scale(1) rotate(${Math.random() * 360}deg)`;
+          }, 800 + i * 50);
+        }
+      }, 7000);
+
+      // Fade out (9s)
+      setTimeout(() => {
+        birthdayLoader.style.opacity = '0';
+        birthdayLoader.style.transition = 'opacity 0.8s';
+      }, 9000);
+
+      setTimeout(() => {
+        birthdayLoader.remove();
+        if (mainContent) mainContent.style.opacity = '1';
+        console.log('🎂 Birthday animation completed!');
+      }, 9800);
+    }
+
+    function restoreMainContentVisibility() {
+      const mainContent = window.AppElements?.mainContent || document.getElementById('mainContent');
+      if (mainContent) {
+        mainContent.style.opacity = '1';
+        mainContent.style.visibility = 'visible';
+      }
+
+      // Cleanup any stale holiday state that could leave a full-screen overlay behind.
+      document.body.classList.remove(
+        'christmas-active',
+        'newyear-active',
+        'cny-active',
+        'easter-active',
+        'spring-active',
+        'summer-active',
+        'backtoschool-active',
+        'thanksgiving-active',
+        'birthday-active',
+        'halloween-active'
+      );
+
+      document.querySelectorAll(
+        '.christmas-loader, .newyear-loader, .cny-loader, .easter-loader, .spring-loader, .summer-loader, .backtoschool-loader, .thanksgiving-loader, .birthday-loader, .halloween-loader'
+      ).forEach((el) => el.remove());
+    }
+
+    function shouldRunBlockingHolidayIntro() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('holidayIntro') === '1';
+    }
+
+    // Always ensure UI is recoverable even if any intro animation throws.
+    setTimeout(restoreMainContentVisibility, 9000);
+
+    // Disable blocking full-screen intros by default to keep learning UI visible.
+    if (shouldRunBlockingHolidayIntro()) {
+      initEasterAnimation();
+      initSpringAnimation();
+      initSummerAnimation();
+      initBackToSchoolAnimation();
+      initThanksgivingAnimation();
+      initBirthdayAnimation();
+      initChristmasAnimation();
+      initNewYearAnimation();
+      initChineseNewYearAnimation();
+      initHalloweenAnimation();
+    } else {
+      restoreMainContentVisibility();
+      console.log('Holiday intro animations are disabled by default. Use ?holidayIntro=1 to preview.');
+    }
+  </script>
+<script src="environment.js"></script>`n</body>
+</html>

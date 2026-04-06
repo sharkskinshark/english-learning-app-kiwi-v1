@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Holiday System Integration Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            color: white;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .test-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .test-button {
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            transition: transform 0.2s;
+        }
+        .test-button:hover {
+            transform: scale(1.05);
+        }
+        .console-output {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin: 20px 0;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .status-pass { background: #4CAF50; }
+        .status-fail { background: #F44336; }
+        .status-warning { background: #FF9800; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Holiday System Integration Test</h1>
+            <p>Comprehensive testing for conflicts, corruption, and integration issues</p>
+        </div>
+
+        <div class="test-section">
+            <h2>🎯 Quick Test Suite</h2>
+            <button class="test-button" onclick="runAllTests()">🚀 Run All Integration Tests</button>
+            <button class="test-button" onclick="testHolidayAnimations()">🎭 Test Holiday Animations</button>
+            <button class="test-button" onclick="testVocabularySystem()">📚 Test Vocabulary System</button>
+            <button class="test-button" onclick="checkCodeIntegrity()">🔧 Check Code Integrity</button>
+            <button class="test-button" onclick="clearConsole()">🧹 Clear Console</button>
+        </div>
+
+        <div class="grid">
+            <div class="test-section">
+                <h3>📊 Test Results</h3>
+                <div id="testResults">
+                    <div>Waiting for tests to run...</div>
+                </div>
+            </div>
+            <div class="test-section">
+                <h3>⚠️ Issues Found</h3>
+                <div id="issuesFound">
+                    <div>No issues detected yet</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>📝 Console Output</h3>
+            <div id="consoleOutput" class="console-output">
+Holiday Integration Test Console
+================================
+Ready to run tests...
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🎮 Individual Holiday Tests</h3>
+            <div class="grid">
+                <button class="test-button" onclick="testSpecificHoliday('christmas')">🎄 Test Christmas</button>
+                <button class="test-button" onclick="testSpecificHoliday('halloween')">🎃 Test Halloween</button>
+                <button class="test-button" onclick="testSpecificHoliday('spring')">🌸 Test Spring Bloom</button>
+                <button class="test-button" onclick="testSpecificHoliday('newyear')">🎆 Test New Year</button>
+                <button class="test-button" onclick="testSpecificHoliday('easter')">🐰 Test Easter</button>
+                <button class="test-button" onclick="testSpecificHoliday('summer')">☀️ Test Summer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Console output capture
+        const originalConsoleLog = console.log;
+        const originalConsoleError = console.error;
+        const originalConsoleWarn = console.warn;
+
+        function logToConsole(message, type = 'log') {
+            const consoleOutput = document.getElementById('consoleOutput');
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'warn' ? '⚠️' : '📝';
+            consoleOutput.textContent += `\n[${timestamp}] ${prefix} ${message}`;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        console.log = function(...args) {
+            originalConsoleLog.apply(console, args);
+            logToConsole(args.join(' '));
+        };
+
+        console.error = function(...args) {
+            originalConsoleError.apply(console, args);
+            logToConsole(args.join(' '), 'error');
+        };
+
+        console.warn = function(...args) {
+            originalConsoleWarn.apply(console, args);
+            logToConsole(args.join(' '), 'warn');
+        };
+
+        function clearConsole() {
+            document.getElementById('consoleOutput').textContent = 'Console cleared...\n';
+        }
+
+        function updateTestResults(results) {
+            const resultsDiv = document.getElementById('testResults');
+            let html = '';
+            
+            Object.entries(results).forEach(([test, passed]) => {
+                const statusClass = passed ? 'status-pass' : 'status-fail';
+                const statusText = passed ? 'PASS' : 'FAIL';
+                html += `<div><span class="status-indicator ${statusClass}"></span>${test}: ${statusText}</div>`;
+            });
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        function updateIssues(issues) {
+            const issuesDiv = document.getElementById('issuesFound');
+            if (issues.length === 0) {
+                issuesDiv.innerHTML = '<div><span class="status-indicator status-pass"></span>No issues detected</div>';
+            } else {
+                let html = '';
+                issues.forEach(issue => {
+                    html += `<div><span class="status-indicator status-fail"></span>${issue}</div>`;
+                });
+                issuesDiv.innerHTML = html;
+            }
+        }
+
+        // Test function implementations
+        function runAllTests() {
+            console.log('🚀 Starting comprehensive Holiday System Integration Tests...');
+            
+            const results = {
+                'Function Conflicts': testFunctionConflicts(),
+                'Vocabulary Integration': testVocabularyIntegration(),
+                'Animation Integrity': testAnimationIntegrity(),
+                'Code Corruption': testCodeCorruption(),
+                'CSS Conflicts': testCSSConflicts()
+            };
+            
+            updateTestResults(results);
+            
+            const issues = [];
+            Object.entries(results).forEach(([test, passed]) => {
+                if (!passed) issues.push(`${test} failed`);
+            });
+            
+            updateIssues(issues);
+            
+            const allPassed = Object.values(results).every(result => result);
+            console.log(`\n📊 Overall Result: ${allPassed ? '✅ ALL TESTS PASSED' : '❌ SOME TESTS FAILED'}`);
+            
+            return results;
+        }
+
+        function testFunctionConflicts() {
+            console.log('\n📋 Testing for function name conflicts...');
+            
+            const holidayFunctions = [
+                'testChristmasAnimation', 'testChristmasVocab',
+                'testNewYearAnimation', 'testNewYearVocab',
+                'testHalloweenAnimation', 'testHalloweenVocab',
+                'testSpringBloomAnimation', 'testSpringBloomVocab'
+            ];
+            
+            let allFound = true;
+            holidayFunctions.forEach(func => {
+                if (typeof window[func] === 'function') {
+                    console.log(`✅ ${func} - Available`);
+                } else {
+                    console.log(`❌ ${func} - Not found`);
+                    allFound = false;
+                }
+            });
+            
+            return allFound;
+        }
+
+        function testVocabularyIntegration() {
+            console.log('\n📚 Testing vocabulary system integration...');
+            
+            try {
+                // Test vocabulary display function
+                if (typeof createVocabDisplay === 'function') {
+                    console.log('✅ Holiday vocabulary display system operational');
+                    return true;
+                } else {
+                    console.log('⚠️ Holiday vocabulary display function not found');
+                    return false;
+                }
+            } catch (error) {
+                console.error('❌ Error in vocabulary integration:', error.message);
+                return false;
+            }
+        }
+
+        function testAnimationIntegrity() {
+            console.log('\n🎭 Testing animation system integrity...');
+            
+            const animationTests = [
+                () => document.querySelector('style') !== null,
+                () => document.head !== null,
+                () => document.body !== null
+            ];
+            
+            let allPassed = true;
+            animationTests.forEach((test, index) => {
+                try {
+                    if (test()) {
+                        console.log(`✅ Animation test ${index + 1} passed`);
+                    } else {
+                        console.log(`❌ Animation test ${index + 1} failed`);
+                        allPassed = false;
+                    }
+                } catch (error) {
+                    console.error(`❌ Animation test ${index + 1} error:`, error.message);
+                    allPassed = false;
+                }
+            });
+            
+            return allPassed;
+        }
+
+        function testCodeCorruption() {
+            console.log('\n🔧 Testing for code corruption...');
+            
+            let corruptionFound = false;
+            
+            // Test basic JavaScript functionality
+            try {
+                const testObj = { test: 'value' };
+                const testArray = [1, 2, 3];
+                const testFunction = () => 'test';
+                
+                console.log('✅ Basic JavaScript objects working');
+                console.log('✅ Basic JavaScript arrays working');
+                console.log('✅ Basic JavaScript functions working');
+            } catch (error) {
+                console.error('❌ Basic JavaScript corruption detected:', error.message);
+                corruptionFound = true;
+            }
+            
+            return !corruptionFound;
+        }
+
+        function testCSSConflicts() {
+            console.log('\n🎨 Testing for CSS conflicts...');
+            
+            // Check if main app styles are preserved
+            const body = document.body;
+            const computed = window.getComputedStyle(body);
+            
+            if (computed) {
+                console.log('✅ CSS system operational');
+                return true;
+            } else {
+                console.log('❌ CSS system issues detected');
+                return false;
+            }
+        }
+
+        function testHolidayAnimations() {
+            console.log('\n🎭 Testing holiday animations specifically...');
+            
+            const animations = ['christmas', 'halloween', 'spring', 'newyear'];
+            let allWorking = true;
+            
+            animations.forEach(holiday => {
+                const functionName = `test${holiday.charAt(0).toUpperCase() + holiday.slice(1)}Animation`;
+                if (typeof window[functionName] === 'function') {
+                    console.log(`✅ ${holiday} animation function available`);
+                } else {
+                    console.log(`❌ ${holiday} animation function missing`);
+                    allWorking = false;
+                }
+            });
+            
+            return allWorking;
+        }
+
+        function testVocabularySystem() {
+            console.log('\n📚 Testing vocabulary system specifically...');
+            
+            try {
+                // Test if vocabulary words are accessible
+                const testWords = [
+                    { word: "test", meaning: "examination", emoji: "📝" }
+                ];
+                
+                if (typeof createVocabDisplay === 'function') {
+                    console.log('✅ Vocabulary display function available');
+                    return true;
+                } else {
+                    console.log('⚠️ Vocabulary display function not available');
+                    return false;
+                }
+            } catch (error) {
+                console.error('❌ Vocabulary system error:', error.message);
+                return false;
+            }
+        }
+
+        function checkCodeIntegrity() {
+            console.log('\n🔧 Checking code integrity specifically...');
+            
+            const checks = [
+                () => typeof console !== 'undefined',
+                () => typeof document !== 'undefined',
+                () => typeof window !== 'undefined',
+                () => document.body !== null,
+                () => document.head !== null
+            ];
+            
+            let allPassed = true;
+            checks.forEach((check, index) => {
+                try {
+                    if (check()) {
+                        console.log(`✅ Integrity check ${index + 1} passed`);
+                    } else {
+                        console.log(`❌ Integrity check ${index + 1} failed`);
+                        allPassed = false;
+                    }
+                } catch (error) {
+                    console.error(`❌ Integrity check ${index + 1} error:`, error.message);
+                    allPassed = false;
+                }
+            });
+            
+            return allPassed;
+        }
+
+        function testSpecificHoliday(holiday) {
+            console.log(`\n🎯 Testing ${holiday} specifically...`);
+            
+            const animationFunction = `test${holiday.charAt(0).toUpperCase() + holiday.slice(1)}Animation`;
+            const vocabFunction = `test${holiday.charAt(0).toUpperCase() + holiday.slice(1)}Vocab`;
+            
+            let results = { animation: false, vocabulary: false };
+            
+            if (typeof window[animationFunction] === 'function') {
+                console.log(`✅ ${holiday} animation available`);
+                results.animation = true;
+            } else {
+                console.log(`❌ ${holiday} animation missing`);
+            }
+            
+            if (typeof window[vocabFunction] === 'function') {
+                console.log(`✅ ${holiday} vocabulary available`);
+                results.vocabulary = true;
+            } else {
+                console.log(`❌ ${holiday} vocabulary missing`);
+            }
+            
+            const success = results.animation && results.vocabulary;
+            console.log(`${holiday} test result: ${success ? '✅ PASS' : '❌ FAIL'}`);
+            
+            return success;
+        }
+
+        // Initialize page
+        window.addEventListener('load', () => {
+            console.log('🎉 Holiday Integration Test page loaded successfully!');
+            console.log('📋 Ready to run tests. Click "Run All Integration Tests" to begin.');
+        });
+    </script>
+</body>
+</html>

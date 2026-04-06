@@ -1,0 +1,91 @@
+{
+  "meta": {
+    "schemaVersion": 1,
+    "exportedAt": "2026-04-06T01:28:30.937Z",
+    "identityKey": "mike",
+    "nickname": "mike",
+    "source": "browser"
+  },
+  "data": {
+    "englishAppProgress": {
+      "movers": {
+        "clothes": {
+          "correct": 4,
+          "total": 4
+        }
+      }
+    },
+    "englishAppReview": {
+      "paper": {
+        "word": "paper",
+        "meaning": "thin, flat material for writing on",
+        "emoji": "📄",
+        "attempts": 1,
+        "correct": 1,
+        "lastSeen": 1775438629933,
+        "firstSeen": 1775438629933,
+        "needsReview": false,
+        "learnAttempts": 1,
+        "reviewAttempts": 0,
+        "cycleCompleted": false,
+        "lastMode": "spelling",
+        "history": [
+          {
+            "ts": 1775438629933,
+            "correct": true,
+            "phase": "learn",
+            "mode": "spelling"
+          }
+        ],
+        "lastQuestionKey": "learn|spelling|0|paper"
+      }
+    },
+    "englishAppDaily": {
+      "date": "Mon Apr 06 2026",
+      "challenges": [
+        {
+          "type": "category_master",
+          "description": "Complete 5 words from any category",
+          "reward": "daily_category_master",
+          "requirement": 5,
+          "progress": 5,
+          "completed": true
+        },
+        {
+          "type": "perfect_spell",
+          "description": "Get 3 perfect spelling answers",
+          "reward": "daily_perfect_speller",
+          "requirement": 3,
+          "progress": 3,
+          "completed": true
+        },
+        {
+          "type": "review_champion",
+          "description": "Review 4 words from your review list",
+          "reward": "daily_reviewer",
+          "requirement": 4,
+          "progress": 0,
+          "completed": false
+        }
+      ],
+      "completed": false
+    },
+    "englishAppIdentityProfiles": {
+      "mike": {
+        "nickname": "mike",
+        "birthday": "19790419",
+        "createdAt": 1775438496636,
+        "lastLoginAt": 1775438496636,
+        "stats": {
+          "totalSessions": 0,
+          "learnSessions": 0,
+          "reviewSessions": 0,
+          "totalQuestions": 0,
+          "totalScore": 0
+        }
+      }
+    },
+    "englishAppActiveIdentity": "mike",
+    "englishAppUsername": "mike"
+  }
+}

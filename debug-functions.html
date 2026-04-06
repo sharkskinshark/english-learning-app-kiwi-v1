@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Function Debug Test</title>
+</head>
+<body>
+    <h1>JavaScript Function Debug Test</h1>
+    <button onclick="testFunctions()">Test Function Availability</button>
+    <button onclick="testHolidayStatus()">Test Holiday Status Function</button>
+    <div id="output"></div>
+
+    <script src="events.js"></script>
+    <script>
+        function testFunctions() {
+            const output = document.getElementById('output');
+            let result = '<h2>Function Availability Test:</h2>';
+            
+            // Test EVENTS object
+            result += `<p><strong>EVENTS object:</strong> ${typeof EVENTS !== 'undefined' ? '✅ Available' : '❌ Not found'}</p>`;
+            if (typeof EVENTS !== 'undefined') {
+                result += `<p>Available events: ${Object.keys(EVENTS).join(', ')}</p>`;
+                result += `<p>Total events: ${Object.keys(EVENTS).length}</p>`;
+            }
+            
+            // Test isHolidayActive function
+            result += `<p><strong>isHolidayActive function:</strong> ${typeof isHolidayActive !== 'undefined' ? '✅ Available' : '❌ Not found'}</p>`;
+            
+            // Test if we can call the function
+            if (typeof isHolidayActive !== 'undefined' && typeof EVENTS !== 'undefined') {
+                try {
+                    const testResult = isHolidayActive('christmas');
+                    result += `<p>Test call isHolidayActive('christmas'): ${testResult}</p>`;
+                } catch (error) {
+                    result += `<p>Error calling function: ${error.message}</p>`;
+                }
+            }
+            
+            output.innerHTML = result;
+        }
+        
+        function testHolidayStatus() {
+            const output = document.getElementById('output');
+            let result = '<h2>Holiday Status Test:</h2>';
+            
+            const holidayIds = ['easter', 'spring', 'summer', 'backToSchool', 'halloween', 'thanksgiving', 'christmas', 'newyear', 'chinesenewyear', 'birthday'];
+            
+            result += `<p>Testing ${holidayIds.length} holidays...</p>`;
+            
+            let foundEvents = 0;
+            let errorEvents = [];
+            
+            holidayIds.forEach(holidayId => {
+                const event = EVENTS[holidayId];
+                if (event && event.name && event.period) {
+                    foundEvents++;
+                    try {
+                        const isActive = isHolidayActive(holidayId);
+                        result += `<p>✅ ${event.name}: ${isActive ? 'ACTIVE' : 'Inactive'} (${event.period.start} to ${event.period.end})</p>`;
+                    } catch (error) {
+                        errorEvents.push(holidayId);
+                        result += `<p>❌ ${event.name}: Error - ${error.message}</p>`;
+                    }
+                } else {
+                    result += `<p>❌ ${holidayId}: Not found in EVENTS</p>`;
+                }
+            });
+            
+            result += `<p><strong>Summary:</strong> Found ${foundEvents}/${holidayIds.length} events, ${errorEvents.length} errors</p>`;
+            
+            output.innerHTML = result;
+        }
+        
+        // Auto-run test when page loads
+        window.addEventListener('load', testFunctions);
+    </script>
+</body>
+</html>
