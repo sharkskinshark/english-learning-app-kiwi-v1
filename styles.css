@@ -5133,6 +5133,11 @@ footer.notes{margin-top:12px;color:#657786;font-size:0.9rem}
   margin: 20px 0;
 }
 
+/* Match leaderboard title typeface to the UI sans text style without changing size */
+#leaderboardsSection > h2 {
+  font-family: "Segoe UI", Roboto, Arial, sans-serif !important;
+}
+
 .identity-section {
   background: var(--card);
   padding: 16px;
