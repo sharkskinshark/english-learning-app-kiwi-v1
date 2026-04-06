@@ -54,7 +54,7 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--zen-ink) !important;
   letter-spacing: 0.1em !important; /* Very wide spacing */
   margin-bottom: 1.5rem;
-  text-transform: lowercase; /* Poetic minimalist touch */
+  text-transform: none; /* Preserve authored capitalization */
 }
 
 h1 {
@@ -101,7 +101,7 @@ button, .btn, .secondary-action-btn, #identityToggleBtn, #eventToggleBtn, #liste
   
   cursor: pointer !important;
   transition: border-color 0.4s ease, transform 0.3s ease !important;
-  text-transform: lowercase !important;
+  text-transform: none !important;
   letter-spacing: 0.12em !important;
 }
 
