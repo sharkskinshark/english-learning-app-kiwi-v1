@@ -401,13 +401,19 @@ function getProgress() {
 
 // Listen and spell functionality
 function speakWord(word) {
+  const text = String(word || '').trim();
+  if (!text) {
+    console.warn('No word available to speak');
+    return;
+  }
+
   if (!synth) {
     console.error('Speech synthesis not supported in this browser');
     alert('Speech synthesis is not supported in your browser. Please try a different browser.');
     return;
   }
 
-  const utterance = new SpeechSynthesisUtterance(word);
+  const utterance = new SpeechSynthesisUtterance(text);
   
   // Enhanced settings for iPad/iPhone with human-like British female voice
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -440,24 +446,15 @@ function speakWord(word) {
     }
     // Cancel any queued utterances to avoid overlap
     try { synth.cancel(); } catch {}
+    try { synth.resume(); } catch {}
     synth.speak(utterance);
   };
 
-  // Voices may not be loaded immediately in some browsers (especially iOS/Safari)
+  // Keep speech inside the user's click/tap activation. If voices are not ready,
+  // speak immediately with the system default voice instead of delaying playback.
   const voicesNow = (typeof synth?.getVoices === 'function') ? synth.getVoices() : [];
-  if (!voicesNow || voicesNow.length === 0) {
-    // Try again when voices load - important for iOS Safari
-    const handler = () => {
-      try { assignVoiceAndSpeak(); } finally { synth.onvoiceschanged = null; }
-    };
-    synth.onvoiceschanged = handler;
-    // Fallback timeout in case onvoiceschanged doesn't fire (e.g., iOS)
-    setTimeout(() => {
-      if (synth.onvoiceschanged) { synth.onvoiceschanged = null; assignVoiceAndSpeak(); }
-    }, 800);  // Increased timeout for iOS
-  } else {
-    assignVoiceAndSpeak();
-  }
+  if (!voicesNow || voicesNow.length === 0) console.warn('Voices not loaded yet, using system default voice');
+  assignVoiceAndSpeak();
 }
 
 // ---------- Phonics analysis (Consonant/Vowel rules) ----------
@@ -1352,7 +1349,8 @@ function startSession(){
 }
 
 function updateSessionProgress(){
-  progressEl.textContent = `${session.index} / ${session.words.length}`;
+  const currentNumber = session.words.length ? Math.min(session.index + 1, session.words.length) : 0;
+  progressEl.textContent = `${currentNumber} / ${session.words.length}`;
 }
 
 function showCurrent(){
@@ -1387,8 +1385,8 @@ function showCurrent(){
     correctAnswer.classList.add('hidden');
     wordImage.innerHTML = '';
     
-    // Automatically speak the word
-    setTimeout(() => speakWord(current.word), 500);
+    // Speak immediately while still inside the user's click/tap activation.
+    speakWord(current.word);
   }else if(mode === 'phonics'){
     spellingArea.classList.add('hidden');
     meaningArea.classList.add('hidden');
@@ -1623,6 +1621,10 @@ startBtn.addEventListener('touchend', function(e) {
 
 listenWordBtn.addEventListener('click', () => {
   const current = session.words[session.index];
+  if (!current?.word) {
+    promptEl.textContent = 'Press Start to begin';
+    return;
+  }
   speakWord(current.word);
 });
 
