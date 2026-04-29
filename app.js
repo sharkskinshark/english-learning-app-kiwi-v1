@@ -426,6 +426,73 @@ function selectReliableSpeechVoice() {
 
 // Listen and spell functionality
 let speechAttemptId = 0;
+let currentWordAudio = null;
+
+function buildRemoteSpeechUrls(text) {
+  const q = encodeURIComponent(text);
+  return [
+    `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en-GB&q=${q}`,
+    `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en-US&q=${q}`
+  ];
+}
+
+function playRemoteWordAudio(text, attemptId, onFallback = null) {
+  const urls = buildRemoteSpeechUrls(text);
+  let urlIndex = 0;
+
+  const tryNext = () => {
+    if (speechAttemptId !== attemptId) return;
+
+    if (urlIndex >= urls.length) {
+      if (typeof onFallback === 'function') {
+        onFallback();
+      } else {
+        setSpeechFeedback('Audio playback failed (remote-audio-failed). Please try Chrome or check browser audio permissions.', true);
+      }
+      return;
+    }
+
+    try {
+      if (currentWordAudio) {
+        currentWordAudio.pause();
+        currentWordAudio.removeAttribute('src');
+        currentWordAudio.load();
+      }
+    } catch {}
+
+    const audio = new Audio(urls[urlIndex]);
+    currentWordAudio = audio;
+    urlIndex += 1;
+    audio.preload = 'auto';
+    audio.volume = 1;
+
+    audio.onplaying = () => {
+      if (speechAttemptId === attemptId) setSpeechFeedback(`Playing: ${text}`);
+    };
+    audio.onended = () => {
+      if (speechAttemptId === attemptId && !hasAnsweredCurrentQuestion) {
+        setTimeout(() => {
+          if (speechAttemptId === attemptId && !hasAnsweredCurrentQuestion) setSpeechFeedback('');
+        }, 350);
+      }
+    };
+    audio.onerror = () => {
+      console.warn('Remote word audio failed, trying next source');
+      tryNext();
+    };
+
+    const playPromise = audio.play();
+    if (playPromise && typeof playPromise.catch === 'function') {
+      playPromise.catch((error) => {
+        console.warn('Remote word audio play rejected:', error);
+        tryNext();
+      });
+    }
+  };
+
+  tryNext();
+}
+
 function speakWord(word) {
   const text = String(word || '').trim();
   if (!text) {
@@ -445,6 +512,7 @@ function speakWord(word) {
   // Enhanced settings for iPad/iPhone with human-like British female voice
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   const isMobile = /Mobile|Android|iPhone|iPad/.test(navigator.userAgent);
+  const isEdge = /Edg\//i.test(navigator.userAgent);
 
   const buildUtterance = (voice = null) => {
     const utterance = new SpeechSynthesisUtterance(text);
@@ -494,7 +562,8 @@ function speakWord(word) {
         return;
       }
 
-      setSpeechFeedback(`Audio playback failed (${code}). Please check browser sound, tab mute, and system speech settings.`, true);
+      setSpeechFeedback(`System speech failed (${code}). Trying online audio...`);
+      playRemoteWordAudio(text, attemptId);
     };
 
     try {
@@ -523,6 +592,12 @@ function speakWord(word) {
   const voice = selectReliableSpeechVoice();
   if (voice) console.log('Speaking with voice:', voice.name, '(' + voice.lang + ')');
   else console.warn('No reliable speech voice found, using browser default');
+
+  if (isEdge) {
+    playRemoteWordAudio(text, attemptId, () => speakUtterance(voice, true));
+    return;
+  }
+
   speakUtterance(voice, true);
 }
 
