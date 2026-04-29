@@ -6536,6 +6536,9 @@ button, .btn, .secondary-action-btn, #registerProfileBtn, #recoverNicknameBtn, #
 button:hover, .btn:hover { opacity: 0.6 !important; transform: none !important; box-shadow: none !important; border: none !important; }
 .container, .identity-section, .event-section, .controls { background: transparent !important; border: none !important; box-shadow: none !important; }
 
+/* Hidden state must win over final visual overrides that force flex display. */
+.hidden { display: none !important; }
+
 /* Restore waterdrop glass style for key CTA buttons */
 #registerProfileBtn,
 #recoverNicknameBtn,
@@ -6598,4 +6601,11 @@ button:hover, .btn:hover { opacity: 0.6 !important; transform: none !important; 
   background: rgba(255, 255, 255, 0.25) !important;
   border: 1.5px solid rgba(44, 42, 41, 0.1) !important;
   box-shadow: 0 1px 4px 0 rgba(44, 42, 41, 0.1), 0 1px 4px 0 rgba(255, 255, 255, 0.1) inset !important;
+}
+
+/* Auth visibility guard: these IDs have stronger display overrides above. */
+#topUserBar.hidden,
+#googleSignOutBtn.hidden,
+#topUserLogoutBtn.hidden {
+  display: none !important;
 }

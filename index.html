@@ -19,7 +19,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260406-modernWa-glass-v1">
+  <link rel="stylesheet" href="styles.css?v=20260429-gmail-auth-v1">
   <!-- Vercel Speed Insights - Simplified working implementation -->
   <script defer src="/_vercel/speed-insights/script.js"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -164,13 +164,12 @@
         </div>
         <div class="identity-section-body">
         <div class="account-auth-panel">
-          <h3>Google 帳號登入</h3>
+          <h3>Gmail 帳號登入</h3>
           <div class="account-auth-actions">
             <div id="googleSignInContainer"></div>
-            <button id="existingGoogleLoginBtn" class="secondary-action-btn">已註冊者 Gmail 直接登入</button>
-            <button id="googleSignOutBtn" class="secondary-action-btn hidden">切換 / 登出 Google</button>
+            <button id="googleSignOutBtn" class="secondary-action-btn hidden">登出 Gmail 帳號</button>
           </div>
-          <div id="authStatusHint" class="identity-hint">請先登入 Google，再完成註冊或直接登入。</div>
+          <div id="authStatusHint" class="identity-hint">登入 Gmail 後，已註冊帳號會自動登入。</div>
         </div>
 
         <div class="username-area">
@@ -183,10 +182,10 @@
           <input type="checkbox" id="birthdayVisibilityToggle">
           <span>顯示生日數字</span>
         </label>
-        <div id="identityHint" class="identity-hint">請先登入 Google，再設定暱稱與生日完成註冊。暱稱不可重複。</div>
+        <div id="identityHint" class="identity-hint">請先登入 Gmail，再設定暱稱與生日完成註冊。暱稱不可重複。</div>
 
         <div class="cloud-sync-panel">
-          <h3>雲端同步（Google 帳號）☁️</h3>
+          <h3>雲端同步（Gmail 帳號）☁️</h3>
           <div class="cloud-sync-actions">
             <button id="cloudPullBtn" class="secondary-action-btn">從雲端下載</button>
             <button id="cloudPushBtn">上傳到雲端</button>
@@ -195,7 +194,7 @@
             <input type="checkbox" id="autoCloudSyncChk">
             <span id="autoCloudSyncLabel">每次完成練習後自動上傳（帳號雲端）</span>
           </label>
-          <div id="cloudSyncHint" class="identity-hint">請先登入 Google，才可使用上傳與下載。</div>
+          <div id="cloudSyncHint" class="identity-hint">請先登入 Gmail，才可使用上傳與下載。</div>
         </div>
         </div>
       </section>
@@ -374,7 +373,7 @@
   <script src="review.js?v=20260406-2"></script>
   <script src="daily.js?v=20260406-2"></script>
   <script src="events.js?v=20260406-2"></script>
-  <script src="app.js?v=20260406-24"></script>
+  <script src="app.js?v=20260429-gmail-auth-v1"></script>
   <script src="calendar.js?v=20260406-4"></script>
   <script src="leaderboard.js?v=20260406-4"></script>
 
