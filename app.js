@@ -399,21 +399,32 @@ function getProgress() {
   return saved ? JSON.parse(saved) : {};
 }
 
+function setSpeechFeedback(message, isError = false) {
+  if (!feedbackEl) return;
+  feedbackEl.textContent = message || '';
+  feedbackEl.className = isError ? 'feedback bad' : 'feedback';
+}
+
 // Listen and spell functionality
+let speechAttemptId = 0;
 function speakWord(word) {
   const text = String(word || '').trim();
   if (!text) {
     console.warn('No word available to speak');
+    setSpeechFeedback('No word is ready to play yet.', true);
     return;
   }
 
-  if (!synth) {
+  const speech = window.speechSynthesis;
+  if (!speech || typeof SpeechSynthesisUtterance !== 'function') {
     console.error('Speech synthesis not supported in this browser');
-    alert('Speech synthesis is not supported in your browser. Please try a different browser.');
+    setSpeechFeedback('This browser does not support word audio playback.', true);
     return;
   }
 
+  const attemptId = ++speechAttemptId;
   const utterance = new SpeechSynthesisUtterance(text);
+  let didStart = false;
   
   // Enhanced settings for iPad/iPhone with human-like British female voice
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -444,10 +455,42 @@ function speakWord(word) {
     } else {
       console.warn('No suitable voice found, using system default');
     }
-    // Cancel any queued utterances to avoid overlap
-    try { synth.cancel(); } catch {}
-    try { synth.resume(); } catch {}
-    synth.speak(utterance);
+
+    utterance.onstart = () => {
+      didStart = true;
+      if (speechAttemptId === attemptId) setSpeechFeedback(`Playing: ${text}`);
+    };
+    utterance.onend = () => {
+      if (speechAttemptId === attemptId && !hasAnsweredCurrentQuestion) {
+        setTimeout(() => {
+          if (speechAttemptId === attemptId && !hasAnsweredCurrentQuestion) setSpeechFeedback('');
+        }, 350);
+      }
+    };
+    utterance.onerror = (event) => {
+      console.error('Speech synthesis error:', event?.error || event);
+      if (speechAttemptId === attemptId) {
+        setSpeechFeedback('Audio playback failed. Please check browser sound, tab mute, and system speech settings.', true);
+      }
+    };
+
+    try {
+      if (speech.speaking || speech.pending) speech.cancel();
+    } catch {}
+
+    try { speech.resume(); } catch {}
+
+    try {
+      speech.speak(utterance);
+      setTimeout(() => {
+        if (speechAttemptId === attemptId && !didStart && !speech.speaking) {
+          setSpeechFeedback('Audio did not start. Please check browser sound, tab mute, and system speech settings.', true);
+        }
+      }, 1200);
+    } catch (error) {
+      console.error('Speech synthesis failed:', error);
+      setSpeechFeedback('Audio playback failed. Please try another browser or check system speech settings.', true);
+    }
   };
 
   // Keep speech inside the user's click/tap activation. If voices are not ready,
@@ -1619,14 +1662,29 @@ startBtn.addEventListener('touchend', function(e) {
   }
 }, { passive: false });
 
-listenWordBtn.addEventListener('click', () => {
+function playCurrentWord() {
   const current = session.words[session.index];
   if (!current?.word) {
     promptEl.textContent = 'Press Start to begin';
     return;
   }
   speakWord(current.word);
+}
+
+let listenTouchHandled = false;
+listenWordBtn.addEventListener('click', () => {
+  if (listenTouchHandled) {
+    listenTouchHandled = false;
+    return;
+  }
+  playCurrentWord();
 });
+
+listenWordBtn.addEventListener('touchend', (e) => {
+  listenTouchHandled = true;
+  e.preventDefault();
+  playCurrentWord();
+}, { passive: false });
 
 submitSpelling.addEventListener('click', ()=>{checkSpelling();});
 
