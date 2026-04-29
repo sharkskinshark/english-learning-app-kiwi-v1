@@ -405,6 +405,25 @@ function setSpeechFeedback(message, isError = false) {
   feedbackEl.className = isError ? 'feedback bad' : 'feedback';
 }
 
+function selectReliableSpeechVoice() {
+  const voices = (typeof window.speechSynthesis?.getVoices === 'function')
+    ? window.speechSynthesis.getVoices()
+    : [];
+  if (!voices || voices.length === 0) return null;
+
+  const englishVoices = voices.filter(v => /^en[-_]/i.test(v.lang || ''));
+  const localEnglish = englishVoices.filter(v => v.localService !== false);
+  const candidates = localEnglish.length ? localEnglish : englishVoices;
+
+  return (
+    candidates.find(v => /en[-_]gb/i.test(v.lang || '')) ||
+    candidates.find(v => /united kingdom|british|uk/i.test(v.name || '')) ||
+    candidates.find(v => /en[-_]us/i.test(v.lang || '')) ||
+    candidates[0] ||
+    null
+  );
+}
+
 // Listen and spell functionality
 let speechAttemptId = 0;
 function speakWord(word) {
@@ -423,38 +442,35 @@ function speakWord(word) {
   }
 
   const attemptId = ++speechAttemptId;
-  const utterance = new SpeechSynthesisUtterance(text);
-  let didStart = false;
-  
   // Enhanced settings for iPad/iPhone with human-like British female voice
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   const isMobile = /Mobile|Android|iPhone|iPad/.test(navigator.userAgent);
-  
-  utterance.lang = 'en-GB';
-  
-  // Optimized for human-like, steady and gentle speech on mobile devices
-  if (isIOS) {
-    utterance.rate = 0.75;    // Slower and more steady for iOS
-    utterance.pitch = 1.0;    // Natural female pitch for iOS Moira voice
-    utterance.volume = 0.9;   // Slightly softer volume
-  } else if (isMobile) {
-    utterance.rate = 0.8;     // Steady pace for Android
-    utterance.pitch = 1.05;   // Gentle female pitch
-    utterance.volume = 0.95;  // Clear but gentle volume
-  } else {
-    utterance.rate = 0.85;    // Desktop default
-    utterance.pitch = 1.1;    // Desktop default
-    utterance.volume = 1.0;   // Desktop default
-  }
 
-  const assignVoiceAndSpeak = () => {
-    const voice = pickBritishFemaleVoice();
-    if (voice) {
-      utterance.voice = voice;
-      console.log('Speaking with voice:', voice.name, '(' + voice.lang + ')');
+  const buildUtterance = (voice = null) => {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-GB';
+    if (voice) utterance.voice = voice;
+
+    // Optimized for human-like, steady and gentle speech on mobile devices
+    if (isIOS) {
+      utterance.rate = 0.75;
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
+    } else if (isMobile) {
+      utterance.rate = 0.8;
+      utterance.pitch = 1.05;
+      utterance.volume = 1.0;
     } else {
-      console.warn('No suitable voice found, using system default');
+      utterance.rate = 0.85;
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
     }
+    return utterance;
+  };
+
+  const speakUtterance = (voice = null, allowDefaultFallback = true) => {
+    const utterance = buildUtterance(voice);
+    let didStart = false;
 
     utterance.onstart = () => {
       didStart = true;
@@ -468,10 +484,17 @@ function speakWord(word) {
       }
     };
     utterance.onerror = (event) => {
-      console.error('Speech synthesis error:', event?.error || event);
-      if (speechAttemptId === attemptId) {
-        setSpeechFeedback('Audio playback failed. Please check browser sound, tab mute, and system speech settings.', true);
+      const code = event?.error || 'unknown';
+      console.error('Speech synthesis error:', code, event);
+      if (speechAttemptId !== attemptId) return;
+
+      if (allowDefaultFallback && voice) {
+        console.warn('Retrying speech with browser default voice after voice error:', code);
+        speakUtterance(null, false);
+        return;
       }
+
+      setSpeechFeedback(`Audio playback failed (${code}). Please check browser sound, tab mute, and system speech settings.`, true);
     };
 
     try {
@@ -497,7 +520,10 @@ function speakWord(word) {
   // speak immediately with the system default voice instead of delaying playback.
   const voicesNow = (typeof synth?.getVoices === 'function') ? synth.getVoices() : [];
   if (!voicesNow || voicesNow.length === 0) console.warn('Voices not loaded yet, using system default voice');
-  assignVoiceAndSpeak();
+  const voice = selectReliableSpeechVoice();
+  if (voice) console.log('Speaking with voice:', voice.name, '(' + voice.lang + ')');
+  else console.warn('No reliable speech voice found, using browser default');
+  speakUtterance(voice, true);
 }
 
 // ---------- Phonics analysis (Consonant/Vowel rules) ----------
