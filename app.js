@@ -203,11 +203,20 @@ function getDisplayableEnglishVoices(voices) {
   }
 
   if (profile === 'safari') {
-    return list.filter((voice) => (
+    const safariGbDownloadedPremium = list.filter((voice) => (
       isGbEnglishVoice(voice) &&
       isDownloadedVoice(voice) &&
       isHumanPremiumEnglishVoice(voice)
     ));
+    if (safariGbDownloadedPremium.length) return safariGbDownloadedPremium;
+
+    const safariGbHuman = list.filter((voice) => (
+      isGbEnglishVoice(voice) &&
+      isHumanPremiumEnglishVoice(voice)
+    ));
+    if (safariGbHuman.length) return safariGbHuman;
+
+    return list.filter(isGbEnglishVoice);
   }
 
   if (profile === 'edge') {
@@ -671,7 +680,7 @@ function speakWord(word) {
   // Enhanced settings for iPad/iPhone with human-like British female voice
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   const isMobile = /Mobile|Android|iPhone|iPad/.test(navigator.userAgent);
-  const isEdge = /Edg\//i.test(navigator.userAgent);
+  const ignoredSpeechErrors = new Set(['interrupted', 'canceled']);
 
   const buildUtterance = (voice = null) => {
     const utterance = new SpeechSynthesisUtterance(text);
@@ -712,17 +721,22 @@ function speakWord(word) {
     };
     utterance.onerror = (event) => {
       const code = event?.error || 'unknown';
-      console.error('Speech synthesis error:', code, event);
       if (speechAttemptId !== attemptId) return;
 
+      if (ignoredSpeechErrors.has(code)) {
+        console.warn('Speech synthesis was interrupted by a newer playback request:', code);
+        return;
+      }
+
+      console.error('Speech synthesis error:', code, event);
       if (allowDefaultFallback && voice) {
         console.warn('Retrying speech with browser default voice after voice error:', code);
+        setSpeechFeedback('Selected voice failed. Trying browser default voice...');
         speakUtterance(null, false);
         return;
       }
 
-      setSpeechFeedback(`System speech failed (${code}). Trying online audio...`);
-      playRemoteWordAudio(text, attemptId);
+      setSpeechFeedback(`Audio playback failed (${code}). Please choose another English voice or check browser speech settings.`, true);
     };
 
     try {
@@ -751,11 +765,6 @@ function speakWord(word) {
   const voice = selectReliableSpeechVoice();
   if (voice) console.log('Speaking with voice:', voice.name, '(' + voice.lang + ')');
   else console.warn('No reliable speech voice found, using browser default');
-
-  if (isEdge) {
-    playRemoteWordAudio(text, attemptId, () => speakUtterance(voice, true));
-    return;
-  }
 
   speakUtterance(voice, true);
 }
