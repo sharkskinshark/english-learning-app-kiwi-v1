@@ -145,15 +145,25 @@ function logAvailableVoices() {
 
 function formatVoiceLabel(voice) {
   const parts = [voice.name || 'Unnamed voice', voice.lang || 'unknown'];
-  if (voice.localService === false) parts.push('online');
+  parts.push(voice.localService === false ? 'online' : 'downloaded');
   return parts.join(' - ');
+}
+
+function isEnglishVoice(voice) {
+  return /^en([-_]|$)/i.test(voice?.lang || '');
+}
+
+function getDisplayableEnglishVoices(voices) {
+  const englishVoices = (voices || []).filter(isEnglishVoice);
+  const downloadedEnglish = englishVoices.filter(v => v.localService !== false);
+  return downloadedEnglish.length ? downloadedEnglish : englishVoices;
 }
 
 function sortVoicesForDisplay(voices) {
   return [...voices].sort((a, b) => {
-    const aEnglish = /^en[-_]/i.test(a.lang || '') ? 0 : 1;
-    const bEnglish = /^en[-_]/i.test(b.lang || '') ? 0 : 1;
-    if (aEnglish !== bEnglish) return aEnglish - bEnglish;
+    const aDownloaded = a.localService !== false ? 0 : 1;
+    const bDownloaded = b.localService !== false ? 0 : 1;
+    if (aDownloaded !== bDownloaded) return aDownloaded - bDownloaded;
     return formatVoiceLabel(a).localeCompare(formatVoiceLabel(b));
   });
 }
@@ -161,13 +171,13 @@ function sortVoicesForDisplay(voices) {
 function populateVoiceSelect() {
   if (!voiceSelect || typeof synth?.getVoices !== 'function') return;
 
-  const voices = sortVoicesForDisplay(synth.getVoices() || []);
+  const voices = sortVoicesForDisplay(getDisplayableEnglishVoices(synth.getVoices() || []));
   const saved = localStorage.getItem(SELECTED_VOICE_KEY) || 'auto';
   voiceSelect.innerHTML = '';
 
   const autoOption = document.createElement('option');
   autoOption.value = 'auto';
-  autoOption.textContent = voices.length ? 'Auto voice' : 'Auto voice (loading voices...)';
+  autoOption.textContent = voices.length ? 'Auto English voice' : 'Auto English voice (loading voices...)';
   voiceSelect.appendChild(autoOption);
 
   voices.forEach((voice) => {
