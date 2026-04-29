@@ -1545,7 +1545,7 @@ startBtn.addEventListener('click', (e)=>{
   }
 
   if (!appAccessGranted) {
-    setIdentityHint('請先完成註冊（名稱+生日+Gmail）或使用已註冊 Gmail 登入。', true);
+    setIdentityHint('請先完成註冊（名稱+生日+Gmail）。');
     return;
   }
   
@@ -1609,7 +1609,7 @@ startBtn.addEventListener('touchend', function(e) {
     }
 
     if (!appAccessGranted) {
-      setIdentityHint('請先完成註冊（名稱+生日+Gmail）或使用已註冊 Gmail 登入。', true);
+      setIdentityHint('請先完成註冊（名稱+生日+Gmail）。');
       return;
     }
     
@@ -2080,7 +2080,7 @@ async function syncAuthGateFromCurrentState({ silent = false } = {}) {
   if (!backendAuthState.signedIn) {
     setLearningAccess(false);
     if (!silent) {
-      setIdentityHint('請先登入 Google，再完成註冊或使用「已註冊者 Gmail 直接登入」。', true);
+      setIdentityHint('請先登入 Gmail，再完成註冊。');
     }
     return false;
   }
@@ -2088,7 +2088,7 @@ async function syncAuthGateFromCurrentState({ silent = false } = {}) {
   const email = getSignedInGoogleEmail();
   if (!email) {
     setLearningAccess(false);
-    if (!silent) setIdentityHint('目前無法讀取 Google 帳號信箱，請重新登入。', true);
+    if (!silent) setIdentityHint('目前無法讀取 Gmail 信箱，請重新登入。', true);
     return false;
   }
 
@@ -2128,20 +2128,20 @@ async function syncAuthGateFromCurrentState({ silent = false } = {}) {
 
   setLearningAccess(false);
   if (!silent) {
-    setIdentityHint('Google 已登入，請先設定暱稱與生日再按「完成註冊」。暱稱不可重複。', true);
+    setIdentityHint('Gmail 已登入，請先設定暱稱與生日再按「完成註冊」。暱稱不可重複。');
   }
   return false;
 }
 
 async function signInRegisteredByGoogleOnly() {
   if (!backendAuthState.signedIn) {
-    setIdentityHint('請先完成 Google 登入。', true);
+    setIdentityHint('請先完成 Gmail 登入。', true);
     return false;
   }
 
   const email = getSignedInGoogleEmail();
   if (!email) {
-    setIdentityHint('無法取得 Google 信箱，請重新登入。', true);
+    setIdentityHint('無法取得 Gmail 信箱，請重新登入。', true);
     return false;
   }
 
@@ -2169,13 +2169,13 @@ async function signInRegisteredByGoogleOnly() {
 
 async function recoverNicknameForSignedInGoogle() {
   if (!backendAuthState.signedIn) {
-    setIdentityHint('請先完成 Google 登入。', true);
+    setIdentityHint('請先完成 Gmail 登入。', true);
     return false;
   }
 
   const email = getSignedInGoogleEmail();
   if (!email) {
-    setIdentityHint('無法取得 Google 信箱，請重新登入。', true);
+    setIdentityHint('無法取得 Gmail 信箱，請重新登入。', true);
     return false;
   }
 
@@ -2298,8 +2298,12 @@ async function saveOrSignInIdentityProfile(name, birthday, options = {}) {
 
   const linkedByEmail = findIdentityByGoogleEmail(googleEmail, store);
   if (linkedByEmail && linkedByEmail.key !== key) {
-    setIdentityHint('此 Gmail 已綁定其他名稱，請使用「已註冊者 Gmail 直接登入」。', true);
-    return { ok: false, reason: 'email-linked-other-profile' };
+    localStorage.setItem(ACTIVE_IDENTITY_KEY, linkedByEmail.key);
+    resetIdentityInputFields();
+    syncUsernameAcrossFeatures(linkedByEmail.profile.nickname);
+    setLearningAccess(true, linkedByEmail.profile, googleEmail);
+    setIdentityHint(`此 Gmail 已綁定 ${linkedByEmail.profile.nickname}，已直接登入。`);
+    return { ok: true, key: linkedByEmail.key, profile: linkedByEmail.profile };
   }
 
   if (existing && existing.birthday !== birth) {
@@ -2465,13 +2469,13 @@ function updateIdentityRegistrationControls() {
   if (usernameInputField) {
     usernameInputField.disabled = !signedIn;
     usernameInputField.readOnly = !signedIn;
-    usernameInputField.placeholder = signedIn ? IDENTITY_PLACEHOLDER_NAME : '請先登入 Google';
+    usernameInputField.placeholder = signedIn ? IDENTITY_PLACEHOLDER_NAME : '請先登入 Gmail';
   }
 
   if (birthdayInputField) {
     birthdayInputField.disabled = !signedIn;
     birthdayInputField.readOnly = !signedIn;
-    birthdayInputField.placeholder = signedIn ? IDENTITY_PLACEHOLDER_BIRTHDAY : '請先登入 Google';
+    birthdayInputField.placeholder = signedIn ? IDENTITY_PLACEHOLDER_BIRTHDAY : '請先登入 Gmail';
   }
 
   if (birthdayVisibilityToggle) {
@@ -2537,6 +2541,7 @@ function updateCloudSyncControlLabels() {
   }
 
   if (googleSignOutBtn) {
+    googleSignOutBtn.textContent = '登出 Gmail 帳號';
     googleSignOutBtn.classList.toggle('hidden', !backendAuthState.signedIn);
     googleSignOutBtn.disabled = cloudSyncBusy;
   }
@@ -2544,7 +2549,8 @@ function updateCloudSyncControlLabels() {
     googleSignInContainer.classList.toggle('hidden', backendAuthState.signedIn);
   }
   if (existingGoogleLoginBtn) {
-    existingGoogleLoginBtn.disabled = !backendAuthState.signedIn || cloudSyncBusy;
+    existingGoogleLoginBtn.classList.add('hidden');
+    existingGoogleLoginBtn.disabled = true;
   }
 
   updateIdentityRegistrationControls();
@@ -2587,7 +2593,7 @@ function describeSignedInUser(user) {
   const name = (user.name || '').trim();
   const email = (user.email || '').trim();
   if (name && email) return `已登入：${name} (${email})。`;
-  return `已登入：${name || email || 'Google 帳號'}。`;
+  return `已登入：${name || email || 'Gmail 帳號'}。`;
 }
 
 async function refreshBackendSessionState({ silent = false } = {}) {
@@ -2617,7 +2623,7 @@ async function refreshBackendSessionState({ silent = false } = {}) {
     if (backendAuthState.signedIn) {
       setAuthStatusHint(`${describeSignedInUser(backendAuthState.user)} 帳號雲端同步已啟用。`);
     } else {
-      setAuthStatusHint('請先使用 Google 登入，才能使用雲端同步。');
+      setAuthStatusHint('請先登入 Gmail，才能使用雲端同步。');
     }
   }
 
@@ -2629,18 +2635,18 @@ async function refreshBackendSessionState({ silent = false } = {}) {
 async function handleGoogleCredentialResponse(response) {
   const idToken = response?.credential || '';
   if (!idToken) {
-    setAuthStatusHint('Google 登入未回傳憑證。', true);
+    setAuthStatusHint('Gmail 登入未回傳憑證。', true);
     return;
   }
 
-  setAuthStatusHint('正在使用 Google 登入...');
+  setAuthStatusHint('正在登入 Gmail...');
   const result = await fetchBackendJson('/api/auth/google-login', {
     method: 'POST',
     body: { idToken }
   });
 
   if (!result.ok) {
-    setAuthStatusHint(result.data?.error || 'Google 登入失敗。', true);
+    setAuthStatusHint(result.data?.error || 'Gmail 登入失敗。', true);
     return;
   }
 
@@ -2680,7 +2686,7 @@ function tryInitGoogleSignIn(attempt = 0) {
     return;
   }
   if (attempt >= 30) {
-    setAuthStatusHint('Google 登入元件載入失敗，請重新整理後再試。', true);
+    setAuthStatusHint('Gmail 登入元件載入失敗，請重新整理後再試。', true);
     return;
   }
   setTimeout(() => tryInitGoogleSignIn(attempt + 1), 200);
@@ -2689,7 +2695,7 @@ function tryInitGoogleSignIn(attempt = 0) {
 async function initBackendAccountSync() {
   const result = await fetchBackendJson('/api/auth/config');
   if (!result.ok) {
-    setAuthStatusHint('後端登入服務暫時不可用，請稍後再試。', true);
+    setAuthStatusHint('本機預覽無法連線 Gmail 登入服務，請用 Vercel 網址測試登入。');
     updateCloudSyncControlLabels();
     return;
   }
@@ -2728,8 +2734,8 @@ async function signOutBackendAccount() {
   backendAuthState.signedIn = false;
   backendAuthState.user = null;
   updateCloudSyncControlLabels();
-  setAuthStatusHint('已登出 Google 帳號。');
-  setCloudSyncHint('已登出，請先登入 Google 才能上傳或下載雲端資料。');
+  setAuthStatusHint('已登出 Gmail 帳號。');
+  setCloudSyncHint('已登出，請先登入 Gmail 才能上傳或下載雲端資料。');
   setLearningAccess(false);
   setIdentityHint('你已登出。請重新登入或註冊。');
 }
@@ -3206,8 +3212,8 @@ function ensureSignedInForCloudSync() {
     return false;
   }
   if (!backendAuthState.signedIn) {
-    setAuthStatusHint('請先使用 Google 登入。', true);
-    setCloudSyncHint('請先使用 Google 登入。', true);
+    setAuthStatusHint('請先登入 Gmail。');
+    setCloudSyncHint('請先登入 Gmail。');
     return false;
   }
   return true;
