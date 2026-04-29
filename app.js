@@ -4,6 +4,7 @@ let currentWord = '';
 let hasAnsweredCurrentQuestion = false;
 let currentQuestionKey = '';
 const synth = window.speechSynthesis;
+const SELECTED_VOICE_KEY = 'englishAppSelectedSpeechVoice';
 
 // Preferred British female voice matching - optimized for human-like voices on iPad/iPhone
 // IMPORTANT: Moira (Apple voice) is first for iOS devices - most human-like
@@ -31,12 +32,31 @@ const VOICE_PREFERENCES = [
   'English (United Kingdom)'
 ];
 
+function getVoiceKey(voice) {
+  if (!voice) return '';
+  return voice.voiceURI || `${voice.name || ''}|${voice.lang || ''}|${voice.localService ? 'local' : 'remote'}`;
+}
+
+function getSelectedSpeechVoice(voices = null) {
+  const saved = localStorage.getItem(SELECTED_VOICE_KEY) || 'auto';
+  if (!saved || saved === 'auto') return null;
+
+  const list = voices || ((typeof synth?.getVoices === 'function') ? synth.getVoices() : []);
+  return list.find(v => getVoiceKey(v) === saved) || null;
+}
+
 function pickBritishFemaleVoice() {
   try {
     const voices = (typeof synth?.getVoices === 'function') ? synth.getVoices() : [];
     if (!voices || voices.length === 0) {
       console.warn('No voices available');
       return null;
+    }
+
+    const selectedVoice = getSelectedSpeechVoice(voices);
+    if (selectedVoice) {
+      console.log('✓ SELECTED VOICE:', selectedVoice.name, '(' + selectedVoice.lang + ')');
+      return selectedVoice;
     }
     
     // Log available voices for debugging
@@ -122,6 +142,69 @@ function logAvailableVoices() {
     console.warn('Error logging voices:', e);
   }
 }
+
+function formatVoiceLabel(voice) {
+  const parts = [voice.name || 'Unnamed voice', voice.lang || 'unknown'];
+  if (voice.localService === false) parts.push('online');
+  return parts.join(' - ');
+}
+
+function sortVoicesForDisplay(voices) {
+  return [...voices].sort((a, b) => {
+    const aEnglish = /^en[-_]/i.test(a.lang || '') ? 0 : 1;
+    const bEnglish = /^en[-_]/i.test(b.lang || '') ? 0 : 1;
+    if (aEnglish !== bEnglish) return aEnglish - bEnglish;
+    return formatVoiceLabel(a).localeCompare(formatVoiceLabel(b));
+  });
+}
+
+function populateVoiceSelect() {
+  if (!voiceSelect || typeof synth?.getVoices !== 'function') return;
+
+  const voices = sortVoicesForDisplay(synth.getVoices() || []);
+  const saved = localStorage.getItem(SELECTED_VOICE_KEY) || 'auto';
+  voiceSelect.innerHTML = '';
+
+  const autoOption = document.createElement('option');
+  autoOption.value = 'auto';
+  autoOption.textContent = voices.length ? 'Auto voice' : 'Auto voice (loading voices...)';
+  voiceSelect.appendChild(autoOption);
+
+  voices.forEach((voice) => {
+    const option = document.createElement('option');
+    option.value = getVoiceKey(voice);
+    option.textContent = formatVoiceLabel(voice);
+    voiceSelect.appendChild(option);
+  });
+
+  voiceSelect.value = voices.some(v => getVoiceKey(v) === saved) ? saved : 'auto';
+}
+
+function initVoiceSelector() {
+  if (!voiceSelect) return;
+
+  populateVoiceSelect();
+  voiceSelect.addEventListener('change', () => {
+    localStorage.setItem(SELECTED_VOICE_KEY, voiceSelect.value || 'auto');
+    const selected = getSelectedSpeechVoice();
+    if (selected) {
+      setSpeechFeedback(`Voice selected: ${selected.name}`);
+    } else {
+      setSpeechFeedback('Voice selected: Auto');
+    }
+  });
+
+  if (synth) {
+    if (typeof synth.addEventListener === 'function') {
+      synth.addEventListener('voiceschanged', populateVoiceSelect);
+    } else {
+      synth.onvoiceschanged = populateVoiceSelect;
+    }
+  }
+
+  setTimeout(populateVoiceSelect, 300);
+  setTimeout(populateVoiceSelect, 1200);
+}
 const PROGRESS_KEY = 'englishAppProgress';
 const IDENTITY_STORE_KEY = 'englishAppIdentityProfiles';
 const ACTIVE_IDENTITY_KEY = 'englishAppActiveIdentity';
@@ -163,6 +246,7 @@ if (startBtn) {
 const progressSection = document.getElementById('progressSection');
 const showProgressBtn = document.getElementById('showProgress');
 const listenWordBtn = document.getElementById('listenWordBtn');
+const voiceSelect = document.getElementById('voiceSelect');
 const spellingInput = document.getElementById('spellingInput');
 const submitSpelling = document.getElementById('submitSpelling');
 const spellingResult = document.getElementById('spellingResult');
@@ -410,6 +494,9 @@ function selectReliableSpeechVoice() {
     ? window.speechSynthesis.getVoices()
     : [];
   if (!voices || voices.length === 0) return null;
+
+  const selectedVoice = getSelectedSpeechVoice(voices);
+  if (selectedVoice) return selectedVoice;
 
   const englishVoices = voices.filter(v => /^en[-_]/i.test(v.lang || ''));
   const localEnglish = englishVoices.filter(v => v.localService !== false);
@@ -3565,6 +3652,7 @@ if (eventToggleBtn) {
 
 renderReportHistoryList();
 updateCloudSyncControlLabels();
+initVoiceSelector();
 applyIdentityInputPlaceholders();
 setBirthdayDigitsVisible(false);
 setLearningAccess(false);
