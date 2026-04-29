@@ -153,17 +153,79 @@ function isEnglishVoice(voice) {
   return /^en([-_]|$)/i.test(voice?.lang || '');
 }
 
+function isDownloadedVoice(voice) {
+  return voice?.localService !== false;
+}
+
+function isGbEnglishVoice(voice) {
+  return /^en[-_]GB$/i.test(voice?.lang || '');
+}
+
+function getVoiceBrowserProfile() {
+  const ua = navigator.userAgent || '';
+  if (/Edg\//i.test(ua)) return 'edge';
+  if (/CriOS|Chrome/i.test(ua) && !/Edg\//i.test(ua)) return 'chrome';
+  if (/Safari/i.test(ua) && !/CriOS|Chrome|Edg\//i.test(ua)) return 'safari';
+  return 'default';
+}
+
+function isHumanPremiumEnglishVoice(voice) {
+  if (!isEnglishVoice(voice) || !isDownloadedVoice(voice)) return false;
+
+  const name = String(voice.name || '');
+  const searchable = `${name} ${voice.voiceURI || ''}`.toLowerCase();
+
+  // Browser speech APIs do not expose a reliable "premium" flag, so combine
+  // downloaded/local service, English locale, premium-quality labels, and
+  // known human Apple/Microsoft English voice names.
+  const premiumIndicators = /premium|enhanced|natural|neural|siri|online \(natural\)/i;
+  const knownHumanEnglishVoices = /arthur|daniel|fiona|kate|martha|moira|oliver|serena|susan|victoria|samantha|allison|ava|zoe|jamie|sonia|libby|olivia|zira/i;
+  const nonHumanIndicators = /compact|novelty|eloquence|bells?|boing|bubbles|cellos?|deranged|fred|good news|bad news|hysterical|organ|princess|superstar|trinoids|whisper|zarvox/i;
+
+  if (nonHumanIndicators.test(searchable)) return false;
+  return isGbEnglishVoice(voice) || premiumIndicators.test(searchable) || knownHumanEnglishVoices.test(searchable);
+}
+
 function getDisplayableEnglishVoices(voices) {
-  const englishVoices = (voices || []).filter(isEnglishVoice);
-  const downloadedEnglish = englishVoices.filter(v => v.localService !== false);
-  return downloadedEnglish.length ? downloadedEnglish : englishVoices;
+  const list = voices || [];
+  const profile = getVoiceBrowserProfile();
+
+  if (profile === 'chrome') {
+    const allowedChromeVoices = new Set([
+      'google uk english female|en-gb',
+      'google uk english male|en-gb',
+      'google us english|en-us'
+    ]);
+    return list.filter((voice) => {
+      const key = `${String(voice.name || '').toLowerCase()}|${String(voice.lang || '').toLowerCase()}`;
+      return allowedChromeVoices.has(key);
+    });
+  }
+
+  if (profile === 'safari') {
+    return list.filter((voice) => (
+      isGbEnglishVoice(voice) &&
+      isDownloadedVoice(voice) &&
+      isHumanPremiumEnglishVoice(voice)
+    ));
+  }
+
+  if (profile === 'edge') {
+    const edgeGbNatural = list.filter((voice) => {
+      const searchable = `${voice.name || ''} ${voice.voiceURI || ''}`.toLowerCase();
+      return isGbEnglishVoice(voice) && /microsoft/.test(searchable) && /natural/.test(searchable);
+    });
+    return edgeGbNatural.length ? edgeGbNatural : list.filter(isGbEnglishVoice);
+  }
+
+  return list.filter(isHumanPremiumEnglishVoice);
 }
 
 function sortVoicesForDisplay(voices) {
   return [...voices].sort((a, b) => {
-    const aDownloaded = a.localService !== false ? 0 : 1;
-    const bDownloaded = b.localService !== false ? 0 : 1;
-    if (aDownloaded !== bDownloaded) return aDownloaded - bDownloaded;
+    const aGb = isGbEnglishVoice(a) ? 0 : 1;
+    const bGb = isGbEnglishVoice(b) ? 0 : 1;
+    if (aGb !== bGb) return aGb - bGb;
     return formatVoiceLabel(a).localeCompare(formatVoiceLabel(b));
   });
 }
@@ -177,7 +239,7 @@ function populateVoiceSelect() {
 
   const autoOption = document.createElement('option');
   autoOption.value = 'auto';
-  autoOption.textContent = voices.length ? 'Auto English voice' : 'Auto English voice (loading voices...)';
+  autoOption.textContent = voices.length ? 'Auto filtered English voice' : 'No matching English voice exposed';
   voiceSelect.appendChild(autoOption);
 
   voices.forEach((voice) => {
