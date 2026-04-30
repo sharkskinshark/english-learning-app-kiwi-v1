@@ -5,6 +5,10 @@ let hasAnsweredCurrentQuestion = false;
 let currentQuestionKey = '';
 const synth = window.speechSynthesis;
 const SELECTED_VOICE_KEY = 'englishAppSelectedSpeechVoice';
+const SPELLING_LETTERS_VISIBLE_KEY = 'englishAppSpellingLettersVisible';
+let spellingLettersVisible = localStorage.getItem(SPELLING_LETTERS_VISIBLE_KEY) === '1';
+let currentSpellingHintWord = '';
+let activePlaybackWord = '';
 
 // Preferred British female voice matching - optimized for human-like voices on iPad/iPhone
 // IMPORTANT: Moira (Apple voice) is first for iOS devices - most human-like
@@ -161,6 +165,10 @@ function isGbEnglishVoice(voice) {
   return /^en[-_]GB$/i.test(voice?.lang || '');
 }
 
+function getVoiceSearchText(voice) {
+  return `${voice?.name || ''} ${voice?.voiceURI || ''}`.toLowerCase();
+}
+
 function isAppleTouchBrowser() {
   const ua = navigator.userAgent || '';
   const platform = navigator.platform || '';
@@ -181,7 +189,7 @@ function isHumanPremiumEnglishVoice(voice) {
   if (!isEnglishVoice(voice) || !isDownloadedVoice(voice)) return false;
 
   const name = String(voice.name || '');
-  const searchable = `${name} ${voice.voiceURI || ''}`.toLowerCase();
+  const searchable = getVoiceSearchText(voice);
 
   // Browser speech APIs do not expose a reliable "premium" flag, so combine
   // downloaded/local service, English locale, premium-quality labels, and
@@ -192,6 +200,24 @@ function isHumanPremiumEnglishVoice(voice) {
 
   if (nonHumanIndicators.test(searchable)) return false;
   return isGbEnglishVoice(voice) || premiumIndicators.test(searchable) || knownHumanEnglishVoices.test(searchable);
+}
+
+function isEdgeGbNaturalVoice(voice) {
+  const searchable = getVoiceSearchText(voice);
+  return (
+    isGbEnglishVoice(voice) &&
+    /microsoft/.test(searchable) &&
+    /natural/.test(searchable) &&
+    !/abbi/.test(searchable)
+  );
+}
+
+function isKnownWorkingEdgeGbVoice(voice) {
+  const searchable = getVoiceSearchText(voice);
+  return (
+    isEdgeGbNaturalVoice(voice) &&
+    /ryan|sonia|thomas|libby|maisie|ollie|phoebe|george/.test(searchable)
+  );
 }
 
 function getDisplayableEnglishVoices(voices) {
@@ -248,10 +274,10 @@ function getDisplayableEnglishVoices(voices) {
   }
 
   if (profile === 'edge') {
-    const edgeGbNatural = list.filter((voice) => {
-      const searchable = `${voice.name || ''} ${voice.voiceURI || ''}`.toLowerCase();
-      return isGbEnglishVoice(voice) && /microsoft/.test(searchable) && /natural/.test(searchable);
-    });
+    const workingEdgeVoices = list.filter(isKnownWorkingEdgeGbVoice);
+    if (workingEdgeVoices.length) return workingEdgeVoices;
+
+    const edgeGbNatural = list.filter(isEdgeGbNaturalVoice);
     return edgeGbNatural.length ? edgeGbNatural : list.filter(isGbEnglishVoice);
   }
 
@@ -272,12 +298,14 @@ function sortVoicesForDisplay(voices) {
 function getSpeechVoiceRank(voice) {
   if (!voice) return 999;
   const profile = getVoiceBrowserProfile();
-  const searchable = `${voice.name || ''} ${voice.voiceURI || ''}`.toLowerCase();
+  const searchable = getVoiceSearchText(voice);
 
   if (profile === 'edge') {
+    if (!isEdgeGbNaturalVoice(voice)) return 90;
     if (/microsoft/.test(searchable) && /thomas/.test(searchable) && isGbEnglishVoice(voice)) return 0;
     if (/microsoft/.test(searchable) && /george|ryan/.test(searchable) && isGbEnglishVoice(voice)) return 1;
-    if (/microsoft/.test(searchable) && /libby|sonia/.test(searchable) && isGbEnglishVoice(voice)) return 2;
+    if (/microsoft/.test(searchable) && /libby|sonia|maisie/.test(searchable) && isGbEnglishVoice(voice)) return 2;
+    if (/microsoft/.test(searchable) && /ollie|phoebe/.test(searchable) && isGbEnglishVoice(voice)) return 3;
     if (/microsoft/.test(searchable) && /natural/.test(searchable) && isGbEnglishVoice(voice)) return 10;
     if (isGbEnglishVoice(voice) && isDownloadedVoice(voice)) return 20;
     if (isEnglishVoice(voice) && isDownloadedVoice(voice)) return 30;
@@ -387,6 +415,7 @@ if (startBtn) {
 const progressSection = document.getElementById('progressSection');
 const showProgressBtn = document.getElementById('showProgress');
 const listenWordBtn = document.getElementById('listenWordBtn');
+const toggleSpellingHintBtn = document.getElementById('toggleSpellingHintBtn');
 const voiceSelect = document.getElementById('voiceSelect');
 const spellingInput = document.getElementById('spellingInput');
 const submitSpelling = document.getElementById('submitSpelling');
@@ -630,6 +659,67 @@ function setSpeechFeedback(message, isError = false) {
   feedbackEl.className = isError ? 'feedback bad' : 'feedback';
 }
 
+function isSpellingPracticeVisible() {
+  return modeSelect?.value === 'spelling' && !spellingArea?.classList.contains('hidden');
+}
+
+function updateSpellingHintToggle() {
+  if (!toggleSpellingHintBtn) return;
+  toggleSpellingHintBtn.textContent = spellingLettersVisible ? '隱藏拼字' : '顯示拼字';
+  toggleSpellingHintBtn.setAttribute('aria-pressed', String(spellingLettersVisible));
+}
+
+function setWordPlaybackFeedback(word) {
+  const cleanWord = String(word || '').trim();
+  activePlaybackWord = cleanWord;
+  if (cleanWord) currentSpellingHintWord = cleanWord;
+
+  if (isSpellingPracticeVisible() && cleanWord) {
+    setSpeechFeedback(spellingLettersVisible ? `Playing: ${cleanWord}` : 'Playing word');
+    return;
+  }
+
+  setSpeechFeedback(cleanWord ? `Playing: ${cleanWord}` : 'Playing word');
+}
+
+function clearWordPlaybackFeedback(word = '') {
+  const cleanWord = String(word || '').trim();
+  if (cleanWord && activePlaybackWord && cleanWord !== activePlaybackWord) return;
+
+  activePlaybackWord = '';
+  if (isSpellingPracticeVisible() && spellingLettersVisible && currentSpellingHintWord && !hasAnsweredCurrentQuestion) {
+    setSpeechFeedback(`Spelling: ${currentSpellingHintWord}`);
+    return;
+  }
+
+  setSpeechFeedback('');
+}
+
+function refreshSpellingHintFeedback() {
+  updateSpellingHintToggle();
+  if (!isSpellingPracticeVisible()) return;
+
+  if (activePlaybackWord) {
+    setWordPlaybackFeedback(activePlaybackWord);
+    return;
+  }
+
+  if (spellingLettersVisible && currentSpellingHintWord && !hasAnsweredCurrentQuestion) {
+    setSpeechFeedback(`Spelling: ${currentSpellingHintWord}`);
+    return;
+  }
+
+  if (!hasAnsweredCurrentQuestion && !feedbackEl?.classList.contains('bad')) {
+    setSpeechFeedback('');
+  }
+}
+
+function setSpellingLettersVisible(visible) {
+  spellingLettersVisible = !!visible;
+  localStorage.setItem(SPELLING_LETTERS_VISIBLE_KEY, spellingLettersVisible ? '1' : '0');
+  refreshSpellingHintFeedback();
+}
+
 function selectReliableSpeechVoice() {
   const voices = (typeof window.speechSynthesis?.getVoices === 'function')
     ? window.speechSynthesis.getVoices()
@@ -683,13 +773,19 @@ function uniqueSpeechVoices(voices) {
 
 function buildSpeechVoiceQueue(voices = null) {
   const list = voices || ((typeof synth?.getVoices === 'function') ? synth.getVoices() : []);
+  const profile = getVoiceBrowserProfile();
   const selectedVoice = getSelectedSpeechVoice(list);
   const displayableVoices = sortVoicesForSpeech(getDisplayableEnglishVoices(list));
-  const fallbackVoices = sortVoicesForSpeech([
-    ...list.filter(isGbEnglishVoice),
-    ...list.filter((voice) => isEnglishVoice(voice) && isDownloadedVoice(voice)),
-    ...list.filter(isEnglishVoice)
-  ]);
+  const fallbackVoices = profile === 'edge'
+    ? sortVoicesForSpeech([
+      ...list.filter(isKnownWorkingEdgeGbVoice),
+      ...list.filter(isEdgeGbNaturalVoice)
+    ])
+    : sortVoicesForSpeech([
+      ...list.filter(isGbEnglishVoice),
+      ...list.filter((voice) => isEnglishVoice(voice) && isDownloadedVoice(voice)),
+      ...list.filter(isEnglishVoice)
+    ]);
 
   const voicesInOrder = uniqueSpeechVoices([
     selectedVoice,
@@ -698,7 +794,6 @@ function buildSpeechVoiceQueue(voices = null) {
   ]);
   const freshVoices = voicesInOrder.filter((voice) => !isRecentlyFailedSpeechVoice(voice));
   const usableVoices = freshVoices.length ? freshVoices : voicesInOrder;
-  const profile = getVoiceBrowserProfile();
   const defaultFallbacks = profile === 'edge'
     ? [{ voice: null, lang: 'en-US' }, { voice: null, lang: 'en-GB' }]
     : [{ voice: null, lang: 'en-GB' }, { voice: null, lang: 'en-US' }];
@@ -753,12 +848,12 @@ function playRemoteWordAudio(text, attemptId, onFallback = null) {
     audio.volume = 1;
 
     audio.onplaying = () => {
-      if (speechAttemptId === attemptId) setSpeechFeedback(`Playing: ${text}`);
+      if (speechAttemptId === attemptId) setWordPlaybackFeedback(text);
     };
     audio.onended = () => {
       if (speechAttemptId === attemptId && !hasAnsweredCurrentQuestion) {
         setTimeout(() => {
-          if (speechAttemptId === attemptId && !hasAnsweredCurrentQuestion) setSpeechFeedback('');
+          if (speechAttemptId === attemptId && !hasAnsweredCurrentQuestion) clearWordPlaybackFeedback(text);
         }, 350);
       }
     };
@@ -856,12 +951,12 @@ function speakWord(word) {
 
     utterance.onstart = () => {
       didStart = true;
-      if (speechAttemptId === attemptId) setSpeechFeedback(`Playing: ${text}`);
+      if (speechAttemptId === attemptId) setWordPlaybackFeedback(text);
     };
     utterance.onend = () => {
       if (speechAttemptId === attemptId && !hasAnsweredCurrentQuestion) {
         setTimeout(() => {
-          if (speechAttemptId === attemptId && !hasAnsweredCurrentQuestion) setSpeechFeedback('');
+          if (speechAttemptId === attemptId && !hasAnsweredCurrentQuestion) clearWordPlaybackFeedback(text);
         }, 350);
       }
     };
@@ -1094,6 +1189,8 @@ function checkSpelling() {
   hasAnsweredCurrentQuestion = true;
   spellingInput.disabled = true;
   submitSpelling.disabled = true;
+  activePlaybackWord = '';
+  if (!feedbackEl?.classList.contains('bad')) setSpeechFeedback('');
 
   const current = session.words[session.index];
   const correct = userInput === current.word.toLowerCase();
@@ -1830,6 +1927,9 @@ function showCurrent(){
     submitSpelling.disabled = false;
     spellingInput.focus();
     currentWord = current;
+    currentSpellingHintWord = current.word || '';
+    activePlaybackWord = '';
+    refreshSpellingHintFeedback();
     
     // Reset result area
     resultMessage.textContent = '';
@@ -1839,6 +1939,8 @@ function showCurrent(){
     // Speak immediately while still inside the user's click/tap activation.
     speakWord(current.word);
   }else if(mode === 'phonics'){
+    currentSpellingHintWord = '';
+    activePlaybackWord = '';
     spellingArea.classList.add('hidden');
     meaningArea.classList.add('hidden');
     phonicsArea.classList.remove('hidden');
@@ -1851,6 +1953,8 @@ function showCurrent(){
     // Show next button immediately since no input required
     nextBtn.classList.remove('hidden');
   }else{
+    currentSpellingHintWord = '';
+    activePlaybackWord = '';
     spellingArea.classList.add('hidden');
     phonicsArea.classList.add('hidden');
     meaningArea.classList.remove('hidden');
@@ -2076,7 +2180,15 @@ function playCurrentWord() {
     promptEl.textContent = 'Press Start to begin';
     return;
   }
+  currentSpellingHintWord = current.word;
   speakWord(current.word);
+}
+
+if (toggleSpellingHintBtn) {
+  updateSpellingHintToggle();
+  toggleSpellingHintBtn.addEventListener('click', () => {
+    setSpellingLettersVisible(!spellingLettersVisible);
+  });
 }
 
 let listenTouchHandled = false;

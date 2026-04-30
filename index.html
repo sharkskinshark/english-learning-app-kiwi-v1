@@ -19,7 +19,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260429-gmail-auth-v1">
+  <link rel="stylesheet" href="styles.css?v=20260430-spelling-toggle-v1">
   <!-- Vercel Speed Insights - Simplified working implementation -->
   <script defer src="/_vercel/speed-insights/script.js"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -273,6 +273,9 @@
             <input id="spellingInput" placeholder="Type what you hear..." autocomplete="off">
             <button id="submitSpelling" class="btn">Check Answer</button>
           </div>
+          <div class="spelling-hint-controls">
+            <button id="toggleSpellingHintBtn" type="button" class="secondary-action-btn" aria-pressed="false">顯示拼字</button>
+          </div>
           <div id="spellingResult" class="hidden">
             <p id="resultMessage"></p>
             <div id="correctAnswer" class="hidden">
@@ -379,7 +382,7 @@
   <script src="review.js?v=20260406-2"></script>
   <script src="daily.js?v=20260406-2"></script>
   <script src="events.js?v=20260406-2"></script>
-  <script src="app.js?v=20260430-ios-chrome-voice-filter-v1"></script>
+  <script src="app.js?v=20260430-spelling-toggle-v1"></script>
   <script src="calendar.js?v=20260406-4"></script>
   <script src="leaderboard.js?v=20260406-4"></script>
 
