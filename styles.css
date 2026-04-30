@@ -4043,6 +4043,79 @@ h1{margin:0 0 12px;font-size:1.6rem}
 .controls #reviewStats {
   grid-column: 1 / -1;
 }
+.voice-control-label {
+  width: 100%;
+}
+.voice-control-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+}
+#voiceHelpBtn {
+  white-space: nowrap;
+}
+.voice-help-panel {
+  grid-column: 1 / -1;
+  width: 100%;
+  border: 1px solid #d8e6f8;
+  border-radius: 8px;
+  background: rgba(248, 252, 255, 0.92);
+  color: #243449;
+  padding: 16px;
+  box-shadow: 0 6px 18px rgba(44, 42, 41, 0.08);
+}
+.voice-help-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.voice-help-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.voice-help-note,
+.voice-help-source {
+  margin: 8px 0;
+  color: #52647c;
+}
+.voice-help-steps {
+  margin: 10px 0 12px 22px;
+  padding: 0;
+}
+.voice-help-steps li {
+  margin: 7px 0;
+}
+.voice-help-lists {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.voice-help-lists h4 {
+  margin: 0 0 6px;
+  font-size: 0.98rem;
+}
+.voice-help-lists p {
+  margin: 0;
+  color: #52647c;
+}
+@media (max-width: 560px) {
+  .voice-control-row {
+    grid-template-columns: 1fr;
+  }
+  #voiceHelpBtn,
+  #voiceHelpCloseBtn {
+    justify-self: start;
+  }
+  .voice-help-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
 #loadingMessage {
   margin-left: 0;
   color: #506380;
@@ -6594,6 +6667,8 @@ button:hover, .btn:hover { opacity: 0.6 !important; transform: none !important; 
 #cloudPullBtn,
 #cloudPushBtn,
 #startBtn,
+#voiceHelpBtn,
+#voiceHelpCloseBtn,
 #listenWordBtn,
 #toggleSpellingHintBtn,
 #submitSpelling,
@@ -6621,6 +6696,8 @@ button:hover, .btn:hover { opacity: 0.6 !important; transform: none !important; 
 #cloudPullBtn:hover,
 #cloudPushBtn:hover,
 #startBtn:hover,
+#voiceHelpBtn:hover,
+#voiceHelpCloseBtn:hover,
 #listenWordBtn:hover,
 #toggleSpellingHintBtn:hover,
 #submitSpelling:hover,
@@ -6641,6 +6718,8 @@ button:hover, .btn:hover { opacity: 0.6 !important; transform: none !important; 
 #cloudPullBtn:active,
 #cloudPushBtn:active,
 #startBtn:active,
+#voiceHelpBtn:active,
+#voiceHelpCloseBtn:active,
 #listenWordBtn:active,
 #toggleSpellingHintBtn:active,
 #submitSpelling:active,

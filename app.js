@@ -193,6 +193,12 @@ function getVoiceBrowserProfile() {
   return 'default';
 }
 
+function shouldOfferDefaultIpadVoiceFallback(voices) {
+  const profile = getVoiceBrowserProfile();
+  if (profile !== 'ios-chrome') return false;
+  return getDisplayableEnglishVoices(voices || []).length === 0;
+}
+
 function isHumanPremiumEnglishVoice(voice) {
   if (!isEnglishVoice(voice) || !isDownloadedVoice(voice)) return false;
 
@@ -385,13 +391,17 @@ function sortVoicesForSpeech(voices) {
 function populateVoiceSelect() {
   if (!voiceSelect || typeof synth?.getVoices !== 'function') return;
 
-  const voices = sortVoicesForDisplay(getDisplayableEnglishVoices(synth.getVoices() || []));
+  const rawVoices = synth.getVoices() || [];
+  const voices = sortVoicesForDisplay(getDisplayableEnglishVoices(rawVoices));
+  const useDefaultIpadFallback = shouldOfferDefaultIpadVoiceFallback(rawVoices);
   const saved = localStorage.getItem(SELECTED_VOICE_KEY) || 'auto';
   voiceSelect.innerHTML = '';
 
   const autoOption = document.createElement('option');
   autoOption.value = 'auto';
-  autoOption.textContent = voices.length ? 'Auto filtered English voice' : 'No matching English voice exposed';
+  autoOption.textContent = useDefaultIpadFallback
+    ? 'Use iPad default voice'
+    : voices.length ? 'Auto filtered English voice' : 'No matching English voice exposed';
   voiceSelect.appendChild(autoOption);
 
   voices.forEach((voice) => {
@@ -429,6 +439,32 @@ function initVoiceSelector() {
 
   setTimeout(populateVoiceSelect, 300);
   setTimeout(populateVoiceSelect, 1200);
+}
+
+function setVoiceHelpOpen(open) {
+  if (!voiceHelpPanel || !voiceHelpBtn) return;
+  voiceHelpPanel.classList.toggle('hidden', !open);
+  voiceHelpBtn.setAttribute('aria-expanded', String(open));
+}
+
+function initVoiceHelp() {
+  if (!voiceHelpBtn || !voiceHelpPanel) return;
+
+  voiceHelpBtn.addEventListener('click', () => {
+    setVoiceHelpOpen(voiceHelpPanel.classList.contains('hidden'));
+  });
+
+  voiceHelpCloseBtn?.addEventListener('click', () => {
+    setVoiceHelpOpen(false);
+    voiceHelpBtn.focus();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !voiceHelpPanel.classList.contains('hidden')) {
+      setVoiceHelpOpen(false);
+      voiceHelpBtn.focus();
+    }
+  });
 }
 const PROGRESS_KEY = 'englishAppProgress';
 const IDENTITY_STORE_KEY = 'englishAppIdentityProfiles';
@@ -473,6 +509,9 @@ const showProgressBtn = document.getElementById('showProgress');
 const listenWordBtn = document.getElementById('listenWordBtn');
 const toggleSpellingHintBtn = document.getElementById('toggleSpellingHintBtn');
 const voiceSelect = document.getElementById('voiceSelect');
+const voiceHelpBtn = document.getElementById('voiceHelpBtn');
+const voiceHelpPanel = document.getElementById('voiceHelpPanel');
+const voiceHelpCloseBtn = document.getElementById('voiceHelpCloseBtn');
 const spellingInput = document.getElementById('spellingInput');
 const submitSpelling = document.getElementById('submitSpelling');
 const spellingResult = document.getElementById('spellingResult');
@@ -858,6 +897,10 @@ function buildSpeechVoiceQueue(voices = null) {
   const defaultFallbacks = profile === 'edge'
     ? [{ voice: null, lang: 'en-US' }, { voice: null, lang: 'en-GB' }]
     : [{ voice: null, lang: 'en-GB' }, { voice: null, lang: 'en-US' }];
+
+  if (profile === 'ios-chrome' && usableVoices.length === 0) {
+    return defaultFallbacks;
+  }
 
   return [
     ...usableVoices.map((voice) => ({ voice, lang: voice.lang || 'en-GB' })),
@@ -4058,6 +4101,7 @@ if (eventToggleBtn) {
 renderReportHistoryList();
 updateCloudSyncControlLabels();
 initVoiceSelector();
+initVoiceHelp();
 applyIdentityInputPlaceholders();
 setBirthdayDigitsVisible(false);
 setLearningAccess(false);
