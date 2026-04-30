@@ -1363,15 +1363,20 @@ function checkSpelling() {
   scoreEl.textContent = `Score: ${session.score}`;
 }
 
+function handleSpellingEnterKey(event) {
+  if (event.key !== 'Enter') return;
+  if (modeSelect?.value !== 'spelling' || spellingArea?.classList.contains('hidden')) return;
+
+  event.preventDefault();
+  handleSpellingSubmitAction();
+}
+
 // Add event listeners for spelling practice (removed duplicates)
-spellingInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') {
-    if (hasAnsweredCurrentQuestion && modeSelect?.value === 'spelling') {
-      next();
-    } else {
-      checkSpelling();
-    }
-  }
+spellingInput.addEventListener('keydown', handleSpellingEnterKey);
+document.addEventListener('keydown', (event) => {
+  if (event.target === spellingInput) return;
+  if (document.activeElement === spellingInput) return;
+  handleSpellingEnterKey(event);
 });
 
 function updateProgress(level, category, correct, total) {
@@ -2158,7 +2163,9 @@ function checkMeaning(selected,current){
     saveForReview(current, isCorrect, {
       mode: 'meaning',
       phase: session.isReview ? 'review' : 'learn',
-      questionKey: currentQuestionKey
+      questionKey: currentQuestionKey,
+      selectedAnswer: selected,
+      correctAnswer: current.meaning
     });
   }
 
