@@ -46,7 +46,15 @@ function getSelectedSpeechVoice(voices = null) {
   if (!saved || saved === 'auto') return null;
 
   const list = voices || ((typeof synth?.getVoices === 'function') ? synth.getVoices() : []);
-  return list.find(v => getVoiceKey(v) === saved) || null;
+  const selected = list.find(v => getVoiceKey(v) === saved) || null;
+  const profile = getVoiceBrowserProfile();
+
+  if (selected && (profile === 'ios-chrome' || profile === 'ios-webkit')) {
+    const allowedKeys = new Set(getDisplayableEnglishVoices(list).map(getVoiceKey));
+    return allowedKeys.has(getVoiceKey(selected)) ? selected : null;
+  }
+
+  return selected;
 }
 
 function pickBritishFemaleVoice() {
@@ -202,13 +210,60 @@ function isHumanPremiumEnglishVoice(voice) {
   return isGbEnglishVoice(voice) || premiumIndicators.test(searchable) || knownHumanEnglishVoices.test(searchable);
 }
 
+function isKnownGoodIpadVoice(voice) {
+  if (!isEnglishVoice(voice)) return false;
+  const searchable = getVoiceSearchText(voice);
+  return /daniel|tessa|samantha|rishi|kathy|karen|moira|moria|serena|kate|fiona|victoria|arthur|oliver|susan|allison|ava|zoe|jamie/.test(searchable);
+}
+
+function isKnownWorkingIosChromeVoice(voice) {
+  if (!isEnglishVoice(voice)) return false;
+  const searchable = getVoiceSearchText(voice);
+  return isKnownGoodIpadVoice(voice) || /superstar|superstart|junior|fred/.test(searchable);
+}
+
+function getIpadVoiceRank(voice) {
+  const searchable = getVoiceSearchText(voice);
+  const order = [
+    /daniel/,
+    /tessa/,
+    /moira|moria/,
+    /samantha/,
+    /serena/,
+    /kate/,
+    /fiona/,
+    /victoria/,
+    /rishi/,
+    /kathy/,
+    /karen/,
+    /arthur/,
+    /oliver/,
+    /susan/,
+    /allison/,
+    /ava/,
+    /zoe/,
+    /jamie/,
+    /superstar|superstart/,
+    /junior/,
+    /fred/
+  ];
+  const index = order.findIndex((pattern) => pattern.test(searchable));
+  return index === -1 ? 99 : index;
+}
+
+function isBlockedEdgeGbNaturalVoice(voice) {
+  const searchable = getVoiceSearchText(voice);
+  return /hollie/.test(searchable) || (/ollie/.test(searchable) && /multilingual/.test(searchable));
+}
+
 function isEdgeGbNaturalVoice(voice) {
   const searchable = getVoiceSearchText(voice);
   return (
     isGbEnglishVoice(voice) &&
     /microsoft/.test(searchable) &&
     /natural/.test(searchable) &&
-    !/abbi/.test(searchable)
+    !/abbi/.test(searchable) &&
+    !isBlockedEdgeGbNaturalVoice(voice)
   );
 }
 
@@ -237,26 +292,23 @@ function getDisplayableEnglishVoices(voices) {
   }
 
   if (profile === 'ios-chrome') {
-    const iosGbDownloadedPremium = list.filter((voice) => (
-      isGbEnglishVoice(voice) &&
+    return list.filter(isKnownWorkingIosChromeVoice);
+  }
+
+  if (profile === 'ios-webkit') {
+    const knownGoodIpadVoices = list.filter(isKnownGoodIpadVoice);
+    if (knownGoodIpadVoices.length) return knownGoodIpadVoices;
+
+    const ipadHumanDownloaded = list.filter((voice) => (
       isDownloadedVoice(voice) &&
       isHumanPremiumEnglishVoice(voice)
     ));
-    if (iosGbDownloadedPremium.length) return iosGbDownloadedPremium;
+    if (ipadHumanDownloaded.length) return ipadHumanDownloaded;
 
-    const iosGbHuman = list.filter((voice) => (
-      isGbEnglishVoice(voice) &&
-      isHumanPremiumEnglishVoice(voice)
-    ));
-    if (iosGbHuman.length) return iosGbHuman;
-
-    const iosHumanEnglish = list.filter(isHumanPremiumEnglishVoice);
-    if (iosHumanEnglish.length) return iosHumanEnglish;
-
-    return list.filter(isEnglishVoice);
+    return list.filter(isHumanPremiumEnglishVoice);
   }
 
-  if (profile === 'safari' || profile === 'ios-webkit') {
+  if (profile === 'safari') {
     const safariGbDownloadedPremium = list.filter((voice) => (
       isGbEnglishVoice(voice) &&
       isDownloadedVoice(voice) &&
@@ -299,6 +351,10 @@ function getSpeechVoiceRank(voice) {
   if (!voice) return 999;
   const profile = getVoiceBrowserProfile();
   const searchable = getVoiceSearchText(voice);
+
+  if (profile === 'ios-chrome' || profile === 'ios-webkit') {
+    return getIpadVoiceRank(voice);
+  }
 
   if (profile === 'edge') {
     if (!isEdgeGbNaturalVoice(voice)) return 90;
@@ -776,16 +832,21 @@ function buildSpeechVoiceQueue(voices = null) {
   const profile = getVoiceBrowserProfile();
   const selectedVoice = getSelectedSpeechVoice(list);
   const displayableVoices = sortVoicesForSpeech(getDisplayableEnglishVoices(list));
-  const fallbackVoices = profile === 'edge'
-    ? sortVoicesForSpeech([
+  let fallbackVoices;
+  if (profile === 'edge') {
+    fallbackVoices = sortVoicesForSpeech([
       ...list.filter(isKnownWorkingEdgeGbVoice),
       ...list.filter(isEdgeGbNaturalVoice)
-    ])
-    : sortVoicesForSpeech([
+    ]);
+  } else if (profile === 'ios-chrome' || profile === 'ios-webkit') {
+    fallbackVoices = displayableVoices;
+  } else {
+    fallbackVoices = sortVoicesForSpeech([
       ...list.filter(isGbEnglishVoice),
       ...list.filter((voice) => isEnglishVoice(voice) && isDownloadedVoice(voice)),
       ...list.filter(isEnglishVoice)
     ]);
+  }
 
   const voicesInOrder = uniqueSpeechVoices([
     selectedVoice,
@@ -1985,10 +2046,18 @@ function renderChoices(current){
   shuffle(uniquePool);
   const options = uniquePool.slice(0,3).concat(current.meaning);
   shuffle(options);
-  options.forEach(opt=>{
+  options.forEach((opt, index)=>{
     const b=document.createElement('button');
     b.className='choiceBtn';
-    b.textContent=opt;
+    b.type = 'button';
+    b.dataset.meaning = opt;
+    b.setAttribute('aria-label', `Answer ${index + 1}: ${opt}`);
+    b.innerHTML = `
+      <span class="choice-check" aria-hidden="true"></span>
+      <span class="choice-number" aria-hidden="true">${index + 1}.</span>
+      <span class="choice-text"></span>
+    `;
+    b.querySelector('.choice-text').textContent = opt;
     b.onclick=()=>checkMeaning(opt,current);
     choicesEl.appendChild(b);
   });
@@ -2020,10 +2089,14 @@ function checkMeaning(selected,current){
   // Color the buttons
   const buttons = document.querySelectorAll('.choiceBtn');
   buttons.forEach(btn => {
-    if (btn.textContent === current.meaning) {
+    const answer = btn.dataset.meaning || '';
+    const check = btn.querySelector('.choice-check');
+    if (answer === current.meaning) {
       btn.classList.add('correct');
-    } else if (btn.textContent === selected && !isCorrect) {
+      if (check) check.textContent = '✓';
+    } else if (answer === selected && !isCorrect) {
       btn.classList.add('wrong');
+      if (check) check.textContent = '✕';
     }
     btn.disabled = true; // Disable all buttons after choice
   });
