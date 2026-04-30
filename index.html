@@ -19,7 +19,17 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260430-finished-button-v1">
+  <link rel="stylesheet" href="styles.css?v=20260430-goal-intro-v1">
+  <script src="goal-intro.js?v=20260430-goal-intro-v1" defer></script>
+  <script>
+    // Safety fallback: if goal-intro.js fails to load entirely, never leave
+    // the main app permanently hidden by the goal-flow-active body class.
+    setTimeout(function () {
+      if (document.body) {
+        document.body.classList.remove('goal-flow-active', 'goal-animation-active', 'goal-flow-fading');
+      }
+    }, 25000);
+  </script>
   <!-- Vercel Speed Insights - Simplified working implementation -->
   <script defer src="/_vercel/speed-insights/script.js"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -137,7 +147,137 @@
   
 
 </head>
-<body>
+<body class="goal-flow-active">
+
+  <!-- Goal intro overlay (shown before main app; faded out by goal-intro.js) -->
+  <section class="goal-intro-screen" id="goalIntroScreen" aria-label="Full shields entry">
+    <div class="goal-intro-content">
+      <button class="goal-crest-button" id="goalCrestButton" type="button" aria-label="Start full shields goal animation">
+        <span class="goal-tap-tooltip">Tap here</span>
+        <svg viewBox="0 0 160 160" aria-hidden="true" focusable="false">
+          <circle cx="80" cy="80" r="72" fill="#fffdf5" stroke="#dfe6ef" stroke-width="4"></circle>
+          <path d="M44 32 H116 V78 C116 106 99 126 80 138 C61 126 44 106 44 78 Z" fill="#f7f9fc" stroke="#273142" stroke-width="5" stroke-linejoin="round"></path>
+          <path d="M50 38 H110 V77 C110 100 96 116 80 127 C64 116 50 100 50 77 Z" fill="#f7c948"></path>
+          <path d="M80 39 V127 M51 76 H109" stroke="#ffffff" stroke-width="5" stroke-linecap="round"></path>
+          <path d="M61 52 C68 58 69 68 60 75 M99 52 C92 58 91 68 100 75 M62 88 C70 94 70 105 62 112 M98 88 C90 94 90 105 98 112" fill="none" stroke="#273142" stroke-width="3" stroke-linecap="round"></path>
+          <path d="M64 83 L76 95 L99 66" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      </button>
+      <h1 class="goal-intro-title">Full Shields Goal</h1>
+      <p class="goal-intro-subtitle">Tap the exam shield to see the encouragement animation before the main page appears.</p>
+    </div>
+  </section>
+
+  <section class="goal-stage" id="goalAnimationStage" aria-hidden="true">
+    <div class="goal-stage-inner">
+      <header class="goal-hero">
+        <div>
+          <h1>Full Shields Goal</h1>
+          <p class="goal-subtitle">Collect 5 shields in Reading &amp; Writing, Listening, and Speaking.</p>
+        </div>
+        <div class="goal-score-ring" aria-live="polite">
+          <div>
+            <strong id="goalShieldCount">0</strong>
+            <span>/ 15 shields</span>
+          </div>
+        </div>
+      </header>
+
+      <section class="goal-board" aria-label="Full shields encouragement preview">
+        <svg width="0" height="0" aria-hidden="true" focusable="false">
+          <defs>
+            <linearGradient id="goalShieldGradient" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0%" stop-color="#ffe58a"></stop>
+              <stop offset="58%" stop-color="#f7c948"></stop>
+              <stop offset="100%" stop-color="#77b255"></stop>
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <div class="goal-note">
+          <span id="goalEncourageText" class="goal-message">Every practice round fills another shield.</span>
+          <span>Goal: 3 skills &times; 5 shields</span>
+        </div>
+
+        <div class="goal-rows">
+          <div class="goal-skill-row">
+            <div class="goal-skill-label">Reading and Writing</div>
+            <div class="goal-shield-strip" aria-label="Reading and Writing shields"></div>
+          </div>
+          <div class="goal-skill-row">
+            <div class="goal-skill-label">Listening</div>
+            <div class="goal-shield-strip" aria-label="Listening shields"></div>
+          </div>
+          <div class="goal-skill-row">
+            <div class="goal-skill-label">Speaking</div>
+            <div class="goal-shield-strip" aria-label="Speaking shields"></div>
+          </div>
+        </div>
+
+        <div class="goal-kiwi-zone">
+          <div class="goal-kiwi-family" id="goalKiwiFamily" aria-hidden="true">
+            <svg class="goal-kiwi goal-son" viewBox="0 0 100 120" focusable="false">
+              <defs>
+                <radialGradient id="goalGreenGradSon" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                  <stop offset="0%" stop-color="#DCECB2"></stop>
+                  <stop offset="40%" stop-color="#88B92E"></stop>
+                  <stop offset="100%" stop-color="#558B2F"></stop>
+                </radialGradient>
+                <radialGradient id="goalBrownGradSon" cx="50%" cy="50%" r="50%" fx="40%" fy="40%">
+                  <stop offset="0%" stop-color="#A16F4A"></stop>
+                  <stop offset="70%" stop-color="#795548"></stop>
+                  <stop offset="100%" stop-color="#4E342E"></stop>
+                </radialGradient>
+              </defs>
+              <line class="goal-leg-left" x1="40" y1="90" x2="40" y2="120" stroke="#2c2a29" stroke-width="4" stroke-linecap="round"></line>
+              <line class="goal-leg-right" x1="60" y1="90" x2="60" y2="120" stroke="#2c2a29" stroke-width="4" stroke-linecap="round"></line>
+              <ellipse class="goal-body" cx="50" cy="55" rx="35" ry="40" fill="url(#goalBrownGradSon)"></ellipse>
+              <ellipse class="goal-body-inner" cx="50" cy="55" rx="31" ry="36" fill="url(#goalGreenGradSon)"></ellipse>
+              <ellipse cx="50" cy="55" rx="10" ry="18" fill="#F2F5E0" opacity="0.9"></ellipse>
+              <path d="M 46 42 L 47 44 M 54 42 L 53 44 M 38 52 L 41 53 M 62 52 L 59 53 M 40 64 L 43 62 M 60 64 L 57 62 M 48 70 L 49 67 M 52 70 L 51 67" stroke="#2C272E" stroke-width="1.5" stroke-linecap="round"></path>
+              <line class="goal-arm-left" x1="20" y1="60" x2="5" y2="80" stroke="#2c2a29" stroke-width="3" stroke-linecap="round"></line>
+              <line class="goal-arm-right" x1="80" y1="60" x2="95" y2="80" stroke="#2c2a29" stroke-width="3" stroke-linecap="round"></line>
+              <circle class="goal-eye" cx="42" cy="45" r="4" fill="#2c2a29"></circle>
+              <circle class="goal-eye" cx="58" cy="45" r="4" fill="#2c2a29"></circle>
+              <ellipse cx="34" cy="50" rx="4" ry="2" fill="#ff7070" opacity="0.8"></ellipse>
+              <ellipse cx="66" cy="50" rx="4" ry="2" fill="#ff7070" opacity="0.8"></ellipse>
+              <path d="M 47 54 Q 50 58 53 54" stroke="#2c2a29" stroke-width="2" fill="none" stroke-linecap="round"></path>
+            </svg>
+            <svg class="goal-kiwi goal-dad" viewBox="0 0 100 120" focusable="false">
+              <defs>
+                <radialGradient id="goalGreenGradDad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                  <stop offset="0%" stop-color="#DCECB2"></stop>
+                  <stop offset="40%" stop-color="#88B92E"></stop>
+                  <stop offset="100%" stop-color="#558B2F"></stop>
+                </radialGradient>
+                <radialGradient id="goalBrownGradDad" cx="50%" cy="50%" r="50%" fx="40%" fy="40%">
+                  <stop offset="0%" stop-color="#A16F4A"></stop>
+                  <stop offset="70%" stop-color="#795548"></stop>
+                  <stop offset="100%" stop-color="#4E342E"></stop>
+                </radialGradient>
+              </defs>
+              <line class="goal-leg-left" x1="40" y1="90" x2="40" y2="120" stroke="#2c2a29" stroke-width="4" stroke-linecap="round"></line>
+              <line class="goal-leg-right" x1="60" y1="90" x2="60" y2="120" stroke="#2c2a29" stroke-width="4" stroke-linecap="round"></line>
+              <ellipse class="goal-body" cx="50" cy="55" rx="35" ry="40" fill="url(#goalBrownGradDad)"></ellipse>
+              <ellipse class="goal-body-inner" cx="50" cy="55" rx="31" ry="36" fill="url(#goalGreenGradDad)"></ellipse>
+              <ellipse cx="50" cy="55" rx="10" ry="18" fill="#F2F5E0" opacity="0.9"></ellipse>
+              <path d="M 46 42 L 47 44 M 54 42 L 53 44 M 38 52 L 41 53 M 62 52 L 59 53 M 40 64 L 43 62 M 60 64 L 57 62 M 48 70 L 49 67 M 52 70 L 51 67" stroke="#2C272E" stroke-width="1.5" stroke-linecap="round"></path>
+              <line class="goal-arm-left" x1="20" y1="60" x2="5" y2="80" stroke="#2c2a29" stroke-width="3" stroke-linecap="round"></line>
+              <line class="goal-arm-right" x1="80" y1="60" x2="95" y2="80" stroke="#2c2a29" stroke-width="3" stroke-linecap="round"></line>
+              <circle class="goal-eye" cx="42" cy="45" r="4" fill="#2c2a29"></circle>
+              <circle class="goal-eye" cx="58" cy="45" r="4" fill="#2c2a29"></circle>
+              <ellipse cx="34" cy="50" rx="4" ry="2" fill="#ff7070" opacity="0.8"></ellipse>
+              <ellipse cx="66" cy="50" rx="4" ry="2" fill="#ff7070" opacity="0.8"></ellipse>
+              <path d="M 47 54 Q 50 58 53 54" stroke="#2c2a29" stroke-width="2" fill="none" stroke-linecap="round"></path>
+            </svg>
+            <div class="goal-football"></div>
+          </div>
+        </div>
+
+        <div class="goal-confetti" id="goalConfetti"></div>
+      </section>
+    </div>
+  </section>
 
   <!-- Holiday animations will be injected here by JavaScript -->
 
@@ -414,7 +554,7 @@
   <script src="events.js?v=20260406-2"></script>
   <script src="app.js?v=20260430-finished-button-v1"></script>
   <script src="calendar.js?v=20260406-4"></script>
-  <script src="leaderboard.js?v=20260406-4"></script>
+  <script src="leaderboard.js?v=20260430-leaderboard-hint-v1"></script>
 
   <!-- Achievement notification template -->
   <div id="achievementNotif" class="achievement-unlock hidden">
@@ -2515,6 +2655,6 @@
       console.log('Holiday intro animations are disabled by default. Use ?holidayIntro=1 to preview.');
     }
   </script>
-  <script src="environment.js"></script>
+  <script src="environment.js?v=20260430-kiwi-tooltip-v1"></script>
 </body>
 </html>

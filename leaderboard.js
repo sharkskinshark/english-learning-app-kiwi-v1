@@ -176,6 +176,9 @@ function generateLeaderboardHTML(type, leaderboard = [], current = null, limit =
                         <span class="username">No records yet</span>
                         <span class="score">-</span>
                     </div>
+                    <div class="leaderboard-empty-hint">
+                        完成一次練習後會更新排行榜。需要 Gmail 登入；不需要勾選雲端自動上傳。
+                    </div>
                 </div>
             </div>
         `;
