@@ -161,8 +161,16 @@ function isGbEnglishVoice(voice) {
   return /^en[-_]GB$/i.test(voice?.lang || '');
 }
 
+function isAppleTouchBrowser() {
+  const ua = navigator.userAgent || '';
+  const platform = navigator.platform || '';
+  return /iPad|iPhone|iPod/i.test(ua) || (platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
 function getVoiceBrowserProfile() {
   const ua = navigator.userAgent || '';
+  if (isAppleTouchBrowser() && /CriOS/i.test(ua)) return 'ios-chrome';
+  if (isAppleTouchBrowser()) return 'ios-webkit';
   if (/Edg\//i.test(ua)) return 'edge';
   if (/CriOS|Chrome/i.test(ua) && !/Edg\//i.test(ua)) return 'chrome';
   if (/Safari/i.test(ua) && !/CriOS|Chrome|Edg\//i.test(ua)) return 'safari';
@@ -202,7 +210,27 @@ function getDisplayableEnglishVoices(voices) {
     });
   }
 
-  if (profile === 'safari') {
+  if (profile === 'ios-chrome') {
+    const iosGbDownloadedPremium = list.filter((voice) => (
+      isGbEnglishVoice(voice) &&
+      isDownloadedVoice(voice) &&
+      isHumanPremiumEnglishVoice(voice)
+    ));
+    if (iosGbDownloadedPremium.length) return iosGbDownloadedPremium;
+
+    const iosGbHuman = list.filter((voice) => (
+      isGbEnglishVoice(voice) &&
+      isHumanPremiumEnglishVoice(voice)
+    ));
+    if (iosGbHuman.length) return iosGbHuman;
+
+    const iosHumanEnglish = list.filter(isHumanPremiumEnglishVoice);
+    if (iosHumanEnglish.length) return iosHumanEnglish;
+
+    return list.filter(isEnglishVoice);
+  }
+
+  if (profile === 'safari' || profile === 'ios-webkit') {
     const safariGbDownloadedPremium = list.filter((voice) => (
       isGbEnglishVoice(voice) &&
       isDownloadedVoice(voice) &&
@@ -232,9 +260,40 @@ function getDisplayableEnglishVoices(voices) {
 
 function sortVoicesForDisplay(voices) {
   return [...voices].sort((a, b) => {
+    const rankDiff = getSpeechVoiceRank(a) - getSpeechVoiceRank(b);
+    if (rankDiff !== 0) return rankDiff;
     const aGb = isGbEnglishVoice(a) ? 0 : 1;
     const bGb = isGbEnglishVoice(b) ? 0 : 1;
     if (aGb !== bGb) return aGb - bGb;
+    return formatVoiceLabel(a).localeCompare(formatVoiceLabel(b));
+  });
+}
+
+function getSpeechVoiceRank(voice) {
+  if (!voice) return 999;
+  const profile = getVoiceBrowserProfile();
+  const searchable = `${voice.name || ''} ${voice.voiceURI || ''}`.toLowerCase();
+
+  if (profile === 'edge') {
+    if (/microsoft/.test(searchable) && /thomas/.test(searchable) && isGbEnglishVoice(voice)) return 0;
+    if (/microsoft/.test(searchable) && /george|ryan/.test(searchable) && isGbEnglishVoice(voice)) return 1;
+    if (/microsoft/.test(searchable) && /libby|sonia/.test(searchable) && isGbEnglishVoice(voice)) return 2;
+    if (/microsoft/.test(searchable) && /natural/.test(searchable) && isGbEnglishVoice(voice)) return 10;
+    if (isGbEnglishVoice(voice) && isDownloadedVoice(voice)) return 20;
+    if (isEnglishVoice(voice) && isDownloadedVoice(voice)) return 30;
+    if (isGbEnglishVoice(voice)) return 40;
+  }
+
+  if (isGbEnglishVoice(voice) && isDownloadedVoice(voice)) return 0;
+  if (isGbEnglishVoice(voice)) return 10;
+  if (isEnglishVoice(voice) && isDownloadedVoice(voice)) return 20;
+  return 30;
+}
+
+function sortVoicesForSpeech(voices) {
+  return [...voices].sort((a, b) => {
+    const rankDiff = getSpeechVoiceRank(a) - getSpeechVoiceRank(b);
+    if (rankDiff !== 0) return rankDiff;
     return formatVoiceLabel(a).localeCompare(formatVoiceLabel(b));
   });
 }
@@ -267,6 +326,7 @@ function initVoiceSelector() {
   populateVoiceSelect();
   voiceSelect.addEventListener('change', () => {
     localStorage.setItem(SELECTED_VOICE_KEY, voiceSelect.value || 'auto');
+    failedSpeechVoiceKeys.clear();
     const selected = getSelectedSpeechVoice();
     if (selected) {
       setSpeechFeedback(`Voice selected: ${selected.name}`);
@@ -579,22 +639,80 @@ function selectReliableSpeechVoice() {
   const selectedVoice = getSelectedSpeechVoice(voices);
   if (selectedVoice) return selectedVoice;
 
-  const englishVoices = voices.filter(v => /^en[-_]/i.test(v.lang || ''));
-  const localEnglish = englishVoices.filter(v => v.localService !== false);
-  const candidates = localEnglish.length ? localEnglish : englishVoices;
-
-  return (
-    candidates.find(v => /en[-_]gb/i.test(v.lang || '')) ||
-    candidates.find(v => /united kingdom|british|uk/i.test(v.name || '')) ||
-    candidates.find(v => /en[-_]us/i.test(v.lang || '')) ||
-    candidates[0] ||
-    null
-  );
+  return buildSpeechVoiceQueue(voices)[0]?.voice || null;
 }
 
 // Listen and spell functionality
 let speechAttemptId = 0;
 let currentWordAudio = null;
+const failedSpeechVoiceKeys = new Map();
+const FAILED_VOICE_COOLDOWN_MS = 5 * 60 * 1000;
+
+function markSpeechVoiceFailed(voice, code) {
+  const key = getVoiceKey(voice);
+  if (!key) return;
+  failedSpeechVoiceKeys.set(key, { at: Date.now(), code });
+}
+
+function isRecentlyFailedSpeechVoice(voice) {
+  const key = getVoiceKey(voice);
+  if (!key) return false;
+  const failure = failedSpeechVoiceKeys.get(key);
+  if (!failure) return false;
+
+  if (Date.now() - failure.at > FAILED_VOICE_COOLDOWN_MS) {
+    failedSpeechVoiceKeys.delete(key);
+    return false;
+  }
+
+  return true;
+}
+
+function uniqueSpeechVoices(voices) {
+  const seen = new Set();
+  const unique = [];
+  (voices || []).forEach((voice) => {
+    if (!voice) return;
+    const key = getVoiceKey(voice);
+    if (!key || seen.has(key)) return;
+    seen.add(key);
+    unique.push(voice);
+  });
+  return unique;
+}
+
+function buildSpeechVoiceQueue(voices = null) {
+  const list = voices || ((typeof synth?.getVoices === 'function') ? synth.getVoices() : []);
+  const selectedVoice = getSelectedSpeechVoice(list);
+  const displayableVoices = sortVoicesForSpeech(getDisplayableEnglishVoices(list));
+  const fallbackVoices = sortVoicesForSpeech([
+    ...list.filter(isGbEnglishVoice),
+    ...list.filter((voice) => isEnglishVoice(voice) && isDownloadedVoice(voice)),
+    ...list.filter(isEnglishVoice)
+  ]);
+
+  const voicesInOrder = uniqueSpeechVoices([
+    selectedVoice,
+    ...displayableVoices,
+    ...fallbackVoices
+  ]);
+  const freshVoices = voicesInOrder.filter((voice) => !isRecentlyFailedSpeechVoice(voice));
+  const usableVoices = freshVoices.length ? freshVoices : voicesInOrder;
+  const profile = getVoiceBrowserProfile();
+  const defaultFallbacks = profile === 'edge'
+    ? [{ voice: null, lang: 'en-US' }, { voice: null, lang: 'en-GB' }]
+    : [{ voice: null, lang: 'en-GB' }, { voice: null, lang: 'en-US' }];
+
+  return [
+    ...usableVoices.map((voice) => ({ voice, lang: voice.lang || 'en-GB' })),
+    ...defaultFallbacks
+  ];
+}
+
+function formatSpeechCandidate(candidate) {
+  if (candidate?.voice) return `${candidate.voice.name} (${candidate.voice.lang})`;
+  return `browser default (${candidate?.lang || 'en-GB'})`;
+}
 
 function buildRemoteSpeechUrls(text) {
   const q = encodeURIComponent(text);
@@ -682,9 +800,10 @@ function speakWord(word) {
   const isMobile = /Mobile|Android|iPhone|iPad/.test(navigator.userAgent);
   const ignoredSpeechErrors = new Set(['interrupted', 'canceled']);
 
-  const buildUtterance = (voice = null) => {
+  const buildUtterance = (candidate = null) => {
+    const voice = candidate?.voice || null;
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-GB';
+    utterance.lang = candidate?.lang || voice?.lang || 'en-GB';
     if (voice) utterance.voice = voice;
 
     // Optimized for human-like, steady and gentle speech on mobile devices
@@ -704,9 +823,36 @@ function speakWord(word) {
     return utterance;
   };
 
-  const speakUtterance = (voice = null, allowDefaultFallback = true) => {
-    const utterance = buildUtterance(voice);
+  const voiceCandidates = buildSpeechVoiceQueue();
+
+  const speakUtterance = (candidateIndex = 0) => {
+    const candidate = voiceCandidates[candidateIndex] || { voice: null, lang: 'en-GB' };
+    const utterance = buildUtterance(candidate);
     let didStart = false;
+    let movedToNextCandidate = false;
+
+    const tryNextCandidate = (code) => {
+      if (movedToNextCandidate || speechAttemptId !== attemptId) return;
+      movedToNextCandidate = true;
+      if (candidate.voice) markSpeechVoiceFailed(candidate.voice, code);
+
+      const nextIndex = candidateIndex + 1;
+      if (nextIndex < voiceCandidates.length) {
+        console.warn(
+          'Retrying speech with next English voice after error:',
+          code,
+          'next:',
+          formatSpeechCandidate(voiceCandidates[nextIndex])
+        );
+        setSpeechFeedback('That voice failed in this browser. Trying another English voice...');
+        setTimeout(() => {
+          if (speechAttemptId === attemptId) speakUtterance(nextIndex);
+        }, 80);
+        return;
+      }
+
+      setSpeechFeedback(`Audio playback failed (${code}). Please choose another English voice or check browser speech settings.`, true);
+    };
 
     utterance.onstart = () => {
       didStart = true;
@@ -721,22 +867,15 @@ function speakWord(word) {
     };
     utterance.onerror = (event) => {
       const code = event?.error || 'unknown';
-      if (speechAttemptId !== attemptId) return;
+      if (speechAttemptId !== attemptId || movedToNextCandidate) return;
 
       if (ignoredSpeechErrors.has(code)) {
         console.warn('Speech synthesis was interrupted by a newer playback request:', code);
         return;
       }
 
-      console.error('Speech synthesis error:', code, event);
-      if (allowDefaultFallback && voice) {
-        console.warn('Retrying speech with browser default voice after voice error:', code);
-        setSpeechFeedback('Selected voice failed. Trying browser default voice...');
-        speakUtterance(null, false);
-        return;
-      }
-
-      setSpeechFeedback(`Audio playback failed (${code}). Please choose another English voice or check browser speech settings.`, true);
+      console.error('Speech synthesis error:', code, formatSpeechCandidate(candidate), event);
+      tryNextCandidate(code);
     };
 
     try {
@@ -748,13 +887,13 @@ function speakWord(word) {
     try {
       speech.speak(utterance);
       setTimeout(() => {
-        if (speechAttemptId === attemptId && !didStart && !speech.speaking) {
-          setSpeechFeedback('Audio did not start. Please check browser sound, tab mute, and system speech settings.', true);
+        if (speechAttemptId === attemptId && !didStart && !speech.speaking && !movedToNextCandidate) {
+          tryNextCandidate('no-start');
         }
       }, 1200);
     } catch (error) {
       console.error('Speech synthesis failed:', error);
-      setSpeechFeedback('Audio playback failed. Please try another browser or check system speech settings.', true);
+      tryNextCandidate('exception');
     }
   };
 
@@ -762,11 +901,11 @@ function speakWord(word) {
   // speak immediately with the system default voice instead of delaying playback.
   const voicesNow = (typeof synth?.getVoices === 'function') ? synth.getVoices() : [];
   if (!voicesNow || voicesNow.length === 0) console.warn('Voices not loaded yet, using system default voice');
-  const voice = selectReliableSpeechVoice();
-  if (voice) console.log('Speaking with voice:', voice.name, '(' + voice.lang + ')');
+  const voice = voiceCandidates.find(candidate => candidate.voice)?.voice || null;
+  if (voice) console.log('Speaking with voice:', formatSpeechCandidate(voiceCandidates[0]));
   else console.warn('No reliable speech voice found, using browser default');
 
-  speakUtterance(voice, true);
+  speakUtterance(0);
 }
 
 // ---------- Phonics analysis (Consonant/Vowel rules) ----------
