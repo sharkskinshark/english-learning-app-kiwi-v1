@@ -41,11 +41,14 @@
     const naturalW = el.offsetWidth;
     const naturalH = el.offsetHeight;
     if (!naturalW || !naturalH) return;
-    const availW = Math.max(0, window.innerWidth - padding * 2);
-    const availH = Math.max(0, window.innerHeight - padding * 2);
+    const availW = window.innerWidth - padding * 2;
+    const availH = window.innerHeight - padding * 2;
+    if (availW <= 0 || availH <= 0) return;
     const sx = availW / naturalW;
     const sy = availH / naturalH;
-    const scale = Math.min(1, sx, sy);
+    let scale = Math.min(1, sx, sy);
+    if (!isFinite(scale) || scale <= 0) scale = 1;
+    scale = Math.max(0.3, scale);
     el.style.setProperty('--goal-fit-scale', scale.toFixed(3));
   }
 

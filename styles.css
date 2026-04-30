@@ -6895,7 +6895,6 @@ body.goal-flow-fading #mainContent {
   --goal-fit-scale: 1;
   transform: scale(var(--goal-fit-scale));
   transform-origin: center center;
-  transition: transform 240ms ease;
 }
 
 .goal-crest-button {
