@@ -536,7 +536,6 @@ const googleSignInContainer = document.getElementById('googleSignInContainer');
 const googleSignOutBtn = document.getElementById('googleSignOutBtn');
 const existingGoogleLoginBtn = document.getElementById('existingGoogleLoginBtn');
 const registerProfileBtn = document.getElementById('registerProfileBtn');
-const recoverNicknameBtn = document.getElementById('recoverNicknameBtn');
 const authStatusHint = document.getElementById('authStatusHint');
 const learningContent = document.getElementById('learningContent');
 const identitySection = document.getElementById('identitySection');
@@ -2642,8 +2641,8 @@ function normalizeEmail(raw) {
   return (raw || '').trim().toLowerCase();
 }
 
-const IDENTITY_PLACEHOLDER_NAME = '輸入暱稱';
-const IDENTITY_PLACEHOLDER_BIRTHDAY = '輸入西元生日';
+const IDENTITY_PLACEHOLDER_NAME = '2. 暱稱';
+const IDENTITY_PLACEHOLDER_BIRTHDAY = '3. 20220000';
 
 function applyIdentityInputPlaceholders() {
   if (usernameInputField) usernameInputField.placeholder = IDENTITY_PLACEHOLDER_NAME;
@@ -2880,7 +2879,7 @@ async function syncAuthGateFromCurrentState({ silent = false } = {}) {
 
   setLearningAccess(false);
   if (!silent) {
-    setIdentityHint('Gmail 已登入，請先設定暱稱與生日再按「完成註冊」。暱稱不可重複。');
+    setIdentityHint('請先完成註冊：填入步驟 2 暱稱與步驟 3 生日後按「完成註冊」。');
   }
   return false;
 }
@@ -2916,37 +2915,6 @@ async function signInRegisteredByGoogleOnly() {
   syncUsernameAcrossFeatures(linked.profile.nickname);
   setLearningAccess(true, linked.profile, email);
   setIdentityHint(`已使用 Gmail 登入：${linked.profile.nickname}`);
-  return true;
-}
-
-async function recoverNicknameForSignedInGoogle() {
-  if (!backendAuthState.signedIn) {
-    setIdentityHint('請先完成 Gmail 登入。', true);
-    return false;
-  }
-
-  const email = getSignedInGoogleEmail();
-  if (!email) {
-    setIdentityHint('無法取得 Gmail 信箱，請重新登入。', true);
-    return false;
-  }
-
-  let linked = findIdentityByGoogleEmail(email);
-  if (!linked) {
-    const remoteIdentity = await fetchIdentityProfileFromBackend();
-    if (remoteIdentity.ok && remoteIdentity.profile) {
-      const synced = upsertLocalIdentityProfile(remoteIdentity.profile);
-      if (synced) linked = synced;
-    }
-  }
-
-  if (!linked?.profile) {
-    setIdentityHint('此 Gmail 尚未註冊暱稱，請先輸入暱稱與生日完成註冊。', true);
-    return false;
-  }
-
-  fillIdentityInputs(linked.profile);
-  setIdentityHint(`此 Gmail 綁定的暱稱是：${linked.profile.nickname}`);
   return true;
 }
 
@@ -3221,13 +3189,13 @@ function updateIdentityRegistrationControls() {
   if (usernameInputField) {
     usernameInputField.disabled = !signedIn;
     usernameInputField.readOnly = !signedIn;
-    usernameInputField.placeholder = signedIn ? IDENTITY_PLACEHOLDER_NAME : '請先登入 Gmail';
+    usernameInputField.placeholder = IDENTITY_PLACEHOLDER_NAME;
   }
 
   if (birthdayInputField) {
     birthdayInputField.disabled = !signedIn;
     birthdayInputField.readOnly = !signedIn;
-    birthdayInputField.placeholder = signedIn ? IDENTITY_PLACEHOLDER_BIRTHDAY : '請先登入 Gmail';
+    birthdayInputField.placeholder = IDENTITY_PLACEHOLDER_BIRTHDAY;
   }
 
   if (birthdayVisibilityToggle) {
@@ -3237,10 +3205,6 @@ function updateIdentityRegistrationControls() {
 
   if (registerProfileBtn) {
     registerProfileBtn.disabled = !signedIn || cloudSyncBusy;
-  }
-
-  if (recoverNicknameBtn) {
-    recoverNicknameBtn.disabled = !signedIn || cloudSyncBusy;
   }
 }
 
@@ -4027,7 +3991,7 @@ if (saveUsernameBtn) {
 if (registerProfileBtn) {
   registerProfileBtn.addEventListener('click', async () => {
     if (!backendAuthState.signedIn) {
-      setIdentityHint('請先完成 Gmail 登入，再送出註冊。', true);
+      setIdentityHint('請先登入 Gmail，並填入暱稱與西元生日後再完成註冊。', true);
       return;
     }
 
@@ -4051,9 +4015,30 @@ if (existingGoogleLoginBtn) {
   });
 }
 
-if (recoverNicknameBtn) {
-  recoverNicknameBtn.addEventListener('click', async () => {
-    await recoverNicknameForSignedInGoogle();
+if (usernameInputField) {
+  let nicknameCheckTimer = null;
+  const NICKNAME_CHECK_DEBOUNCE_MS = 250;
+  const clearNicknameWarning = () => {
+    const hint = document.getElementById('identityHint');
+    if (hint?.dataset.warningSource === 'nickname-taken') {
+      setIdentityHint('');
+      delete hint.dataset.warningSource;
+    }
+  };
+  usernameInputField.addEventListener('input', () => {
+    if (nicknameCheckTimer) window.clearTimeout(nicknameCheckTimer);
+    nicknameCheckTimer = window.setTimeout(() => {
+      const typed = normalizeNickname(usernameInputField.value || '');
+      if (!typed) { clearNicknameWarning(); return; }
+      const owner = findIdentityByNickname(typed);
+      if (!owner) { clearNicknameWarning(); return; }
+      const currentEmail = normalizeEmail(getSignedInGoogleEmail() || '');
+      const ownerEmail = normalizeEmail(owner.profile?.googleEmail || '');
+      if (currentEmail && ownerEmail === currentEmail) { clearNicknameWarning(); return; }
+      setIdentityHint('此暱稱已被使用，請更換。', true);
+      const hint = document.getElementById('identityHint');
+      if (hint) hint.dataset.warningSource = 'nickname-taken';
+    }, NICKNAME_CHECK_DEBOUNCE_MS);
   });
 }
 

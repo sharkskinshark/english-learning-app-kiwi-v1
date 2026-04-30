@@ -19,7 +19,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260430-goal-intro-v1">
+  <link rel="stylesheet" href="styles.css?v=20260501-register-cleanup-v1">
   <script src="goal-intro.js?v=20260430-goal-intro-v1" defer></script>
   <script>
     // Safety fallback: if goal-intro.js fails to load entirely, never leave
@@ -304,7 +304,7 @@
         </div>
         <div class="identity-section-body">
         <div class="account-auth-panel">
-          <h3>Gmail 帳號登入</h3>
+          <h3>1. Gmail 帳號登入</h3>
           <div class="account-auth-actions">
             <div id="googleSignInContainer"></div>
             <button id="googleSignOutBtn" class="secondary-action-btn hidden">登出 Gmail 帳號</button>
@@ -313,16 +313,16 @@
         </div>
 
         <div class="username-area">
-          <input type="text" id="usernameInput" placeholder="輸入暱稱" maxlength="20">
-          <input type="password" id="birthdayInput" placeholder="輸入西元生日" maxlength="8" inputmode="numeric" pattern="[0-9]*">
+          <input type="text" id="usernameInput" placeholder="2. 暱稱" maxlength="20">
+          <input type="password" id="birthdayInput" placeholder="3. 20220000" maxlength="8" inputmode="numeric" pattern="[0-9]*">
           <button id="registerProfileBtn">完成註冊</button>
-          <button id="recoverNicknameBtn" class="secondary-action-btn">找回暱稱</button>
         </div>
         <label class="birthday-visibility-toggle">
           <input type="checkbox" id="birthdayVisibilityToggle">
           <span>顯示生日數字</span>
         </label>
         <div id="identityHint" class="identity-hint">請先登入 Gmail，再設定暱稱與生日完成註冊。暱稱不可重複。</div>
+        <div class="identity-hint identity-hint-static">登入 Gmail 可以記錄最新練習成果，並上傳/下載最新的練習結果。</div>
 
         <div class="cloud-sync-panel">
           <h3>雲端同步（使用 Gmail 登入識別）☁️</h3>
@@ -552,7 +552,7 @@
   <script src="review.js?v=20260406-2"></script>
   <script src="daily.js?v=20260406-2"></script>
   <script src="events.js?v=20260406-2"></script>
-  <script src="app.js?v=20260430-finished-button-v1"></script>
+  <script src="app.js?v=20260501-register-cleanup-v1"></script>
   <script src="calendar.js?v=20260406-4"></script>
   <script src="leaderboard.js?v=20260430-leaderboard-hint-v1"></script>
 
