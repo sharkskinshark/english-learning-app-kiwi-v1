@@ -815,6 +815,31 @@ function setSpellingLettersVisible(visible) {
   refreshSpellingHintFeedback();
 }
 
+function setSpellingSubmitMode(mode) {
+  if (!submitSpelling) return;
+  const isNext = mode === 'next';
+  submitSpelling.dataset.action = isNext ? 'next' : 'check';
+  submitSpelling.textContent = isNext ? 'Next' : 'Check Answer';
+  submitSpelling.disabled = false;
+}
+
+function setRestartButtonMode(mode) {
+  if (!restartBtn) return;
+  const isFinished = mode === 'finished';
+  restartBtn.dataset.action = isFinished ? 'finished' : 'restart';
+  restartBtn.textContent = isFinished ? 'Finished' : 'Restart';
+}
+
+function goToTypeMenuArea() {
+  const controls = document.querySelector('.controls');
+  if (controls) {
+    controls.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  setTimeout(() => {
+    try { modeSelect?.focus(); } catch {}
+  }, 250);
+}
+
 function selectReliableSpeechVoice() {
   const voices = (typeof window.speechSynthesis?.getVoices === 'function')
     ? window.speechSynthesis.getVoices()
@@ -1292,7 +1317,7 @@ function checkSpelling() {
 
   hasAnsweredCurrentQuestion = true;
   spellingInput.disabled = true;
-  submitSpelling.disabled = true;
+  setSpellingSubmitMode('next');
   activePlaybackWord = '';
   if (!feedbackEl?.classList.contains('bad')) setSpeechFeedback('');
 
@@ -1331,7 +1356,8 @@ function checkSpelling() {
     });
   }
   
-  nextBtn.classList.remove('hidden');
+  nextBtn.classList.add('hidden');
+  setRestartButtonMode('restart');
   restartBtn.classList.remove('hidden');
   scoreEl.classList.remove('hidden');
   scoreEl.textContent = `Score: ${session.score}`;
@@ -1340,7 +1366,11 @@ function checkSpelling() {
 // Add event listeners for spelling practice (removed duplicates)
 spellingInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') {
-    checkSpelling();
+    if (hasAnsweredCurrentQuestion && modeSelect?.value === 'spelling') {
+      next();
+    } else {
+      checkSpelling();
+    }
   }
 });
 
@@ -1836,6 +1866,7 @@ function shuffle(a){
 
 function startSession(){
   console.log('startSession called');
+  setRestartButtonMode('restart');
   
   // Make exercise section visible
   exercise.classList.remove('hidden');
@@ -1995,6 +2026,7 @@ function startSession(){
   feedbackEl.textContent = '';
   nextBtn.classList.add('hidden');
   restartBtn.classList.add('hidden');
+  setRestartButtonMode('restart');
   scoreEl.classList.add('hidden');
   updateSessionProgress();
   showCurrent();
@@ -2018,6 +2050,7 @@ function showCurrent(){
   feedbackEl.textContent = '';
   nextBtn.classList.add('hidden');
   restartBtn.classList.add('hidden');
+  setRestartButtonMode('restart');
   scoreEl.classList.add('hidden');
 
   if(mode === 'spelling'){
@@ -2028,7 +2061,7 @@ function showCurrent(){
     promptEl.textContent = 'Listen to the word and type what you hear.';
     spellingInput.value = '';
     spellingInput.disabled = false;
-    submitSpelling.disabled = false;
+    setSpellingSubmitMode('check');
     spellingInput.focus();
     currentWord = current;
     currentSpellingHintWord = current.word || '';
@@ -2163,6 +2196,7 @@ function finishSession(){
   feedbackEl.textContent = `Final score: ${session.score} / ${session.words.length}`;
   feedbackEl.className='feedback';
   nextBtn.classList.add('hidden');
+  setRestartButtonMode('finished');
   restartBtn.classList.remove('hidden');
   scoreEl.classList.remove('hidden');
   scoreEl.textContent = `Score: ${session.score}`;
@@ -2322,14 +2356,23 @@ listenWordBtn.addEventListener('touchend', (e) => {
   playCurrentWord();
 }, { passive: false });
 
-submitSpelling.addEventListener('click', ()=>{checkSpelling();});
+function handleSpellingSubmitAction() {
+  if (submitSpelling?.dataset.action === 'next' || (hasAnsweredCurrentQuestion && modeSelect?.value === 'spelling')) {
+    next();
+    return;
+  }
+
+  checkSpelling();
+}
+
+submitSpelling.addEventListener('click', ()=>{handleSpellingSubmitAction();});
 
 // Enhanced iPhone touch support for Check Answer button
 submitSpelling.addEventListener('touchend', function(e) {
   console.log('📱 Check Answer button touched');
   e.preventDefault();
   if (!submitSpelling.disabled) {
-    checkSpelling();
+    handleSpellingSubmitAction();
   }
 }, { passive: false });
 
@@ -2344,7 +2387,13 @@ nextBtn.addEventListener('touchend', function(e) {
   }
 }, { passive: false });
 
-restartBtn.addEventListener('click', ()=>{startSession();});
+restartBtn.addEventListener('click', ()=>{
+  if (restartBtn.dataset.action === 'finished') {
+    goToTypeMenuArea();
+    return;
+  }
+  startSession();
+});
 
 // Mode selection handling
 document.getElementById('practiceMode').addEventListener('change', (e) => {
