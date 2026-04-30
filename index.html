@@ -19,7 +19,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260430-meaning-numbered-choices-v1">
+  <link rel="stylesheet" href="styles.css?v=20260430-voice-help-v1">
   <!-- Vercel Speed Insights - Simplified working implementation -->
   <script defer src="/_vercel/speed-insights/script.js"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -185,7 +185,7 @@
         <div id="identityHint" class="identity-hint">請先登入 Gmail，再設定暱稱與生日完成註冊。暱稱不可重複。</div>
 
         <div class="cloud-sync-panel">
-          <h3>雲端同步（Gmail 帳號）☁️</h3>
+          <h3>雲端同步（使用 Gmail 登入識別）☁️</h3>
           <div class="cloud-sync-actions">
             <button id="cloudPullBtn" class="secondary-action-btn">從雲端下載</button>
             <button id="cloudPushBtn">上傳到雲端</button>
@@ -233,11 +233,41 @@
           </select>
         </label>
 
-        <label>Voice:
-          <select id="voiceSelect">
-            <option value="auto">Auto voice</option>
-          </select>
+        <label class="voice-control-label">Voice:
+          <div class="voice-control-row">
+            <select id="voiceSelect">
+              <option value="auto">Auto voice</option>
+            </select>
+            <button id="voiceHelpBtn" type="button" class="secondary-action-btn" aria-expanded="false" aria-controls="voiceHelpPanel">Help</button>
+          </div>
         </label>
+
+        <section id="voiceHelpPanel" class="voice-help-panel hidden" aria-label="iPad premium English voice setup help">
+          <div class="voice-help-header">
+            <h3>iPad premium English voice setup</h3>
+            <button id="voiceHelpCloseBtn" type="button" class="secondary-action-btn" aria-label="Close voice setup help">Close</button>
+          </div>
+          <p class="voice-help-note">Install voices in iPad Settings first. After iPadOS exposes them to Safari or Chrome, they can appear in this app's Voice dropdown.</p>
+          <ol class="voice-help-steps">
+            <li>Connect the iPad to Wi-Fi.</li>
+            <li>Open <strong>Settings</strong> → <strong>Accessibility</strong> → <strong>Spoken Content</strong>.</li>
+            <li>Tap <strong>Voices</strong> → <strong>English</strong>.</li>
+            <li>Open English dialects such as <strong>United Kingdom</strong>, <strong>United States</strong>, or <strong>Australia</strong>.</li>
+            <li>Choose a natural voice and download the higher-quality version if iPadOS shows a download option.</li>
+            <li>Return to this app, refresh the page, then open the Voice dropdown again.</li>
+          </ol>
+          <div class="voice-help-lists">
+            <div>
+              <h4>Recommended human voices</h4>
+              <p>Daniel, Tessa, Moira, Samantha, Serena, Kate, Fiona, Victoria, Arthur, Oliver, Susan, Allison, Ava, Zoe, Jamie.</p>
+            </div>
+            <div>
+              <h4>Browser notes</h4>
+              <p>Safari usually exposes fewer but more reliable voices. Chrome on iPad may show different voices because it still uses iPadOS speech underneath.</p>
+            </div>
+          </div>
+          <p class="voice-help-source">Apple reference: <a href="https://support.apple.com/en-lamr/111798" target="_blank" rel="noopener">Adjust voice and speed for VoiceOver and Speak Screen</a>.</p>
+        </section>
 
         <div id="learnControls">
           <label>Level:
@@ -382,7 +412,7 @@
   <script src="review.js?v=20260406-2"></script>
   <script src="daily.js?v=20260406-2"></script>
   <script src="events.js?v=20260406-2"></script>
-  <script src="app.js?v=20260430-meaning-numbered-choices-v1"></script>
+  <script src="app.js?v=20260430-voice-help-v1"></script>
   <script src="calendar.js?v=20260406-4"></script>
   <script src="leaderboard.js?v=20260406-4"></script>
 
