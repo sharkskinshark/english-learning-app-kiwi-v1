@@ -129,6 +129,10 @@
             
             const familyGroup = document.createElement('div');
             familyGroup.className = 'kiwi-family';
+            familyGroup.tabIndex = 0;
+            familyGroup.setAttribute('role', 'img');
+            familyGroup.setAttribute('aria-label', '我是 Kiwi, jogging');
+            familyGroup.title = '我是 Kiwi · jogging';
             
             const dad = createKiwiSVG('dad');
             const son = createKiwiSVG('son');
@@ -150,6 +154,11 @@
             familyGroup.appendChild(dad);
             familyGroup.appendChild(ball); // Ball explicitly between them structurally
             familyGroup.appendChild(son);
+
+            const tooltip = document.createElement('div');
+            tooltip.className = 'kiwi-tooltip';
+            tooltip.textContent = '我是 Kiwi · jogging';
+            familyGroup.appendChild(tooltip);
             
             container.appendChild(familyGroup);
             document.body.insertBefore(container, document.body.firstChild);
@@ -183,9 +192,24 @@
     });
 
     function startRoaming(element) {
+        function getKiwiActivityLabel() {
+            if (element.classList.contains('action-soccer')) return 'play football';
+            if (element.classList.contains('action-run')) return 'jogging';
+            return 'jogging';
+        }
+
+        function updateKiwiTooltip() {
+            const label = `我是 Kiwi · ${getKiwiActivityLabel()}`;
+            element.title = label;
+            element.setAttribute('aria-label', label);
+            const tooltip = element.querySelector('.kiwi-tooltip');
+            if (tooltip) tooltip.textContent = label;
+        }
+
         function roam() {
             // Remove previous action and movement classes
             element.classList.remove('action-hug', 'action-lift', 'action-soccer', 'action-run');
+            updateKiwiTooltip();
             
             // Fade out confetti if it exists
             const confettiLayer = document.getElementById('confetti-layer');
@@ -206,6 +230,7 @@
             if (isRunning) {
                 element.classList.add('action-run');
             }
+            updateKiwiTooltip();
             
             // Duration relies heavily on distance and scale.
             // If running, they traverse 3x faster.
@@ -245,6 +270,7 @@
                     }
                     
                     element.classList.add(actionClass);
+                    updateKiwiTooltip();
                     
                     // Interactions take roughly 4-5 seconds
                     setTimeout(roam, 4500 + Math.random() * 2000);
