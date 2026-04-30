@@ -19,7 +19,9 @@ function normalizeReviewEntry(raw, wordKey) {
                 ts: toSafeNumber(evt.ts, now),
                 correct: !!evt.correct,
                 phase: evt.phase === 'review' ? 'review' : 'learn',
-                mode: evt.mode === 'meaning' ? 'meaning' : 'spelling'
+                mode: evt.mode === 'meaning' ? 'meaning' : 'spelling',
+                selectedAnswer: typeof evt.selectedAnswer === 'string' ? evt.selectedAnswer : '',
+                correctAnswer: typeof evt.correctAnswer === 'string' ? evt.correctAnswer : ''
             }))
         : [];
 
@@ -131,7 +133,13 @@ function saveForReview(word, correct, meta = {}) {
     entry.needsReview = !correct || (entry.correct / entry.attempts) < 0.7;
     entry.cycleCompleted = entry.learnAttempts > 0 && entry.reviewAttempts > 0;
 
-    entry.history.push({ ts, correct: !!correct, phase, mode });
+    const historyEvent = { ts, correct: !!correct, phase, mode };
+    if (mode === 'meaning') {
+        historyEvent.selectedAnswer = typeof meta.selectedAnswer === 'string' ? meta.selectedAnswer : '';
+        historyEvent.correctAnswer = typeof meta.correctAnswer === 'string' ? meta.correctAnswer : (word.meaning || '');
+    }
+
+    entry.history.push(historyEvent);
     if (entry.history.length > REVIEW_HISTORY_LIMIT) {
         entry.history = entry.history.slice(entry.history.length - REVIEW_HISTORY_LIMIT);
     }
