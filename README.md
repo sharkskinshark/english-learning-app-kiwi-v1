@@ -52,7 +52,6 @@ The repo deploys to Vercel automatically on push to `main`. Backend functions in
 │   ├── sync/               #   Cloud sync push/pull
 │   └── _lib/               #   Shared backend helpers
 ├── dashboards/             # Internal analysis dashboards
-├── user-data/              # Sample identity data
 ├── vercel.json             # Vercel deploy config
 └── package.json
 ```

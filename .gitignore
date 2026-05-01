@@ -110,3 +110,6 @@ shield-goal-animation-preview.html
 kiwi_ghibli.png
 *.code-workspace
 skills/
+
+# Local-only sample / identity data (never push to public)
+user-data/
