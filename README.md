@@ -66,4 +66,4 @@ The repo deploys to Vercel automatically on push to `main`. Backend functions in
 
 ## 📄 License
 
-Open source for educational use.
+[MIT](LICENSE) — free for personal, educational, and commercial use with attribution.
